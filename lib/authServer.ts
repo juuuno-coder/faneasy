@@ -20,13 +20,18 @@ export async function loginWithIdToken(idToken: string) {
     user: profile
       ? {
           id: profile.uid || decoded.uid,
-          name: profile.name || decoded.name || decoded.email,
-          email: profile.email || decoded.email,
-          role: profile.role || "fan",
+          name: profile.name || decoded.name || decoded.email || "User",
+          email: profile.email || decoded.email || "",
+          role: (profile.role as any) || "fan",
           subdomain: profile.subdomain,
           slug: profile.slug,
         }
-      : { id: decoded.uid, email: decoded.email },
+      : { 
+          id: decoded.uid, 
+          name: decoded.name || decoded.email || "User",
+          email: decoded.email || "",
+          role: "fan" as const
+        },
   };
 }
 
