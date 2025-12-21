@@ -27,14 +27,7 @@ export default function HeaderActions({ site }: { site: string }) {
 
   return (
     <div className="flex items-center gap-4">
-        <Link 
-          href={`/sites/${site}/store`}
-          className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
-        >
-          서비스 구매
-        </Link>
-
-        {items.length > 0 && (
+      {items.length > 0 && (
             <Link 
                 href={`/sites/${site}/cart`}
                 className="relative p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
