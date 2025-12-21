@@ -130,7 +130,7 @@ export default async function SitePage({
                 </div>
                 <h3 className="text-xl font-bold mb-3">하이엔드 디자인</h3>
                 <p className="text-gray-400 leading-relaxed">
-                  MZ마케팅 레퍼런스 이상의 세련되고 트렌디한 디자인으로 브랜드
+                  평범한 마케팅 레퍼런스 이상의 세련되고 트렌디한 디자인으로 브랜드
                   신뢰도를 즉각적으로 높여드립니다.
                 </p>
               </div>
