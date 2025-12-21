@@ -31,6 +31,41 @@ import TemplateShowcase from "@/components/template-showcase";
 import { Spotlight } from "@/components/ui/spotlight";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 
+import type { Metadata, ResolvingMetadata } from 'next';
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ site: string }> },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { site } = await params;
+  const creator = getCreator(site);
+
+  if (!creator) return {};
+
+  const title = site === 'kkang' ? '깡대표 x 디어스 | 프리미엄 랜딩페이지' : `${creator.name} 공식 팬페이지`;
+  const description = site === 'kkang' 
+    ? '빠르게 사업을 시작하는 프리미엄 랜딩페이지' 
+    : creator.bio;
+  const ogImage = site === 'kkang' ? '/og-kkang.png' : creator.image;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [ogImage],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
+
 export default async function SitePage({
   params,
 }: {
