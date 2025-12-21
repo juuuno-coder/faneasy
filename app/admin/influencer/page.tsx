@@ -18,11 +18,13 @@ import {
   MoreHorizontal,
   CreditCard,
   ShoppingBag,
+  Palette,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 const AdminProfile = dynamic(() => import("@/components/admin-profile"), {
   ssr: false,
 });
+const DesignEditor = dynamic(() => import("./design-editor"), { ssr: false });
 
 export default function InfluencerDashboard() {
   const router = useRouter();
@@ -30,7 +32,7 @@ export default function InfluencerDashboard() {
   const { getInquiriesByOwner, getOrdersByOwner } = useDataStore();
   
   const [activeTab, setActiveTab] = useState<
-    "overview" | "orders" | "fans" | "inquiries" | "settings"
+    "overview" | "orders" | "fans" | "inquiries" | "settings" | "design"
   >("overview");
   const [fans, setFans] = useState<Fan[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -132,6 +134,19 @@ export default function InfluencerDashboard() {
             <Users className="h-5 w-5" />팬
           </button>
           <button
+            onClick={() => setActiveTab("design")}
+            aria-pressed={activeTab === "design"}
+            aria-current={activeTab === "design" ? "page" : undefined}
+            className={`flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-indigo-500 ${
+              activeTab === "design"
+                ? "bg-gray-100 text-black"
+                : "text-gray-600 hover:bg-gray-50 hover:text-black"
+            }`}
+          >
+            <Palette className="h-5 w-5" />
+            디자인
+          </button>
+          <button
             onClick={() => setActiveTab("settings")}
             aria-pressed={activeTab === "settings"}
             aria-current={activeTab === "settings" ? "page" : undefined}
@@ -169,6 +184,7 @@ export default function InfluencerDashboard() {
               {activeTab === "orders" && "주문 관리"}
               {activeTab === "inquiries" && "문의 및 리드"}
               {activeTab === "fans" && "팬 정보"}
+              {activeTab === "design" && "디자인 편집"}
               {activeTab === "settings" && "페이지 설정"}
             </h1>
             <p className="text-gray-600">환영합니다, {user.name}님!</p>
@@ -411,6 +427,11 @@ export default function InfluencerDashboard() {
               문의 내역 목록 (여기서 확인 가능)
             </div>
           </div>
+        )}
+
+        {/* Design Editor Tab */}
+        {activeTab === "design" && (
+          <DesignEditor subdomain={user.subdomain || ""} />
         )}
 
         {/* Other Tabs Placeholder */}

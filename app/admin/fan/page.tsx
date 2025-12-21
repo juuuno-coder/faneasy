@@ -15,17 +15,19 @@ import {
   Globe,
   CreditCard,
   Users,
+  Palette,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 const AdminProfile = dynamic(() => import("@/components/admin-profile"), {
   ssr: false,
 });
+const DesignEditor = dynamic(() => import("../influencer/design-editor"), { ssr: false });
 
 export default function FanAdminDashboard() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState<
-    "overview" | "inquiries" | "domain" | "billing"
+    "overview" | "inquiries" | "domain" | "billing" | "design"
   >("overview");
   const [fan, setFan] = useState<Fan | undefined>(undefined);
 
@@ -95,6 +97,17 @@ export default function FanAdminDashboard() {
               </span>
             </button>
             <button
+              onClick={() => setActiveTab("design")}
+              className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                activeTab === "design"
+                  ? "bg-white/10 text-white"
+                  : "text-gray-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <Palette className="h-5 w-5" />
+              페이지 디자인
+            </button>
+            <button
               onClick={() => setActiveTab("domain")}
               className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                 activeTab === "domain"
@@ -149,6 +162,7 @@ export default function FanAdminDashboard() {
             <h1 className="text-3xl font-bold mb-2">
               {activeTab === "overview" && "비즈니스 개요"}
               {activeTab === "inquiries" && "문의 관리"}
+              {activeTab === "design" && "페이지 디자인 편집"}
               {activeTab === "domain" && "도메인 설정"}
               {activeTab === "billing" && "구독 및 결제"}
             </h1>
@@ -268,6 +282,12 @@ export default function FanAdminDashboard() {
             <p className="max-w-md mx-auto">
               웹사이트의 문의 폼을 통해 들어온 모든 잠재 고객 목록이 여기에 표시됩니다.
             </p>
+          </div>
+        )}
+
+        {activeTab === "design" && (
+          <div className="text-black text-left">
+             <DesignEditor subdomain={fan.slug} />
           </div>
         )}
 

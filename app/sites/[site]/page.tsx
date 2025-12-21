@@ -15,11 +15,21 @@ import {
   Palette,
   ArrowRight,
   Monitor,
+  Cpu,
+  Layers,
+  Zap,
+  BarChart3,
+  ShieldCheck,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import InquiryForm from "./inquiry-form";
 import FAQSection from "./faq-section";
 import HeaderActions from "./header-actions";
+import { EditableText, EditableContent } from "@/components/editable";
+import TemplateShowcase from "@/components/template-showcase";
+import { Spotlight } from "@/components/ui/spotlight";
+import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 
 export default async function SitePage({
   params,
@@ -250,7 +260,7 @@ export default async function SitePage({
                   href="/sites/kkang/checkout?plan=pro"
                   className="mt-8 block w-full rounded-2xl bg-purple-500 py-4 text-center text-sm font-bold transition-all hover:bg-purple-600 shadow-lg"
                 >
-                  가장 많이 선택하는 플랜<br>지금 시작하기</br>
+                  가장 많이 선택하는 플랜<br />지금 시작하기
                 </Link>
               </div>
 
@@ -301,32 +311,8 @@ export default async function SitePage({
           </div>
         </section>
 
-        {/* References
-        <section id="references" className="py-20 bg-white/1">
-          <div className="mx-auto max-w-7xl px-6 text-center">
-            <h2 className="text-3xl font-bold mb-12">검증된 레퍼런스</h2>
-            <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-              <div className="flex flex-col items-center gap-2 group cursor-pointer">
-                <div className="h-16 w-32 bg-white/10 rounded-xl flex items-center justify-center font-bold text-white group-hover:bg-purple-500/20 transition-colors">
-                  MZ마케팅
-                </div>
-              </div>
-              <div className="flex flex-col items-center gap-2 group cursor-pointer">
-                <div className="h-16 w-32 bg-white/10 rounded-xl flex items-center justify-center font-bold text-white group-hover:bg-purple-500/20 transition-colors">
-                  ART HYUN
-                </div>
-              </div>
-              <div className="flex flex-col items-center gap-2 group cursor-pointer">
-                <div className="h-16 w-32 bg-white/10 rounded-xl flex items-center justify-center font-bold text-white group-hover:bg-purple-500/20 transition-colors">
-                  VENTUTION
-                </div>
-              </div>
-            </div>
-            <p className="mt-12 text-gray-500 text-sm">
-              실제 결과로 증명하는 깡대표 x 개발자들(디어스) 프로젝트 연합
-            </p>
-          </div>
-        </section> */}
+        {/* References / Templates Section */}
+        <TemplateShowcase />
 
         {/* FAQ Section */}
         <FAQSection />
@@ -415,7 +401,7 @@ export default async function SitePage({
         <header className="fixed top-0 z-50 w-full bg-black/80 backdrop-blur-md border-b border-white/10">
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
             <h1 className="text-xl font-black tracking-tighter italic">
-              MZ<span className="text-[#FFE400]">MARKETING</span>
+              LIMITED<span className="text-[#FFE400]">MARKETING</span>
             </h1>
             <nav className="hidden md:flex gap-6 text-sm font-bold text-gray-400">
               <a href="#services" className="hover:text-white transition-colors">SERVICES</a>
@@ -427,18 +413,38 @@ export default async function SitePage({
         </header>
 
         {/* Hero Section */}
-        <section className="pt-32 pb-20 px-6">
-          <div className="mx-auto max-w-7xl">
-            <h2 className="text-[12vw] leading-[0.9] font-black text-white mix-blend-difference mb-12">
-              MZ MARKETING <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-[#FFE400] to-orange-500">
-                SERVICE
-              </span>
-            </h2>
-            <p className="max-w-xl text-xl text-gray-400 font-light border-l-2 border-[#FFE400] pl-6 ml-2">
-              가장 젊고 감각적인 마케팅 솔루션. <br />
-              귀사의 비즈니스를 MZ세대와 연결해드립니다.
-            </p>
+        <section className="pt-32 pb-20 px-6 relative overflow-hidden">
+          <Spotlight
+            className="-top-40 left-0 md:left-60 md:-top-20"
+            fill="white"
+          />
+          <div className="mx-auto max-w-7xl relative z-10">
+            <EditableText
+              subdomain={site}
+              field="heroTitle"
+              as="h2"
+              className="text-[10vw] leading-[0.9] font-black text-white mix-blend-difference mb-12 uppercase"
+              defaultValue={
+                <>
+                  LIMITED MARKETING <br />
+                  <span className="text-transparent bg-clip-text bg-linear-to-r from-[#FFE400] to-orange-500">
+                    SOLUTION
+                  </span>
+                </>
+              }
+            />
+            <EditableText
+              subdomain={site}
+              field="heroDescription"
+              as="p"
+              className="max-w-xl text-xl text-gray-400 font-light border-l-2 border-[#FFE400] pl-6 ml-2"
+              defaultValue={
+                <>
+                  오직 소수의 클라이언트만을 위한 프리미엄 솔루션. <br />
+                  귀사의 비즈니스를 확실한 성공으로 이끌어드립니다.
+                </>
+              }
+            />
           </div>
         </section>
 
@@ -468,31 +474,36 @@ export default async function SitePage({
           </div>
         </section>
 
-        {/* Solutions Section */}
+        {/* Solutions Section (Editable Body) */}
         <section id="solutions" className="py-20 border-t border-white/10 px-6 bg-white/5">
           <div className="mx-auto max-w-7xl">
-             <div className="flex flex-col md:flex-row gap-12">
-              <div className="md:w-1/3 order-1 md:order-2">
-                <h3 className="text-3xl font-bold sticky top-24 text-right md:text-left">
-                  온라인 <br />
-                  <span className="text-blue-500">마케팅 솔루션</span>
-                </h3>
-              </div>
-              <div className="md:w-2/3 order-2 md:order-1 grid grid-cols-1 gap-4">
-                {[
-                  "구글 애널리틱스 (GA4) 세팅 및 분석",
-                  "구글 태그매니저 (GTM) 설치",
-                  "자사/경쟁사 광고 문제점 정밀 분석",
-                  "웹사이트 UX/UI 사용자 경험 분석",
-                  "상세페이지 셀링포인트 도출",
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-4 p-6 border-l-4 border-blue-500 bg-black/20 hover:pl-8 transition-all">
-                    <CheckCircle2 className="text-blue-500 h-6 w-6 shrink-0" />
-                    <span className="font-bold text-lg">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+             <EditableContent
+                subdomain={site}
+                defaultContent={
+                    <div className="flex flex-col md:flex-row gap-12">
+                      <div className="md:w-1/3 order-1 md:order-2">
+                        <h3 className="text-3xl font-bold sticky top-24 text-right md:text-left">
+                          온라인 <br />
+                          <span className="text-blue-500">마케팅 솔루션</span>
+                        </h3>
+                      </div>
+                      <div className="md:w-2/3 order-2 md:order-1 grid grid-cols-1 gap-4">
+                        {[
+                          "구글 애널리틱스 (GA4) 세팅 및 분석",
+                          "구글 태그매니저 (GTM) 설치",
+                          "자사/경쟁사 광고 문제점 정밀 분석",
+                          "웹사이트 UX/UI 사용자 경험 분석",
+                          "상세페이지 셀링포인트 도출",
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center gap-4 p-6 border-l-4 border-blue-500 bg-black/20 hover:pl-8 transition-all">
+                            <CheckCircle2 className="text-blue-500 h-6 w-6 shrink-0" />
+                            <span className="font-bold text-lg">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                }
+             />
           </div>
         </section>
 
@@ -518,20 +529,501 @@ export default async function SitePage({
                     <p className="text-gray-400">성공적인 마케팅, 지금 바로 시작하세요.</p>
                 </div>
                 <div className="bg-white/5 border border-white/10 p-8 md:p-12 rounded-3xl backdrop-blur-sm">
-                    <InquiryForm influencerId="inf-1" />
+                    <InquiryForm influencerId="inf-1" variant="bold" />
                 </div>
              </div>
         </section>
 
         {/* Footer */}
         <footer className="py-12 text-center text-xs text-gray-600 border-t border-white/10 bg-black">
-          <p className="font-bold text-gray-500 mb-2">MZ MARKETING</p>
-          <p>Copyright ⓒ 2025 MZ Marketing. All rights reserved.</p>
+          <p className="font-bold text-gray-500 mb-2">LIMITED MARKETING</p>
+          <p>Copyright ⓒ 2025 Limited Marketing. All rights reserved.</p>
         </footer>
       </div>
     );
   }
  
+  // Custom Design for 'fan2' (Growth Marketing - Bburi Theme)
+  if (site === "fan2") {
+    return (
+      <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-green-100 selection:text-green-900">
+        {/* Clean Professional Header */}
+        <header className="fixed top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+          <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 bg-green-600 rounded-tr-xl rounded-bl-xl flex items-center justify-center">
+                 <span className="text-white font-bold text-lg">G</span>
+              </div>
+              <h1 className="text-xl font-bold tracking-tight text-gray-900">
+                GROWTH<span className="text-green-600">MARKETING</span>
+              </h1>
+            </div>
+            
+            <nav className="hidden md:flex gap-8 text-sm font-semibold text-gray-500">
+              <a href="#about" className="hover:text-green-600 transition-colors">ABOUT</a>
+              <a href="#services" className="hover:text-green-600 transition-colors">SERVICES</a>
+              <a href="#portfolio" className="hover:text-green-600 transition-colors">PORTFOLIO</a>
+              <a href="#contact" className="hover:text-green-600 transition-colors">CONTACT</a>
+            </nav>
+            <HeaderActions site={site} />
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section className="pt-32 pb-24 px-6 bg-slate-900 relative overflow-hidden">
+          {/* Background Image Overlay */}
+          <div className="absolute inset-0 z-0">
+             <img 
+               src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2670&auto=format&fit=crop" 
+               alt="Background" 
+               className="w-full h-full object-cover opacity-20"
+             />
+             <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent"></div>
+          </div>
+
+          <div className="mx-auto max-w-7xl relative z-10">
+            <div className="max-w-3xl">
+              <span className="inline-block px-3 py-1 bg-green-100/80 backdrop-blur text-green-700 rounded-full text-xs font-bold mb-6 tracking-wide border border-green-200">
+                DATA-DRIVEN MARKETING AGENCY
+              </span>
+              <EditableText
+                subdomain={site}
+                field="heroTitle"
+                as="h2"
+                className="text-5xl md:text-7xl font-bold leading-tight text-gray-900 mb-8"
+                defaultValue={
+                  <>
+                    데이터로 증명하는 <br />
+                    <span className="text-green-600 relative inline-block">
+                       확실한 성장의 파트너
+                       <svg className="absolute -bottom-2 left-0 w-full h-3 text-green-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                         <path d="M0 5 Q 50 10 100 5 L 100 0 Q 50 5 0 0 Z" fill="currentColor"/>
+                       </svg>
+                    </span>
+                  </>
+                }
+              />
+              <EditableText
+                subdomain={site}
+                field="heroDescription"
+                as="p"
+                className="text-xl text-gray-600 leading-relaxed max-w-2xl border-l-4 border-green-500 pl-6"
+                defaultValue={
+                    "단순한 노출이 아닌, 실제 매출 성장으로 이어지는 퍼포먼스 마케팅."
+                }
+              />
+              
+              <div className="mt-10 flex gap-4">
+                 <a href="#contact" className="px-8 py-4 bg-gray-900 text-white font-bold rounded-lg hover:bg-gray-800 transition-all shadow-lg shadow-gray-200">
+                   무료 진단 신청하기
+                 </a>
+                 <a href="#services" className="px-8 py-4 bg-white border border-gray-200 text-gray-700 font-bold rounded-lg hover:border-gray-400 transition-all">
+                   서비스 소개
+                 </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Statistics Grid */}
+        <section className="py-12 bg-white border-b border-gray-100">
+           <div className="mx-auto max-w-7xl px-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+                 {[
+                    { label: "누적 집행액", value: "300억+" },
+                    { label: "마케팅 프로젝트", value: "1,500+" },
+                    { label: "평균 ROAS", value: "450%" },
+                    { label: "클라이언트 유지율", value: "92%" }
+                 ].map((stat, i) => (
+                    <div key={i} className="text-center md:text-left">
+                       <div className="text-3xl lg:text-4xl font-black text-gray-900 mb-2">{stat.value}</div>
+                       <div className="text-sm font-bold text-gray-500 uppercase tracking-widest">{stat.label}</div>
+                    </div>
+                 ))}
+              </div>
+
+              <div className="mt-12">
+                 <h4 className="text-center text-sm font-bold text-gray-400 mb-8 uppercase tracking-widest">Trusted by Industry Leaders</h4>
+                 <div className="h-[20rem] rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden">
+                    <InfiniteMovingCards
+                        items={[
+                          { quote: "매출이 300% 성장했습니다. 놀라운 성과입니다.", name: "김대표", title: "스타트업 CEO" },
+                          { quote: "가장 신뢰할 수 있는 파트너입니다.", name: "이이사", title: "마케팅 총괄" },
+                          { quote: "데이터 기반의 분석이 탁월합니다.", name: "박팀장", title: "브랜드 매니저" },
+                          { quote: "ROAS 효율이 획기적으로 개선되었습니다.", name: "최대표", title: "쇼핑몰 운영" },
+                          { quote: "투명한 리포팅 덕분에 안심하고 맡깁니다.", name: "정대표", title: "프랜차이즈 본사" },
+                        ]}
+                        direction="right"
+                        speed="slow"
+                    />
+                 </div>
+              </div>
+           </div>
+        </section>
+
+        {/* Services Section */}
+        <section id="services" className="py-24 px-6 bg-white">
+          <div className="mx-auto max-w-7xl">
+            <div className="text-center mb-16 max-w-2xl mx-auto">
+               <h3 className="text-green-600 font-bold tracking-widest text-sm mb-3">OUR SERVICES</h3>
+               <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">성공을 위한 프로세스</h2>
+               <p className="mt-4 text-gray-500">
+                 체계적인 분석부터 실행, 그리고 성과 측정까지. <br/>
+                 모든 과정이 데이터에 기반하여 투명하게 진행됩니다.
+               </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+               {[
+                 { title: "시장 정밀 분석", desc: "경쟁사 및 타겟 오디언스 분석을 통한 전략 수립", icon: "01" },
+                 { title: "맞춤형 매체 운영", desc: "SA, DA, SNS 등 최적의 매체 믹스 제안 및 운영", icon: "02" },
+                 { title: "성과/데이터 최적화", desc: "GA4 기반의 정밀한 데이터 트래킹 및 리포팅", icon: "03" },
+                 { title: "콘텐츠 크리에이티브", desc: "고효율 소재 기획 및 디자인/영상 제작", icon: "04" },
+                 { title: "CRM 마케팅", desc: "충성 고객 확보를 위한 알림톡/뉴스레터 관리", icon: "05" },
+                 { title: "SEO/검색최적화", desc: "사이트 구조 개선 및 오가닉 트래픽 증대", icon: "06" },
+               ].map((item, i) => (
+                 <div key={i} className="group p-8 border border-gray-100 rounded-2xl hover:border-green-200 hover:shadow-xl hover:shadow-green-500/5 transition-all bg-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-6 text-6xl font-black text-gray-50 opacity-50 group-hover:text-green-50 transition-colors select-none">
+                       {item.icon}
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 relative z-10">{item.title}</h3>
+                    <p className="text-gray-500 relative z-10">{item.desc}</p>
+                 </div>
+               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Solutions Section (Editable Body) - Reusing content structure but different style */}
+        <section id="solutions" className="py-24 px-6 bg-slate-50">
+          <div className="mx-auto max-w-7xl">
+             <div className="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-gray-100">
+                 <EditableContent
+                    subdomain={site}
+                    defaultContent={
+                        <div className="flex flex-col lg:flex-row gap-16 items-center">
+                          <div className="lg:w-1/2">
+                            <h3 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                              온라인 마케팅, <br />
+                              <span className="text-green-600">제대로 된 전문가</span>와 시작하세요.
+                            </h3>
+                            <p className="text-gray-600 mb-8 leading-relaxed">
+                               이제 마케팅은 선택이 아닌 필수입니다. <br/>
+                               수많은 성공 사례가 증명하는 그로스 마케팅의 힘을 경험해보세요.
+                            </p>
+                            <ul className="space-y-4">
+                                {[
+                                  "전담 퍼포먼스 마케터 매칭",
+                                  "월간 상세 리포트 제공",
+                                  "실시간 커뮤니케이션 채널 운영",
+                                  "매체비 투명 공개 원칙"
+                                ].map((item, i) => (
+                                   <li key={i} className="flex items-center gap-3 text-gray-700 font-medium">
+                                      <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                         <CheckCircle2 className="h-4 w-4" />
+                                      </div>
+                                      {item}
+                                   </li>
+                                ))}
+                            </ul>
+                          </div>
+                          <div className="lg:w-1/2 w-full">
+                            <div className="relative group overflow-hidden rounded-2xl shadow-2xl shadow-gray-200">
+                               <img 
+                                 src="https://images.unsplash.com/photo-1551288049-bbbda536ad0a?q=80&w=2670&auto=format&fit=crop" 
+                                 alt="Marketing Dashboard" 
+                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                               />
+                               <div className="absolute inset-0 bg-green-900/10 group-hover:bg-transparent transition-colors"></div>
+                            </div>
+                          </div>
+                        </div>
+                    }
+                 />
+             </div>
+          </div>
+        </section>
+
+        {/* Contact Section - Clean Style */}
+        <section id="contact" className="py-24 px-6 bg-white">
+             <div className="mx-auto max-w-3xl">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4">함께 성장을 만들어볼까요?</h2>
+                    <p className="text-gray-500">
+                       간단한 정보만 남겨주시면, 담당자가 비즈니스 진단을 도와드립니다.
+                    </p>
+                </div>
+                {/* Reusing InquiryForm but in default clean style */}
+                <div className="bg-white p-0 md:p-8">
+                    <InquiryForm influencerId="inf-1" variant="clean" />
+                </div>
+             </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-12 px-6 bg-gray-50 border-t border-gray-200">
+           <div className="mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="text-center md:text-left">
+                <p className="font-bold text-gray-900 text-lg mb-1">GROWTH MARKETING</p>
+                <p className="text-sm text-gray-500">당신의 비즈니스, 그 이상의 가치</p>
+              </div>
+              <div className="flex gap-6 text-sm text-gray-500">
+                 <a href="#" className="hover:text-gray-900">이용약관</a>
+                 <a href="#" className="hover:text-gray-900">개인정보처리방침</a>
+                 <a href="#" className="hover:text-gray-900">고객센터</a>
+              </div>
+              <div className="text-xs text-gray-400">
+                Copyright ⓒ 2025 Growth Marketing. All rights reserved.
+              </div>
+           </div>
+        </footer>
+      </div>
+    );
+  }
+
+  // Custom Design for 'fan3' (AD-TECH Solution - DDMKT Theme)
+  if (site === "fan3") {
+    return (
+      <div className="min-h-screen bg-[#050614] text-white font-sans selection:bg-indigo-500 selection:text-white">
+        {/* Modern Tech Header */}
+        <header className="fixed top-0 z-50 w-full bg-[#050614]/80 backdrop-blur-md border-b border-white/5">
+          <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(79,70,229,0.5)]">
+                 <Zap className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-2xl font-black tracking-tighter uppercase">
+                 도도<span className="text-indigo-400">마케팅</span>
+              </h1>
+            </div>
+            
+            <nav className="hidden md:flex gap-10 text-sm font-bold tracking-tight text-gray-400 transition-all">
+              <a href="#about" className="hover:text-white">회사소개</a>
+              <a href="#solutions" className="hover:text-white">서비스</a>
+              <a href="#portfolio" className="hover:text-white">성공사례</a>
+              <a href="#contact" className="hover:text-white bg-indigo-600 px-6 py-2.5 rounded-full text-white hover:bg-indigo-700 shadow-lg shadow-indigo-600/20">상담신청</a>
+            </nav>
+            <HeaderActions site={site} />
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section className="pt-48 pb-32 px-6 relative overflow-hidden">
+           <div className="absolute inset-0 bg-[#050614] z-0" />
+           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 z-0" />
+           <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/20 blur-[150px] rounded-full z-0" />
+           <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-600/20 blur-[150px] rounded-full z-0" />
+           
+           <div className="mx-auto max-w-7xl relative z-10 flex flex-col items-center text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl text-indigo-400 text-xs font-bold tracking-wide mb-10 uppercase transition-all hover:bg-white/10">
+                 <Zap className="h-3.5 w-3.5 fill-indigo-400" />
+                 데이터로 증명하는 퍼포먼스 마케팅
+              </div>
+              
+              <EditableText
+                subdomain={site}
+                field="heroTitle"
+                as="h2"
+                className="text-6xl md:text-[7rem] font-black leading-[1.05] tracking-tighter mb-12"
+                defaultValue={
+                  <>
+                    <span className="block opacity-50 text-[0.35em] tracking-tight mb-4">비즈니스 성공을 위한</span>
+                    최적의 <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-cyan-400">성장 엔진</span>
+                  </>
+                }
+              />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-left max-w-5xl">
+                 <EditableText
+                  subdomain={site}
+                  field="heroDescription"
+                  as="p"
+                  className="text-xl text-gray-400 leading-relaxed font-medium border-l-4 border-indigo-500 pl-8"
+                  defaultValue={
+                      "단순한 광고 집행을 넘어, 고객의 비즈니스를 깊이 있게 이해하고 분석합니다. 우리는 숫자의 이면에서 기회를 찾아내어 확실한 성과로 연결합니다."
+                  }
+                />
+                <div className="flex gap-4">
+                   <a href="#contact" className="px-10 py-5 bg-indigo-600 text-white font-black rounded-full hover:bg-indigo-500 transition-all shadow-[0_0_40px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95">
+                      무료 상담 신청
+                   </a>
+                   <a href="#solutions" className="px-10 py-5 bg-white/5 border border-white/20 text-white font-black rounded-full hover:bg-white/10 transition-all backdrop-blur-md">
+                      서비스 소개
+                   </a>
+                </div>
+              </div>
+           </div>
+        </section>
+
+        {/* Business Partnership Image Section */}
+        <section className="py-24 px-6 bg-black/50">
+           <div className="mx-auto max-w-7xl">
+              <div className="relative aspect-video rounded-[3rem] overflow-hidden border border-white/10 group">
+                 <img 
+                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2670&auto=format&fit=crop" 
+                   alt="Business Meeting" 
+                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                 />
+                 <div className="absolute inset-0 bg-linear-to-t from-[#050614] via-transparent to-transparent" />
+                 <div className="absolute bottom-0 left-0 p-12 w-full flex justify-between items-end">
+                    <div className="max-w-xl">
+                       <h3 className="text-4xl font-black mb-4 tracking-tighter">함께 성장하는 파트너십</h3>
+                       <p className="text-gray-300 font-medium leading-relaxed">도도마케팅은 수많은 클라이언트의 성공을 함께 만들어왔습니다. 전문 마케터들이 직접 소통하며 최상의 마케팅 믹스를 제안합니다.</p>
+                    </div>
+                    <div className="flex gap-4">
+                       <div className="px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 flex flex-col items-center justify-center">
+                          <span className="text-xs text-indigo-400 font-black uppercase tracking-widest mb-1">ROAS</span>
+                          <span className="text-2xl font-black">450%</span>
+                       </div>
+                       <div className="px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 flex flex-col items-center justify-center">
+                          <span className="text-xs text-indigo-400 font-black uppercase tracking-widest mb-1">Retain</span>
+                          <span className="text-2xl font-black">92%</span>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </section>
+
+        {/* Tech Stats Grid */}
+        <section className="py-12 bg-black/40 border-y border-white/5">
+           <div className="mx-auto max-w-7xl px-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                 {[
+                    { label: "Real-time Data", value: "24/7", desc: "실시간 모니터링", icon: BarChart3 },
+                    { label: "AI Optimization", value: "98.9%", desc: "정밀 타켓팅", icon: Cpu },
+                    { label: "Security Cloud", value: "Secure", desc: "데이터 보안", icon: ShieldCheck },
+                    { label: "Global Traffic", value: "Infinite", desc: "트래픽 관리", icon: Globe }
+                 ].map((stat, i) => (
+                    <div key={i} className="group relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 transition-all">
+                       <stat.icon className="h-5 w-5 text-indigo-400 mb-4 opacity-50 group-hover:opacity-100 transition-all" />
+                       <div className="text-2xl font-black mb-1">{stat.value}</div>
+                       <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{stat.label}</div>
+                       <div className="text-[10px] text-gray-600">{stat.desc}</div>
+                    </div>
+                 ))}
+              </div>
+           </div>
+        </section>
+
+        {/* Marketing Solutions Section */}
+        <section id="solutions" className="py-32 px-6 relative">
+           <div className="mx-auto max-w-7xl">
+              <div className="flex flex-col lg:flex-row gap-20">
+                 <div className="lg:w-2/5 space-y-12">
+                    <div>
+                       <h3 className="text-indigo-500 font-bold tracking-[0.2em] text-xs mb-4 uppercase">Advanced Solutions</h3>
+                       <h2 className="text-5xl font-black mb-8 leading-tight tracking-tighter">
+                          데이터로 앞서가는 <br/>
+                          도도한 전략.
+                       </h2>
+                       <p className="text-gray-300 text-lg leading-relaxed font-medium">
+                          마케팅은 과학입니다. 도도마케팅은 직관이 아닌 데이터를 근거로 움직입니다. 고객의 행동 하나하나를 분석하여 가장 완벽한 성과를 도출합니다.
+                       </p>
+                    </div>
+
+                    <div className="space-y-6">
+                       {[
+                         { title: "검색 광고 최적화", desc: "고효율 키워드 발굴부터 구매 전환까지 완벽한 동선 설계", icon: BarChart3 },
+                         { title: "타겟 오디언스 분석", desc: "빅데이터를 통한 정밀한 타겟팅으로 광고 효율 극대화", icon: Users }
+                       ].map((feat, i) => (
+                          <div key={i} className="flex gap-6 p-8 rounded-3xl bg-white/5 border border-white/10 group hover:bg-indigo-600/10 transition-all">
+                             <div className="h-12 w-12 rounded-2xl bg-indigo-600/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                <feat.icon className="h-6 w-6 text-indigo-500" />
+                             </div>
+                             <div>
+                                <h4 className="text-lg font-black mb-2">{feat.title}</h4>
+                                <p className="text-sm text-gray-500 leading-relaxed font-medium">{feat.desc}</p>
+                             </div>
+                          </div>
+                       ))}
+                    </div>
+                 </div>
+                 
+                 <div className="lg:w-3/5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 h-full">
+                       <div className="relative rounded-[3rem] overflow-hidden border border-white/10 h-full min-h-[450px]">
+                          <img 
+                            src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2670&auto=format&fit=crop" 
+                            alt="Data Analysis" 
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-indigo-900/40" />
+                          <div className="absolute inset-0 p-10 flex flex-col justify-end">
+                             <h3 className="text-2xl font-black mb-4">정밀 분석 솔루션</h3>
+                             <p className="text-sm text-gray-200 leading-relaxed font-medium">
+                                도도마케팅만의 분석 툴을 통해 단순 노출 이상의 가치, 즉 '매출'이라는 명확한 결과물을 가져다 드립니다.
+                             </p>
+                          </div>
+                       </div>
+                       <div className="flex flex-col gap-8">
+                          <div className="flex-1 p-10 rounded-[3rem] bg-linear-to-br from-indigo-600 to-purple-700 font-black relative overflow-hidden group shadow-2xl shadow-indigo-600/20">
+                             <Zap className="absolute top-10 right-10 h-20 w-20 text-white/10 group-hover:scale-125 transition-transform" />
+                             <div className="text-5xl mb-4 italic">No.1</div>
+                             <div className="text-lg opacity-80 uppercase tracking-widest leading-none">Global <br/> Marketing Agency</div>
+                          </div>
+                          <div className="flex-1 p-10 rounded-[3rem] bg-white text-black font-black flex flex-col justify-end shadow-2xl">
+                             <EditableContent
+                               subdomain={site}
+                               defaultContent={
+                                 <>
+                                   <div className="text-3xl tracking-tighter leading-tight mb-4">성장의 끝이 아닌 <br/> 새로운 시작</div>
+                                   <p className="text-sm text-gray-500 font-bold">도도마케팅과 함께라면 <br/> 비즈니스의 한계는 없습니다.</p>
+                                 </>
+                               }
+                             />
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </section>
+
+
+        {/* Contact Section */}
+        <section id="contact" className="py-32 px-6 relative overflow-hidden">
+             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 blur-[120px] -z-10" />
+             <div className="mx-auto max-w-3xl">
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter uppercase">LET'S CONNECT</h2>
+                    <p className="text-gray-400 font-bold text-lg">
+                       상상하던 이상의 성장, <br/>
+                       지금 도도마케팅과 바로 시작하세요. 
+                    </p>
+                </div>
+                <div className="bg-[#0A0B1E] border border-white/10 p-10 md:p-16 rounded-[4rem] shadow-2xl relative">
+                    <div className="absolute top-0 right-0 p-12">
+                       <Zap className="h-8 w-8 text-indigo-500 opacity-20" />
+                    </div>
+                    <InquiryForm influencerId="inf-1" variant="clean" />
+                </div>
+             </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-16 border-t border-white/5 px-6 bg-black">
+           <div className="mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-10">
+              <div className="flex items-center gap-3">
+                 <div className="h-9 w-9 bg-indigo-600 rounded-lg flex items-center justify-center">
+                    <Zap className="h-5 w-5 text-white" />
+                 </div>
+                 <span className="text-xl font-black tracking-tighter italic">도도마케팅</span>
+              </div>
+              <div className="flex gap-10 text-xs font-bold tracking-widest text-gray-500">
+                 <a href="#" className="hover:text-white transition-colors">이용약관</a>
+                 <a href="#" className="hover:text-white transition-colors">개인정보처리방침</a>
+                 <a href="#" className="hover:text-white transition-colors">고객지원</a>
+              </div>
+              <div className="text-xs text-gray-600 font-bold">
+                 &copy; 2025 (주)도도커뮤니케이션. ALL RIGHTS RESERVED.
+              </div>
+           </div>
+        </footer>
+      </div>
+    );
+  }
+
   // Fetch Live News (Legacy/Generic)
   const news = await getLiveNews(creator.name);
 
@@ -549,111 +1041,92 @@ export default async function SitePage({
         <div className="absolute bottom-0 left-0 z-20 w-full p-8 md:p-12">
           <div className="mx-auto max-w-4xl space-y-4">
             <span className="inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-md">
-              {creator.name}의 공식 팬페이지
+              Official Fan Page
             </span>
-            <h1 className="text-5xl font-bold tracking-tight md:text-7xl">
-              {creator.name}의 팬페이지
-            </h1>
-            <p className="max-w-xl text-lg text-gray-300 md:text-xl">
-              {creator.bio}
-            </p>
-
-            <div className="flex flex-wrap gap-4 pt-4">
-              <button
-                className={`group flex items-center gap-2 rounded-full px-8 py-3 font-semibold transition-all hover:scale-105 active:scale-95 bg-white text-black`}
-              >
-                <Heart className="h-5 w-5 fill-current text-red-500" />
-                <span>Join Fandom</span>
-              </button>
-              <button className="flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-8 py-3 font-semibold backdrop-blur-md transition-all hover:bg-white/10">
-                <Share2 className="h-5 w-5" />
-                <span>Share</span>
-              </button>
+            <div className="flex items-end justify-between">
+              <div>
+                <h1 className="text-6xl font-black uppercase tracking-tighter md:text-8xl">
+                  {creator.name}
+                </h1>
+                <p className="mt-4 max-w-xl text-lg text-gray-300 md:text-xl">
+                  {creator.bio}
+                </p>
+              </div>
+              <div className="hidden text-right md:block">
+                <div className="text-4xl font-bold">{creator.stats.fans}</div>
+                <div className="text-sm text-gray-400">Monthly Visitors</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Bar */}
-      <div className="border-y border-white/10 bg-white/5 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-4xl justify-around py-6 text-center">
-          <div>
-            <div className="flex items-center justify-center gap-2 text-2xl font-bold">
-              <Users className="h-6 w-6 text-gray-400" />
-              {creator.stats.fans}
-            </div>
-            <div className="text-xs uppercase tracking-widest text-gray-400">
-              Fans
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center justify-center gap-2 text-2xl font-bold">
-              <Star className="h-6 w-6 text-yellow-500" />
-              Top 1%
-            </div>
-            <div className="text-xs uppercase tracking-widest text-gray-400">
-              Ranking
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center justify-center gap-2 text-2xl font-bold">
-              <MessageCircle className="h-6 w-6 text-gray-400" />
-              {creator.stats.posts}
-            </div>
-            <div className="text-xs uppercase tracking-widest text-gray-400">
-              Posts
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Live News Section */}
-      <div className="mx-auto max-w-4xl px-4 py-20">
-        <div className="mb-8 flex items-center gap-2">
-          <Newspaper className="h-6 w-6 text-purple-400" />
-          <h2 className="text-2xl font-bold">Live News</h2>
+      <div className="mx-auto max-w-4xl px-6 py-12">
+        {/* Quick Actions */}
+        <div className="mb-12 flex flex-wrap gap-4">
+          <button className="flex-1 rounded-2xl bg-white py-4 text-center font-bold text-black transition-transform hover:scale-[1.02] active:scale-95">
+            <Heart className="mx-auto mb-1 h-5 w-5" />
+            Join Fan Club
+          </button>
+          <button className="flex-1 rounded-2xl bg-[#1A1A1A] py-4 text-center font-bold text-white transition-transform hover:bg-[#2A2A2A] active:scale-95">
+            <MessageCircle className="mx-auto mb-1 h-5 w-5" />
+            Community
+          </button>
+          <button className="flex-1 rounded-2xl bg-[#1A1A1A] py-4 text-center font-bold text-white transition-transform hover:bg-[#2A2A2A] active:scale-95">
+            <Share2 className="mx-auto mb-1 h-5 w-5" />
+            Share
+          </button>
         </div>
 
-        <div className="grid gap-4">
-          {news.length > 0 ? (
-            news.map((item, i) => (
+        {/* Live News Feed */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-2xl font-bold">
+              <Newspaper className="h-5 w-5 text-gray-500" />
+              Live Updates
+            </h2>
+            <span className="flex items-center gap-1 text-xs text-green-500">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+              </span>
+              Real-time
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {news.map((item) => (
               <a
-                key={i}
-                href={item.link}
+                href={item.url}
+                key={item.id}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-6 transition-all hover:bg-white/10 hover:border-purple-500/30"
+                className="group block rounded-2xl border border-white/10 bg-[#111] p-6 transition-all hover:bg-[#1A1A1A] hover:border-white/20"
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex justify-between items-start gap-4">
                   <div>
-                    <h3 className="text-lg font-bold leading-tight group-hover:text-purple-400">
+                    <h3 className="text-lg font-bold leading-snug group-hover:text-blue-400 transition-colors">
                       {item.title}
                     </h3>
-                    <div className="mt-2 flex items-center gap-3 text-sm text-gray-400">
+                    <p className="mt-2 text-sm text-gray-400 line-clamp-2">
+                      {item.description}
+                    </p>
+                    <div className="mt-4 flex items-center gap-3 text-xs text-gray-500">
                       <span>{item.source}</span>
-                      <span className="h-1 w-1 rounded-full bg-gray-600" />
-                      <span>{item.pubDate}</span>
+                      <span>•</span>
+                      <span>{item.date}</span>
                     </div>
                   </div>
-                  <ExternalLink className="h-5 w-5 shrink-0 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ExternalLink className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
                 </div>
               </a>
-            ))
-          ) : (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-400">
-              No recent news found.
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        </section>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-12 text-center text-sm text-gray-500">
-        <p>
-          Powered by <span className="font-bold text-white">FanEasy</span>
-        </p>
-        <p>The #1 Fandom Monetization Solution</p>
-      </footer>
+      {/* Admin Quick Action (Only Visible to Admin - Mock) */}
+      <HeaderActions site={site} />
     </div>
   );
 }

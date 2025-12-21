@@ -49,6 +49,22 @@ export const creators: Creator[] = [
     bio: "온라인 마케팅의 모든 것, MZ마케팅과 함께하세요.",
     stats: { fans: "120", posts: "12" },
     image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&q=80"
+  },
+  {
+    subdomain: "fan2",
+    name: "BBURI 마케팅",
+    theme: "light",
+    bio: "뿌리 깊은 마케팅, 당신의 성장을 돕습니다.",
+    stats: { fans: "45", posts: "0" },
+    image: "https://images.unsplash.com/photo-1542744094-24638eff58bb?w=1200&q=80"
+  },
+  {
+    subdomain: "fan3",
+    name: "도도마케팅",
+    theme: "indigo",
+    bio: "데이터 사이언스 기반의 독보적인 퍼포먼스 마케팅 솔루션",
+    stats: { fans: "120+", posts: "24/7" },
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80"
   }
 ];
 
