@@ -25,12 +25,10 @@ export default function TemplateShowcase() {
             <span>PREMIUM TEMPLATES</span>
           </div>
           <h2 className="text-3xl font-black md:text-5xl mb-6">
-            검증된 성공 템플릿
+            빠르게 수정하는 템플릿
           </h2>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            디자인 고민 없이, 업계 1위들의 검증된 레이아웃으로 즉시 시작하세요.
-            <br />
-            PC와 모바일에 완벽하게 최적화되어 제공됩니다.
+            내용만 충실히 준비해 주세요. 디자인 고민없이 검증된 레이아웃으로 즉시 시작하세요.
           </p>
         </div>
 
