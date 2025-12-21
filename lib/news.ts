@@ -1,9 +1,11 @@
 import { XMLParser } from "fast-xml-parser";
 
 export interface NewsItem {
+  id: string;
   title: string;
-  link: string;
-  pubDate: string;
+  url: string;
+  description: string;
+  date: string;
   source: string;
 }
 
@@ -24,11 +26,13 @@ export async function getLiveNews(keyword: string): Promise<NewsItem[]> {
     const items = result.rss.channel.item || [];
 
     // Map and limit to top 5 news
-    return items.slice(0, 5).map((item: any) => ({
+    return (Array.isArray(items) ? items : [items]).slice(0, 5).map((item: any) => ({
+      id: item.guid || item.link,
       title: item.title,
-      link: item.link,
-      pubDate: new Date(item.pubDate).toLocaleDateString(),
-      source: item.source || "Google News"
+      url: item.link,
+      description: item.description || "",
+      date: new Date(item.pubDate).toLocaleDateString(),
+      source: (typeof item.source === 'string' ? item.source : item.source?.['#text']) || "Google News"
     }));
 
   } catch (error) {
