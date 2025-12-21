@@ -59,6 +59,21 @@ export default function InquiryForm({
     };
 
     addInquiry(newInquiry);
+    
+    // Notify Admin (Integrated in Phase 1)
+    try {
+      await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          type: 'inquiry',
+          data: newInquiry 
+        })
+      });
+    } catch (e) {
+      console.error('Notification failed', e);
+    }
+
     setStatus("success");
     
     setFormData({

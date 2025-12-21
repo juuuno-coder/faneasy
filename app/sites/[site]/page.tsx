@@ -23,6 +23,7 @@ import {
   Globe,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import InquiryForm from "./inquiry-form";
 import FAQSection from "./faq-section";
 import HeaderActions from "./header-actions";
@@ -30,6 +31,8 @@ import { EditableText, EditableContent } from "@/components/editable";
 import TemplateShowcase from "@/components/template-showcase";
 import { Spotlight } from "@/components/ui/spotlight";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
+import MobileBottomNav from "@/components/mobile-bottom-nav";
+import { motion } from "framer-motion";
 
 import type { Metadata, ResolvingMetadata } from 'next';
 
@@ -126,18 +129,36 @@ export default async function SitePage({
               <Rocket className="h-4 w-3.5" />
               <span>1인 마케팅 대행사를 위한 가장 완벽한 시작</span>
             </div>
-            <h1 className="mx-auto max-w-4xl text-5xl font-black leading-[1.1] tracking-tight md:text-8xl">
-              빠르게 사업을 시작하는 <br />
-              <span className="bg-linear-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                프리미엄 랜딩페이지
-              </span>
-            </h1>
-            <p className="mx-auto mt-8 max-w-2xl text-lg text-gray-400 md:text-xl">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <h1 className="mx-auto max-w-4xl text-5xl font-black leading-[1.1] tracking-tight md:text-8xl">
+                빠르게 사업을 시작하는 <br />
+                <span className="bg-linear-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  프리미엄 랜딩페이지
+                </span>
+              </h1>
+            </motion.div>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              className="mx-auto mt-8 max-w-2xl text-lg text-gray-400 md:text-xl"
+            >
               디자인부터 세팅까지 올인원. 전문 개발팀과 깡대표가 협업하여{" "}
               <br className="hidden md:block" />
               여러분의 비즈니스를 가장 프로페셔널하게 완성해드립니다.
-            </p>
-            <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            </motion.p>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+              className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            >
               <a
                 href="#contact"
                 className="group relative flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple-500 px-10 font-bold transition-all hover:bg-purple-600 hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] active:scale-95"
@@ -151,7 +172,7 @@ export default async function SitePage({
               >
                 요금제 확인하기
               </a>
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -422,6 +443,8 @@ export default async function SitePage({
             </div>
           </div>
         </footer>
+
+        <MobileBottomNav site={site} />
       </div>
     );
   }
@@ -1066,9 +1089,12 @@ export default async function SitePage({
       {/* Hero Section */}
       <div className="relative h-[60vh] w-full overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/50 to-black z-10" />
-        <img
+        <Image
           src={creator.image}
           alt={creator.name}
+          width={1920}
+          height={1080}
+          priority
           className="h-full w-full object-cover opacity-80 scale-105 animate-slow-zoom"
         />
 
