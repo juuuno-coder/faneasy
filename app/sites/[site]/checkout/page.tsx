@@ -150,13 +150,13 @@ function CheckoutForm() {
           </div>
           <div className="flex flex-col gap-3">
              <button 
-                onClick={() => router.push('/sites/kkang')}
+                onClick={() => router.push('/')}
                 className="w-full rounded-xl bg-white py-3 font-bold text-black hover:bg-gray-200 transition-colors"
                 >
                 홈으로 돌아가기
             </button>
             <button 
-                onClick={() => router.push('/sites/kkang/mypage')}
+                onClick={() => router.push('/mypage')}
                 className="w-full rounded-xl border border-white/10 bg-white/5 py-3 font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                 >
                 마이페이지에서 확인
