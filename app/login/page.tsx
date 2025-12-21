@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
 import { Lock, Mail, LogIn, UserPlus } from "lucide-react";
 import {
@@ -14,6 +14,7 @@ import { mockInfluencers, mockFans } from "@/lib/data";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const login = useAuthStore((state) => state.login);
   const initAuthListener = useAuthStore((state) => state.initAuthListener);
 
@@ -26,7 +27,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     initAuthListener();
-  }, [initAuthListener]);
+    if (searchParams.get("mode") === "signup") {
+      setShowSignup(true);
+    }
+  }, [initAuthListener, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -167,6 +167,46 @@ function CheckoutForm() {
     );
   }
 
+  // Authentication Check
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0A0A0B] p-4 text-white">
+        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 text-center backdrop-blur-xl">
+          <div className="mb-6 flex justify-center">
+            <div className="rounded-full bg-purple-500/20 p-4 text-purple-500">
+                <CreditCard className="h-12 w-12" />
+            </div>
+          </div>
+          <h2 className="mb-2 text-2xl font-bold">로그인이 필요합니다</h2>
+          <p className="mb-8 text-gray-400">
+            주문서 작성을 위해 회원가입 및 로그인이 필요합니다. <br />
+            기존 회원이시라면 로그인 후 이용해주세요.
+          </p>
+          <div className="flex flex-col gap-3">
+             <button 
+                onClick={() => router.push('/login')}
+                className="w-full rounded-xl bg-white py-3 font-bold text-black hover:bg-gray-200 transition-colors"
+                >
+                로그인하기
+            </button>
+            <button 
+                onClick={() => router.push('/login?mode=signup')}
+                className="w-full rounded-xl border border-white/10 bg-white/5 py-3 font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                회원가입하기
+            </button>
+            <button 
+                onClick={() => router.back()}
+                className="mt-4 text-sm text-gray-500 hover:text-gray-300 underline"
+                >
+                뒤로가기
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Redirect if cart is empty in cart mode
   if (isCartMode && checkoutItems.length === 0) {
       return (

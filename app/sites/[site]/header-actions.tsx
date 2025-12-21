@@ -47,12 +47,20 @@ export default function HeaderActions({ site }: { site: string }) {
           마이페이지
         </Link>
       ) : (
-        <Link 
-          href="/login" 
-          className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
-        >
-          로그인/가입
-        </Link>
+        <>
+          <Link 
+            href="/login" 
+            className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+          >
+            로그인
+          </Link>
+          <Link 
+            href="/login?mode=signup" 
+            className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+          >
+            회원가입
+          </Link>
+        </>
       )}
       
       <a 
