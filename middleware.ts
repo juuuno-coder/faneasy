@@ -19,9 +19,17 @@ export function middleware(req: NextRequest) {
        return NextResponse.next();
     }
   } else if (hostname.includes("faneasy.kr")) {
-    // Handle Production
+    // Handle Production (faneasy.kr)
     currentHost = hostname.replace(".faneasy.kr", "");
     if (currentHost === "www" || currentHost === "faneasy") {
+      return NextResponse.next();
+    }
+  } else if (hostname.includes("designd.co.kr")) {
+    // Handle New Domain (designd.co.kr)
+    currentHost = hostname.replace(".designd.co.kr", "");
+    // If it's just designd.co.kr or www.designd.co.kr, let it go to the original route (or show landing)
+    // But since you want kkang.designd.co.kr to work, we extract 'kkang'
+    if (currentHost === "www" || currentHost === "designd" || currentHost === hostname) {
       return NextResponse.next();
     }
   } else {
