@@ -81,11 +81,7 @@ export default function Home() {
               </a>
             ))}
           </div>
-          <p className="mt-4 text-xs text-gray-600">
-            * Note: Subdomains (iu.localhost:3000) allow you to test wildcard
-            routing locally. If they don't load, ensure your browser supports
-            *.localhost resolution.
-          </p>
+
         </div>
       </main>
 

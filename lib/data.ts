@@ -41,6 +41,14 @@ export const creators: Creator[] = [
     bio: "Unkillable Demon King. T1 Faker.",
     stats: { fans: "10M", posts: "560" },
     image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80"
+  },
+  {
+    subdomain: "fan1",
+    name: "MZ마케팅",
+    theme: "dark",
+    bio: "온라인 마케팅의 모든 것, MZ마케팅과 함께하세요.",
+    stats: { fans: "120", posts: "12" },
+    image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&q=80"
   }
 ];
 

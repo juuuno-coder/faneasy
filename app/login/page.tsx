@@ -130,7 +130,7 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold text-white mb-2">
             FanEasy<span className="text-purple-400">.</span>
           </h1>
-          <p className="text-gray-400">관리자 로그인</p>
+          <p className="text-gray-400">로그인</p>
         </div>
 
         {/* Login Card */}

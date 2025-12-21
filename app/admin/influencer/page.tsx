@@ -71,7 +71,7 @@ export default function InfluencerDashboard() {
         aria-label="관리자 사이드바"
       >
         <div className="flex h-16 items-center border-b px-6">
-          <span className="text-lg font-bold">Admin Dashboard</span>
+          <span className="text-lg font-bold">관리자 대시보드</span>
         </div>
         <nav className="p-4 space-y-1">
           <button
@@ -360,13 +360,13 @@ export default function InfluencerDashboard() {
                         {order.productId} PLAN
                       </div>
                       <div className="text-xs text-gray-500">
-                        {order.domainRequest || "No Domain Requested"}
+                        {order.domainRequest || "도메인 요청 없음"}
                       </div>
                     </td>
                     <td className="px-6 py-4 font-medium">
                       {order.amount.toLocaleString()}원
                       <div className="text-xs font-normal text-gray-500">
-                        Bank Transfer
+                        무통장 입금
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -407,10 +407,8 @@ export default function InfluencerDashboard() {
         {/* Keeping existing Tabs */}
         {activeTab === "inquiries" && (
           <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-            {/* Same Inquiry Table as before */}
-            {/* Simplified for brevity in this replace, assume strict copy from previous step if needed or basic placeholder */}
             <div className="p-12 text-center text-gray-500">
-              Inquiries List (See Mock Data)
+              문의 내역 목록 (여기서 확인 가능)
             </div>
           </div>
         )}
@@ -418,12 +416,12 @@ export default function InfluencerDashboard() {
         {/* Other Tabs Placeholder */}
         {activeTab === "fans" && (
           <div className="rounded-xl border bg-white p-8 text-center text-gray-500 shadow-sm">
-            Fan management interface goes here.
+            팬 관리 기능이 이곳에 표시됩니다.
           </div>
         )}
         {activeTab === "settings" && (
           <div className="rounded-xl border bg-white p-8 text-center text-gray-500 shadow-sm">
-            Settings interface goes here.
+            페이지 설정 기능이 이곳에 표시됩니다.
           </div>
         )}
       </main>

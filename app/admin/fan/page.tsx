@@ -49,7 +49,7 @@ export default function FanAdminDashboard() {
             A
           </div>
           <span className="text-lg font-bold tracking-tight">
-            Agency Manager
+            에이전시 관리
           </span>
           <div className="ml-auto hidden md:block">
             {/* dynamic client component */}
@@ -59,9 +59,9 @@ export default function FanAdminDashboard() {
 
         <div className="p-4">
           <div className="mb-6 px-4 py-3 rounded-xl admin-card">
-            <div className="text-xs text-gray-400 mb-1">Current Plan</div>
+            <div className="text-xs text-gray-400 mb-1">현재 플랜</div>
             <div className="text-lg font-bold text-white flex items-center justify-between">
-              PRO Plan
+              PRO 플랜
               <span className="text-[10px] bg-white/5 text-white px-1.5 py-0.5 rounded uppercase">
                 Active
               </span>
@@ -137,7 +137,7 @@ export default function FanAdminDashboard() {
             className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            Sign Out
+            로그아웃
           </button>
         </div>
       </aside>
@@ -147,13 +147,13 @@ export default function FanAdminDashboard() {
         <header className="mb-8 flex justify-between items-end">
           <div>
             <h1 className="text-3xl font-bold mb-2">
-              {activeTab === "overview" && "Business Overview"}
-              {activeTab === "inquiries" && "Inquiry Management"}
-              {activeTab === "domain" && "Domain Configuration"}
-              {activeTab === "billing" && "Billing & Subscription"}
+              {activeTab === "overview" && "비즈니스 개요"}
+              {activeTab === "inquiries" && "문의 관리"}
+              {activeTab === "domain" && "도메인 설정"}
+              {activeTab === "billing" && "구독 및 결제"}
             </h1>
             <p className="text-gray-400">
-              Manage your agency business settings and performance.
+              에이전시 비즈니스 설정 및 성과를 관리하세요.
             </p>
           </div>
 
@@ -176,7 +176,7 @@ export default function FanAdminDashboard() {
               <div className="rounded-2xl admin-card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-gray-400">
-                    Total Visits (Monthly)
+                    총 방문자 (월간)
                   </h3>
                   <div className="p-2 bg-white/5 rounded-lg text-white">
                     <Globe className="h-4 w-4" />
@@ -192,7 +192,7 @@ export default function FanAdminDashboard() {
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-gray-400">
-                    New Leads
+                    신규 리드
                   </h3>
                   <div className="p-2 bg-white/5 rounded-lg text-white">
                     <MessageSquare className="h-4 w-4" />
@@ -201,14 +201,14 @@ export default function FanAdminDashboard() {
                 <div className="flex items-baseline gap-2">
                   <p className="text-3xl font-bold text-white">48</p>
                   <span className="text-sm text-gray-400 flex items-center">
-                    ↑ 5 new
+                    ↑ 5명
                   </span>
                 </div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-gray-400">
-                    Conversion Rate
+                    전환율
                   </h3>
                   <div className="p-2 bg-white/5 rounded-lg text-white">
                     <CheckCircle2 className="h-4 w-4" />
@@ -216,7 +216,7 @@ export default function FanAdminDashboard() {
                 </div>
                 <div className="flex items-baseline gap-2">
                   <p className="text-3xl font-bold text-white">2.4%</p>
-                  <span className="text-sm text-gray-500">Stable</span>
+                  <span className="text-sm text-gray-500">안정적</span>
                 </div>
               </div>
             </div>
@@ -245,12 +245,12 @@ export default function FanAdminDashboard() {
                       <div>
                         <p className="font-bold text-sm">James Smith</p>
                         <p className="text-xs text-gray-400">
-                          Project Inquiry • 2h ago
+                          프로젝트 문의 • 2시간 전
                         </p>
                       </div>
                     </div>
                     <span className="px-2 py-1 bg-white/5 text-white text-xs rounded border border-white/10">
-                      New
+                      신규
                     </span>
                   </div>
                 ))}
@@ -263,22 +263,21 @@ export default function FanAdminDashboard() {
           <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-gray-500">
             <MessageSquare className="mx-auto h-12 w-12 opacity-50 mb-4" />
             <h3 className="text-gray-900 text-lg font-bold mb-2">
-              Manage Your Leads
+              리드 관리
             </h3>
             <p className="max-w-md mx-auto">
-              This dashboard will list all potential clients who contacted you
-              through the Inquiry Form on your website.
+              웹사이트의 문의 폼을 통해 들어온 모든 잠재 고객 목록이 여기에 표시됩니다.
             </p>
           </div>
         )}
 
         {activeTab === "domain" && (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 max-w-2xl">
-            <h3 className="text-lg font-bold mb-6">Custom Domain Connection</h3>
+            <h3 className="text-lg font-bold mb-6">커스텀 도메인 연결</h3>
             <div className="space-y-6">
               <div>
                 <label className="block text-sm text-gray-400 mb-2">
-                  Current Domain
+                  현재 도메인
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -287,18 +286,17 @@ export default function FanAdminDashboard() {
                     className="bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-gray-400 flex-1"
                   />
                   <button className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-sm font-bold">
-                    Copy
+                    복사
                   </button>
                 </div>
               </div>
 
               <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                 <h4 className="font-bold text-gray-900 mb-2">
-                  Connect Your Own Domain
+                  보유 도메인 연결하기
                 </h4>
                 <p className="text-sm text-gray-400 mb-4">
-                  Enter a domain you own (e.g., myagency.com) to connect it to
-                  this site.
+                  보유하고 계신 도메인(예: myagency.com)을 입력하여 사이트와 연결하세요.
                 </p>
                 <div className="flex gap-2">
                   <input
@@ -316,41 +314,41 @@ export default function FanAdminDashboard() {
 
         {activeTab === "billing" && (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 max-w-2xl">
-            <h3 className="text-lg font-bold mb-6">Subscription & Billing</h3>
+            <h3 className="text-lg font-bold mb-6">구독 및 결제 관리</h3>
             <div className="flex items-center justify-between p-4 rounded-xl admin-card mb-6">
               <div>
-                <div className="text-sm text-gray-400">Current Plan</div>
+                <div className="text-sm text-gray-400">현재 플랜</div>
                 <div className="text-2xl font-bold text-white">
-                  PRO Agency Plan
+                  PRO 에이전시 플랜
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-gray-400">Next Billing</div>
-                <div className="text-xl font-bold">Jan 21, 2025</div>
+                <div className="text-sm text-gray-400">다음 결제일</div>
+                <div className="text-xl font-bold">2025년 1월 21일</div>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="flex justify-between items-center py-4 border-b border-white/5">
                 <div>
-                  <div className="font-bold">Payment Method</div>
+                  <div className="font-bold">결제 수단</div>
                   <div className="text-sm text-gray-400">
-                    KakaoBank **** 1234
+                    카카오뱅크 **** 1234
                   </div>
                 </div>
                 <button className="text-sm text-gray-400 font-bold hover:text-white hover:underline">
-                  Update
+                  업데이트
                 </button>
               </div>
               <div className="flex justify-between items-center py-4 border-b border-white/5">
                 <div>
-                  <div className="font-bold">Billing History</div>
+                  <div className="font-bold">결제 내역</div>
                   <div className="text-sm text-gray-400">
-                    View past invoices
+                    지난 결제 영수증 확인
                   </div>
                 </div>
                 <button className="text-sm text-gray-400 font-bold hover:text-white hover:underline">
-                  View
+                  보기
                 </button>
               </div>
             </div>
