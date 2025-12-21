@@ -208,7 +208,7 @@ export default async function SitePage({
                   ))}
                 </ul>
                 <Link
-                  href="/sites/kkang/checkout?plan=basic"
+                  href="checkout?plan=basic"
                   className="mt-8 block w-full rounded-2xl border border-white/10 bg-white/5 py-4 text-center text-sm font-bold transition-all hover:bg-white/10"
                 >
                   지금 시작하기
@@ -257,7 +257,7 @@ export default async function SitePage({
                   ))}
                 </ul>
                 <Link
-                  href="/sites/kkang/checkout?plan=pro"
+                  href="checkout?plan=pro"
                   className="mt-8 block w-full rounded-2xl bg-purple-500 py-4 text-center text-sm font-bold transition-all hover:bg-purple-600 shadow-lg"
                 >
                   가장 많이 선택하는 플랜<br />지금 시작하기
@@ -301,7 +301,7 @@ export default async function SitePage({
                   ))}
                 </ul>
                 <Link
-                  href="/sites/kkang/checkout?plan=master"
+                  href="checkout?plan=master"
                   className="mt-8 block w-full rounded-2xl border border-white/10 bg-white/5 py-4 text-center text-sm font-bold transition-all hover:bg-white/10"
                 >
                   지금 시작하기
