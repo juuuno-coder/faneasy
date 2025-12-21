@@ -47,7 +47,7 @@ npm install
 npm run dev
 ```
 
-서버가 [http://localhost:3500](http://localhost:3500)에서 실행됩니다.
+서버가 [http://localhost:3600](http://localhost:3600)에서 실행됩니다.
 
 문제가 발생할 경우(예: `EADDRINUSE` 또는 `.next/dev/lock` 관련 오류), 먼저 `npm run clean:dev`를 실행해 잠금 파일을 제거한 뒤 다시 `npm run dev`를 시도하세요.
 
@@ -90,26 +90,26 @@ npm run dev
 
 ### 1. 메인 랜딩 페이지
 
-- URL: `http://localhost:3500`
+- URL: `http://localhost:3600`
 - 플랫폼 소개 및 데모 사이트 링크
 
 ### 2. 인플루언서 페이지
 
-- URL: `http://[subdomain].localhost:3500`
+- URL: `http://[subdomain].localhost:3600`
 - 예시:
-  - `http://kkang.localhost:3500` - 깡대표 팬페이지
-  - `http://iu.localhost:3500` - IU 팬페이지
+  - `http://kkang.localhost:3600` - 깡대표 팬페이지
+  - `http://iu.localhost:3600` - IU 팬페이지
 
 ### 3. 팬 하위 페이지
 
-- URL: `http://[subdomain].localhost:3500/[fanSlug]`
+- URL: `http://[subdomain].localhost:3600/[fanSlug]`
 - 예시:
-  - `http://kkang.localhost:3500/fan1` - 팬1의 페이지
-  - `http://kkang.localhost:3500/fan2` - 팬2의 페이지
+  - `http://kkang.localhost:3600/fan1` - 팬1의 페이지
+  - `http://kkang.localhost:3600/fan2` - 팬2의 페이지
 
 ### 4. 관리자 로그인
 
-- URL: `http://localhost:3500/login`
+- URL: `http://localhost:3600/login`
 
 #### 테스트 계정
 
@@ -206,9 +206,9 @@ faneasy/
 
 `middleware.ts`에서 서브도메인을 감지하고 적절한 페이지로 라우팅합니다:
 
-1. `localhost:3500` → 메인 랜딩 페이지
-2. `kkang.localhost:3500` → `/_sites/kkang` (인플루언서 페이지)
-3. `kkang.localhost:3500/fan1` → `/_sites/kkang/fan1` (팬 하위 페이지)
+1. `localhost:3600` → 메인 랜딩 페이지
+2. `kkang.localhost:3600` → `/_sites/kkang` (인플루언서 페이지)
+3. `kkang.localhost:3600/fan1` → `/_sites/kkang/fan1` (팬 하위 페이지)
 
 ## 🎯 향후 개발 계획
 

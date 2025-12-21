@@ -1,0 +1,181 @@
+// 사용자 역할 정의
+export type UserRole = "influencer" | "fan" | "admin";
+
+// 인플루언서 (1차 페이지 소유자)
+export interface Influencer {
+  id: string;
+  subdomain: string; // e.g., 'kkang'
+  name: string;
+  email: string;
+  passwordHash: string;
+  role: "influencer";
+  createdAt: Date;
+  updatedAt: Date;
+
+  // 페이지 설정
+  pageSettings: {
+    title: string;
+    description: string;
+    theme: "dark" | "light" | "custom";
+    primaryColor: string;
+    logo?: string;
+    banner?: string;
+  };
+
+  // 수익 설정
+  revenueShare: {
+    enabled: boolean;
+    percentage: number; // 인플루언서가 가져가는 비율
+  };
+}
+
+// 팬 (2차 하위 페이지 소유자)
+export interface Fan {
+  id: string;
+  influencerId: string; // 소속된 인플루언서
+  slug: string; // e.g., 'fan1' (kkang.faneasy.kr/fan1)
+  name: string;
+  email: string;
+  passwordHash: string;
+  role: "fan";
+  createdAt: Date;
+  updatedAt: Date;
+
+  // 하위 페이지 설정
+  pageSettings: {
+    title: string;
+    description: string;
+    theme: "dark" | "light" | "custom";
+    primaryColor: string;
+    banner?: string;
+  };
+
+  // 권한 설정
+  permissions: {
+    canEditContent: boolean;
+    canManageProducts: boolean;
+    canViewAnalytics: boolean;
+  };
+}
+
+// 상품/서비스
+export interface Product {
+  id: string;
+  ownerId: string; // Influencer ID or Fan ID
+  ownerType: "influencer" | "fan";
+  title: string;
+  description: string;
+  price: number;
+  images: string[];
+  category: string;
+  stock?: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 콘텐츠 (게시물, 공지사항 등)
+export interface Content {
+  id: string;
+  ownerId: string;
+  ownerType: "influencer" | "fan";
+  type: "post" | "notice" | "event";
+  title: string;
+  body: string;
+  images?: string[];
+  isPinned: boolean;
+  isPublished: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 주문
+// 주문
+export interface Order {
+  id: string;
+  productId: string; // Plan ID (basic, pro, master)
+  ownerId: string; // Seller ID (Influencer)
+
+  // Buyer Info
+  buyerName: string;
+  buyerEmail: string;
+  buyerPhone: string;
+  businessName?: string; // For B2B
+
+  // Transaction
+  amount: number;
+  paymentMethod: "bank_transfer";
+  status: "pending_payment" | "paid" | "processing" | "active" | "cancelled";
+
+  // Product Specifics (Agency Service)
+  domainRequest?: string; // Requested domain
+
+  createdAt: Date;
+  updatedAt: Date;
+
+  // 수익 분배 (Log)
+  revenueDistribution?: {
+    influencerShare: number;
+    platformFee: number;
+  };
+}
+
+// 로그인 요청/응답
+export interface LoginRequest {
+  email?: string;
+  password?: string;
+  subdomain?: string; // 어느 페이지의 관리자인지
+  idToken?: string; // Firebase ID token (optional)
+}
+
+export interface LoginResponse {
+  success: boolean;
+  token?: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+    subdomain?: string;
+    slug?: string;
+  };
+  error?: string;
+}
+
+export interface SignupRequest {
+  email: string;
+  password: string;
+  name: string;
+  role?: UserRole;
+  subdomain?: string; // required for influencers
+}
+
+export interface SignupResponse {
+  success: boolean;
+  token?: string; // custom token
+  user?: any;
+  error?: string;
+}
+
+// JWT 페이로드
+export interface JWTPayload {
+  userId: string;
+  email: string;
+  role: UserRole;
+  subdomain?: string;
+  slug?: string;
+}
+
+// 문의/상담 신청
+export interface Inquiry {
+  id: string;
+  ownerId: string; // Influencer ID (깡대표)
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  message: string;
+  plan: "basic" | "pro" | "master";
+  status: "pending" | "contacted" | "completed";
+  createdAt: Date;
+}

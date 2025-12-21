@@ -1,65 +1,124 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Globe, Shield, Zap } from "lucide-react";
+import { creators } from "@/lib/data";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-black text-white selection:bg-purple-500 selection:text-white">
+      {/* Navbar */}
+      <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/50 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <div className="text-xl font-bold tracking-tighter">FanEasy.</div>
+          <div className="flex gap-4 items-center">
+            <Link
+              href="#features"
+              className="text-sm font-medium text-gray-400 hover:text-white"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Features
+            </Link>
+            <Link
+              href="#pricing"
+              className="text-sm font-medium text-gray-400 hover:text-white"
             >
-              Learning
-            </a>{" "}
-            center.
+              Pricing
+            </Link>
+            <Link
+              href="/login"
+              className="px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg text-sm font-medium transition-colors"
+            >
+              로그인
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 pt-20 text-center">
+        <div className="absolute top-1/2 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-600/20 blur-[100px]" />
+
+        <h1 className="mb-6 max-w-4xl text-5xl font-bold tracking-tighter md:text-8xl">
+          One Platform.
+          <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+            Infinite Fandoms.
+          </span>
+        </h1>
+        <p className="mb-10 max-w-2xl text-lg text-gray-400 md:text-xl">
+          Create a stunning dedicated page for your favorite celebrity. Manage
+          content, sell memberships, and connect with fans — all under your own
+          unique domain.
+        </p>
+
+        <button className="group flex items-center gap-2 rounded-full bg-white px-8 py-4 text-lg font-bold text-black transition-all hover:bg-gray-200">
+          Start Your Fanpage
+          <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+        </button>
+
+        {/* Demo Links */}
+        <div className="mt-20 w-full max-w-5xl">
+          <p className="mb-6 text-sm font-medium text-gray-500">
+            LIVE DEMO SITES (Try clicking these!)
+          </p>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {creators.map((c) => (
+              <a
+                key={c.subdomain}
+                href={`http://${c.subdomain}.localhost:3600`}
+                className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-6 text-left transition-all hover:-translate-y-1 hover:border-purple-500/50 hover:bg-white/10"
+              >
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-gray-800 to-black">
+                  <span className="font-bold text-white">{c.name[0]}</span>
+                </div>
+                <h3 className="text-lg font-bold group-hover:text-purple-400">
+                  {c.name}
+                </h3>
+                <p className="text-sm text-gray-400">
+                  {c.subdomain}.faneasy.kr
+                </p>
+                <div className="absolute right-4 top-4 opacity-0 transition-opacity group-hover:opacity-100">
+                  <ArrowRight className="h-5 w-5 -rotate-45" />
+                </div>
+              </a>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-gray-600">
+            * Note: Subdomains (iu.localhost:3000) allow you to test wildcard
+            routing locally. If they don't load, ensure your browser supports
+            *.localhost resolution.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
       </main>
+
+      {/* Features Grid */}
+      <section className="bg-zinc-900 py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="space-y-4 rounded-2xl bg-black p-8">
+              <Globe className="h-8 w-8 text-purple-500" />
+              <h3 className="text-xl font-bold">Custom Subdomains</h3>
+              <p className="text-gray-400">
+                Every fanpage gets its own unique identity like iu.faneasy.kr
+                automatically.
+              </p>
+            </div>
+            <div className="space-y-4 rounded-2xl bg-black p-8">
+              <Zap className="h-8 w-8 text-yellow-500" />
+              <h3 className="text-xl font-bold">Instant Setup</h3>
+              <p className="text-gray-400">
+                Launch a fully functional community site in less than 30
+                seconds.
+              </p>
+            </div>
+            <div className="space-y-4 rounded-2xl bg-black p-8">
+              <Shield className="h-8 w-8 text-green-500" />
+              <h3 className="text-xl font-bold">Managed Security</h3>
+              <p className="text-gray-400">
+                We handle SSL, hosting, and payments. You focus on the content.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

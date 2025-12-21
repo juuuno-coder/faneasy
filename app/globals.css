@@ -19,6 +19,87 @@
   }
 }
 
+/* Accent color (default to main site purple). Can be overridden per site or via env if needed */
+:root {
+  --accent: #8b5cf6; /* main purple */
+  --accent-rgb: 139, 92, 246;
+}
+
+/* Admin accent utility classes for consistent styling */
+.admin-accent {
+  color: var(--accent) !important;
+}
+.admin-accent-bg {
+  background-color: var(--accent);
+  color: white;
+}
+.admin-accent-bg-soft {
+  background-color: rgba(var(--accent-rgb), 0.09);
+}
+.admin-accent-border {
+  border-color: rgba(var(--accent-rgb), 0.18);
+}
+
+/* Admin theme tokens (light, natural look) */
+:root {
+  --admin-bg: #f8fafc; /* very light gray */
+  --admin-card: #ffffff; /* card background */
+  --admin-border: #e6e9ee; /* subtle border */
+  --admin-text: #111827; /* primary text */
+  --admin-muted: #6b7280; /* muted text */
+}
+
+/* Helper classes for admin UI (used to replace heavy dark blocks) */
+.admin-bg {
+  background-color: var(--admin-bg);
+}
+.admin-card {
+  background-color: var(--admin-card);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+}
+.admin-card-strong {
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+}
+.admin-soft-bg {
+  background-color: #f3f4f6;
+}
+
+/* Admin surface compatibility: softly map existing dark utility classes to light equivalents
+   This lets us make broad appearance changes without editing every component class. */
+.admin-surface .bg-neutral-900,
+.admin-surface .bg-zinc-900,
+.admin-surface .bg-zinc-900\/50 {
+  background-color: var(--admin-card) !important;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+  border: 1px solid var(--admin-border) !important;
+}
+.admin-surface .bg-white\/5,
+.admin-surface .bg-white\/10,
+.admin-surface .bg-black\/40,
+.admin-surface .bg-black\/50 {
+  background-color: #f3f4f6 !important;
+}
+.admin-surface .border-white\/10,
+.admin-surface .border-zinc-800,
+.admin-surface .border-white\/5 {
+  border-color: var(--admin-border) !important;
+}
+.admin-surface .text-white {
+  color: var(--admin-text) !important;
+}
+.admin-surface .text-zinc-300,
+.admin-surface .text-gray-300 {
+  color: var(--admin-muted) !important;
+}
+.admin-surface .hover\:bg-white\/5:hover {
+  background-color: #f6f7f8 !important;
+}
+.admin-surface .hover\:bg-white\/20:hover {
+  background-color: #e9edf3 !important;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
