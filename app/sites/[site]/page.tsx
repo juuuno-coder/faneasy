@@ -377,8 +377,7 @@ export default async function SitePage({
                 <div className="space-y-4">
                   <h4 className="text-sm font-bold">Contact</h4>
                   <ul className="space-y-2 text-sm text-gray-500">
-                    <li>kkang@faneasy.kr</li>
-                    <li>010-XXXX-XXXX</li>
+                    <li>duscontactus@gmail.com</li>
                   </ul>
                 </div>
               </div>
