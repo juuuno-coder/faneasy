@@ -74,9 +74,9 @@ export default function LoginPage() {
           };
 
       login(user, token);
-
-      if (user.role === "influencer") router.push("/admin/influencer");
-      else router.push("/admin/fan");
+      
+      const redirectUrl = searchParams.get("redirect") || (user.role === "influencer" ? "/admin/influencer" : "/admin/fan");
+      router.push(redirectUrl);
     } catch (err: any) {
       setError(err?.message || "로그인 중 오류가 발생했습니다.");
       console.error(err);
@@ -111,7 +111,9 @@ export default function LoginPage() {
       };
 
       login(user, token);
-      router.push("/admin/fan");
+      
+      const redirectUrl = searchParams.get("redirect") || "/admin/fan";
+      router.push(redirectUrl);
     } catch (err: any) {
       setError(err?.message || "회원가입 중 오류가 발생했습니다.");
       console.error(err);

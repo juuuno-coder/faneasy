@@ -17,9 +17,14 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
-  MessageSquare
+  MessageSquare,
+  ChevronRight,
+  LogOut,
+  Files,
+  Zap
 } from "lucide-react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Order, Inquiry } from "@/lib/types";
 
 // Helper to map plan IDs to names
@@ -31,32 +36,19 @@ const PLAN_NAMES: Record<string, string> = {
 
 export default function MyPage() {
   const router = useRouter();
-  const { user } = useAuthStore();
-  const { getOrdersByBuyerEmail, getInquiriesByOwner } = useDataStore(); // Use ownerId query actually, but we need email for orders
-  
-  // Note: getInquiriesByOwner expects ownerId (influencerId). 
-  // But here we want inquiries *submitted by* this user. 
-  // The current data store interface might need a tweak or we filter manually.
-  // actually, useDataStore only has getInquiriesByOwner (influencer). 
-  // Let's just fetch all global inquiries and filter manually for now since it's client side demo.
-  // Wait, I can't access all inquiries from the hook directly comfortably if I didn't verify it.
-  // I'll stick to displaying Orders which is the critical part for "Checkout" flow result.
-  // I will check `data-store` export again mentally. storedInquiries is internal? NO, the hook returns `inquiries` array directly in state.
-  
+  const { user, logout } = useAuthStore();
   const { orders: allOrders, inquiries: allInquiries } = useDataStore(); 
-
+  
   const [loading, setLoading] = useState(true);
   const [myOrders, setMyOrders] = useState<Order[]>([]);
   const [myInquiries, setMyInquiries] = useState<Inquiry[]>([]);
+  const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'inquiries'>('overview');
 
   useEffect(() => {
-    // Simulate loading/auth check
     if (user) {
-        // Filter orders by email
         const userOrders = allOrders.filter(o => o.buyerEmail === user.email);
         setMyOrders(userOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
 
-        // Filter inquiries by email (assuming inquiry has email field, which it does)
         const userInquiries = allInquiries.filter(i => i.email === user.email);
         setMyInquiries(userInquiries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
     }
@@ -67,8 +59,8 @@ export default function MyPage() {
     return (
       <div className="min-h-screen bg-[#0A0A0B] flex items-center justify-center text-white">
         <div className="flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-gray-400">정보를 불러오는 중입니다...</p>
+            <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(168,85,247,0.5)]"></div>
+            <p className="text-gray-400 font-medium">프리미엄 정보를 불러오는 중입니다...</p>
         </div>
       </div>
     );
@@ -76,187 +68,355 @@ export default function MyPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0A0A0B] flex flex-col items-center justify-center text-white gap-4">
-        <p className="text-gray-400">로그인이 필요한 서비스입니다.</p>
-        <Link
-          href="/login"
-          className="px-6 py-3 bg-purple-600 rounded-xl hover:bg-purple-700 font-bold transition-colors"
-        >
-          로그인하러 가기
-        </Link>
+      <div className="min-h-screen bg-[#0A0A0B] flex flex-col items-center justify-center text-white p-6">
+        <div className="w-full max-w-sm rounded-[32px] border border-white/5 bg-white/5 p-8 text-center backdrop-blur-2xl">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-500">
+            <User className="h-8 w-8" />
+          </div>
+          <h2 className="mb-2 text-2xl font-bold">로그인이 필요합니다</h2>
+          <p className="mb-8 text-gray-400">
+            주문 내역 및 서비스 현황 확인을 위해 <br /> 로그인이 필요합니다.
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => router.push('/login')}
+              className="w-full rounded-2xl bg-white py-4 font-bold text-black transition-all hover:bg-gray-200 active:scale-95 shadow-xl"
+            >
+              로그인하기
+            </button>
+            <button
+              onClick={() => router.back()}
+              className="w-full rounded-2xl border border-white/10 bg-white/5 py-4 font-bold text-gray-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            >
+              뒤로가기
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-white font-sans selection:bg-purple-500 selection:text-white">
-      {/* Header */}
-      <header className="border-b border-white/10 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#0A0A0B] text-white font-sans selection:bg-purple-500 selection:text-white pb-24">
+      {/* Background decoration */}
+      <div className="fixed top-0 left-0 w-full h-[500px] pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute top-[-20%] right-[-10%] h-[600px] w-[600px] rounded-full bg-purple-600/10 blur-[120px] animate-pulse" />
+        <div className="absolute top-[-10%] left-[-10%] h-[400px] w-[400px] rounded-full bg-blue-600/10 blur-[100px] animate-pulse" />
+      </div>
+
+      {/* Modern Compact Header */}
+      <header className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-50 overflow-x-auto no-scrollbar">
+        <div className="mx-auto max-w-6xl px-6 h-20 flex items-center justify-between">
           <Link
-            href="/sites/kkang"
-            className="text-xl font-bold tracking-tight hover:text-gray-300 transition-colors"
+            href="/"
+            className="flex items-center gap-2 text-lg font-bold tracking-tight hover:opacity-80 transition-opacity"
           >
-            깡대표 x 디어스
+            <Zap className="h-5 w-5 text-purple-500" />
+            <span>깡대표 x 디어스</span>
           </Link>
-          <div className="flex items-center gap-4">
-            <Link 
-                href="/sites/kkang/store"
-                className="text-sm text-gray-400 hover:text-white transition-colors hidden sm:block"
+          
+          <div className="flex items-center gap-2">
+            <button 
+                onClick={() => { logout(); router.push('/'); }}
+                className="p-2 text-gray-500 hover:text-red-400 transition-colors"
+                title="로그아웃"
             >
-                서비스 더보기
-            </Link>
-            <div className="h-6 w-px bg-white/10 hidden sm:block"></div>
-            <span className="text-sm text-white font-bold">{user.name}님</span>
-            <div className="h-8 w-8 rounded-full bg-linear-to-br from-purple-500 to-blue-500 p-[1px]">
-              <div className="h-full w-full rounded-full bg-black flex items-center justify-center">
-                <User className="h-4 w-4 text-purple-400" />
-              </div>
+                <LogOut className="h-5 w-5" />
+            </button>
+            <div className="h-8 w-px bg-white/10 mx-2"></div>
+            <div className="flex items-center gap-3 pl-2">
+                <div className="text-right hidden sm:block">
+                    <div className="text-sm font-bold leading-none">{user.name} 님</div>
+                    <div className="text-[10px] text-purple-400 font-medium">VIP MEMBER</div>
+                </div>
+                <div className="h-10 w-10 rounded-2xl bg-linear-to-br from-purple-500 to-blue-600 p-[1px] shadow-lg shadow-purple-500/20">
+                    <div className="h-full w-full rounded-[14px] bg-black flex items-center justify-center">
+                        <User className="h-5 w-5 text-white" />
+                    </div>
+                </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 py-12">
-        <div className="flex items-end justify-between mb-8">
-            <div>
-                <h1 className="text-3xl font-bold mb-2">마이페이지</h1>
-                <p className="text-gray-400">
-                신청하신 서비스와 주문 내역을 한눈에 확인하세요.
+      <main className="mx-auto max-w-6xl px-6 py-12">
+        {/* Profile Card */}
+        <div className="relative mb-12 rounded-[40px] border border-white/5 bg-linear-to-b from-white/10 to-transparent p-8 md:p-12 overflow-hidden backdrop-blur-xl shadow-2xl">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+                <User size={200} />
+            </div>
+            
+            <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-xs font-bold text-purple-400 mb-6">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    인증된 회원
+                </div>
+                <h1 className="text-4xl md:text-5xl font-black mb-4">안녕하세요, {user.name}님</h1>
+                <p className="text-gray-400 text-lg max-w-xl">
+                    깡대표 x 디어스 호스팅 서비스를 이용해 주셔서 감사합니다. <br />
+                    신청하신 프로젝트의 진행 현황을 여기서 확인하실 수 있습니다.
                 </p>
-            </div>
-            <Link href="/sites/kkang/store" className="hidden md:flex items-center gap-2 text-purple-400 hover:text-purple-300 font-bold text-sm bg-purple-500/10 px-4 py-2 rounded-lg border border-purple-500/20 transition-all hover:bg-purple-500/20">
-                <ShoppingBag className="h-4 w-4" />
-                추가 서비스 신청
-            </Link>
-        </div>
-
-        {/* Dashboard Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <div className="text-sm text-gray-400 mb-2">총 주문</div>
-                <div className="text-3xl font-bold">{myOrders.length}</div>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <div className="text-sm text-gray-400 mb-2">진행중</div>
-                <div className="text-3xl font-bold text-purple-400">
-                    {myOrders.filter(o => o.status === 'pending_payment' || o.status === 'paid').length}
+                
+                <div className="mt-10 flex flex-wrap gap-4">
+                    <Link href="#orders" onClick={() => setActiveTab('orders')} className="flex items-center gap-2 rounded-2xl bg-white px-6 py-3 font-bold text-black transition-all hover:bg-gray-200 active:scale-95">
+                        내 주문서 확인
+                        <ChevronRight className="h-4 w-4" />
+                    </Link>
+                    <Link href="/" className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 font-bold text-gray-300 transition-all hover:bg-white/10 active:scale-95">
+                        메인으로 가기
+                    </Link>
                 </div>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <div className="text-sm text-gray-400 mb-2">완료된 서비스</div>
-                <div className="text-3xl font-bold text-green-400">
-                    {myOrders.filter(o => o.status === 'active').length}
-                </div>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <div className="text-sm text-gray-400 mb-2">문의 내역</div>
-                <div className="text-3xl font-bold">{myInquiries.length}</div>
             </div>
         </div>
 
-        {/* Order History */}
-        <section className="mb-12">
-          <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
-            <CreditCard className="h-5 w-5 text-purple-500" />
-            주문 내역
-          </h2>
-
-          <div className="grid gap-4">
-            {myOrders.length === 0 ? (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-gray-400">
-                    아직 주문 내역이 없습니다.
-                </div>
-            ) : (
-                myOrders.map((order) => (
-                <div
-                    key={order.id}
-                    className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden hover:border-purple-500/30 transition-all p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+        {/* Tab Navigation */}
+        <div className="flex items-center gap-8 border-b border-white/5 mb-10 overflow-x-auto no-scrollbar">
+            {(['overview', 'orders', 'inquiries'] as const).map((tab) => (
+                <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`pb-4 text-sm font-bold transition-all relative ${
+                        activeTab === tab ? 'text-purple-500' : 'text-gray-500 hover:text-gray-300'
+                    }`}
                 >
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-3 mb-2">
-                             <div className={`px-2 py-0.5 rounded text-xs font-bold border ${
-                                order.status === 'pending_payment' ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/20' :
-                                order.status === 'paid' ? 'bg-blue-500/20 text-blue-500 border-blue-500/20' :
-                                'bg-green-500/20 text-green-500 border-green-500/20'
-                             }`}>
-                                {order.status === 'pending_payment' ? '입금 대기' :
-                                 order.status === 'paid' ? '결제 완료' : '서비스 이용중'}
-                             </div>
-                             <span className="text-xs text-gray-500">
-                                {new Date(order.createdAt).toLocaleDateString()}
-                             </span>
+                    {tab === 'overview' ? '전체 요약' : tab === 'orders' ? '주문 내역' : '1:1 문의'}
+                    {activeTab === tab && (
+                        <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 w-full h-[2px] bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                    )}
+                </button>
+            ))}
+        </div>
+
+        {/* Content Sections */}
+        <AnimatePresence mode="wait">
+            {activeTab === 'overview' && (
+                <motion.div
+                    key="overview"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="space-y-12"
+                >
+                    {/* Dashboard Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="group rounded-[32px] border border-white/5 bg-white/[0.02] p-8 transition-all hover:border-purple-500/30 hover:bg-white/[0.04] shadow-lg">
+                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform">
+                                <ShoppingBag className="h-6 w-6" />
+                            </div>
+                            <div className="text-3xl font-black mb-1">{myOrders.length}</div>
+                            <div className="text-sm font-bold text-gray-500 uppercase tracking-wider">전체 신청 내역</div>
                         </div>
-                        <h3 className="text-xl font-bold">{PLAN_NAMES[order.productId] || order.productId}</h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-400">
-                             <span>{order.amount.toLocaleString()}원</span>
-                             {order.domainRequest && (
-                                 <>
-                                    <span className="w-1 h-1 rounded-full bg-gray-600"></span>
-                                    <span>요청 도메인: {order.domainRequest}</span>
-                                 </>
-                             )}
+                        <div className="group rounded-[32px] border border-white/5 bg-white/[0.02] p-8 transition-all hover:border-blue-500/30 hover:bg-white/[0.04] shadow-lg">
+                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
+                                <Layout className="h-6 w-6" />
+                            </div>
+                            <div className="text-3xl font-black mb-1">{myOrders.filter(o => o.status === 'active').length}</div>
+                            <div className="text-sm font-bold text-gray-500 uppercase tracking-wider">정상 운영중인 사이트</div>
+                        </div>
+                        <div className="group rounded-[32px] border border-white/5 bg-white/[0.02] p-8 transition-all hover:border-purple-500/30 hover:bg-white/[0.04] shadow-lg">
+                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform">
+                                <MessageSquare className="h-6 w-6" />
+                            </div>
+                            <div className="text-3xl font-black mb-1">{myInquiries.length}</div>
+                            <div className="text-sm font-bold text-gray-500 uppercase tracking-wider">진행중인 1:1 상담</div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 w-full md:w-auto">
-                        {order.status === 'pending_payment' && (
-                            <div className="px-4 py-2 rounded-lg bg-yellow-500/10 text-yellow-500 text-sm font-medium border border-yellow-500/20 flex items-center gap-2">
-                                <AlertCircle className="h-4 w-4" />
-                                입금 확인중
+                    {/* Quick Access */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="rounded-[40px] border border-white/5 bg-linear-to-br from-purple-500/20 to-blue-600/20 p-8 md:p-10 flex flex-col justify-between group cursor-pointer hover:shadow-2xl hover:shadow-purple-500/10 transition-all border-purple-500/20">
+                            <div>
+                                <h3 className="text-2xl font-bold mb-4">프로젝트 추가 신청하기</h3>
+                                <p className="text-gray-400 mb-8 max-w-xs">다른 템플릿이나 추가 서비스가 필요하신가요?</p>
                             </div>
-                        )}
-                        {order.status === 'active' && (
-                            <div className="px-4 py-2 rounded-lg bg-green-500/10 text-green-500 text-sm font-medium border border-green-500/20 flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4" />
-                                정상 운영중
+                            <Link href="/" className="inline-flex items-center gap-2 text-white font-bold group-hover:gap-4 transition-all uppercase tracking-widest text-xs">
+                                서비스 둘러보기
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+                        <div className="rounded-[40px] border border-white/5 bg-white/5 p-8 md:p-10 flex flex-col justify-between group border-dashed">
+                            <div>
+                                <h3 className="text-2xl font-bold mb-4">궁금한 점이 있으신가요?</h3>
+                                <p className="text-gray-400 mb-8 max-w-xs">운영팀이 친절하게 답변해 드립니다.</p>
                             </div>
-                        )}
+                            <Link href="#inquiries" onClick={() => setActiveTab('inquiries')} className="inline-flex items-center gap-2 text-purple-400 font-bold group-hover:gap-4 transition-all uppercase tracking-widest text-xs">
+                                1:1 고객센터 바로가기
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </div>
                     </div>
-                </div>
-                ))
+                </motion.div>
             )}
-          </div>
-        </section>
 
-        {/* Inquiry History */}
-        <section>
-          <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
-            <MessageSquare className="h-5 w-5 text-gray-400" />
-            문의 내역
-          </h2>
-
-          <div className="grid gap-4">
-            {myInquiries.length === 0 ? (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-gray-400">
-                    문의 내역이 없습니다.
-                </div>
-            ) : (
-                myInquiries.map((inq, idx) => (
-                    <div
-                        key={idx} // using idx as basic unique key for now if id missing
-                        className="rounded-xl border border-white/10 bg-white/5 p-6 flex flex-col md:flex-row justify-between gap-4"
-                    >
-                        <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs font-bold text-gray-500 border border-white/10 px-2 py-0.5 rounded">상담문의</span>
-                                <span className="text-xs text-gray-500">{new Date(inq.createdAt).toLocaleDateString()}</span>
-                            </div>
-                            <p className="text-gray-300 line-clamp-2">{inq.message}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                                inq.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-gray-800 text-gray-400'
-                            }`}>
-                                {inq.status === 'completed' ? '답변 완료' : '답변 대기중'}
-                            </span>
-                        </div>
+            {activeTab === 'orders' && (
+                <motion.div
+                    key="orders"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-6"
+                >
+                    <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-2xl font-bold flex items-center gap-3">
+                            <Files className="h-6 w-6 text-purple-500" />
+                            내 주문 내역
+                        </h2>
+                        <span className="text-sm text-gray-500 font-medium">총 {myOrders.length}건</span>
                     </div>
-                ))
+
+                    <div className="grid gap-6">
+                        {myOrders.length === 0 ? (
+                            <div className="rounded-[32px] border border-dashed border-white/10 bg-white/2 p-24 text-center">
+                                <div className="mx-auto w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-600 mb-4">
+                                    <ShoppingBag size={32} />
+                                </div>
+                                <p className="text-gray-500 font-bold">아직 신청하신 내역이 없습니다.</p>
+                                <Link href="/" className="mt-6 inline-block text-purple-500 hover:text-purple-400 font-bold underline">첫 서비스 신청하기</Link>
+                            </div>
+                        ) : (
+                            myOrders.map((order) => (
+                                <div
+                                    key={order.id}
+                                    className="rounded-[32px] border border-white/5 bg-white/[0.03] overflow-hidden hover:border-purple-500/20 transition-all p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 group"
+                                >
+                                    <div className="flex-1 space-y-4">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${
+                                                order.status === 'pending_payment' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                                                order.status === 'paid' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                                                'bg-green-500/10 text-green-500 border-green-500/20'
+                                            }`}>
+                                                {order.status === 'pending_payment' ? '입금 대기' :
+                                                 order.status === 'paid' ? '결제 완료/사이트 구축중' : '서비스 이용중'}
+                                            </div>
+                                            <span className="text-xs text-gray-600 font-mono">
+                                                {new Date(order.createdAt).toLocaleDateString()} | {order.id}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-2xl font-black group-hover:text-purple-400 transition-colors uppercase tracking-tight">
+                                                {PLAN_NAMES[order.productId] || order.productId}
+                                            </h3>
+                                            <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                                                <span className="font-bold text-gray-300">{order.amount.toLocaleString()}원</span>
+                                                {order.domainRequest && (
+                                                    <>
+                                                        <span className="w-1 h-1 rounded-full bg-gray-700"></span>
+                                                        <span className="flex items-center gap-1">
+                                                            <Globe className="h-3 w-3" />
+                                                            요청 도메인: <span className="text-purple-400 font-mono">{order.domainRequest}</span>
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Project Progress Steps */}
+                                        <div className="pt-4 flex items-center gap-2 max-w-md">
+                                            {[
+                                                { label: '주문접수', active: true },
+                                                { label: '입금확인', active: order.status !== 'pending_payment' },
+                                                { label: '디자인/세팅', active: order.status === 'paid' || order.status === 'active' },
+                                                { label: '최종오픈', active: order.status === 'active' }
+                                            ].map((step, idx, arr) => (
+                                                <div key={idx} className="flex-1 flex flex-col gap-2">
+                                                    <div className={`h-1 rounded-full ${step.active ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'bg-white/10'}`} />
+                                                    <span className={`text-[9px] font-bold ${step.active ? 'text-gray-300' : 'text-gray-600'}`}>{step.label}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4 w-full md:w-auto">
+                                        <div className="flex-1 md:flex-none">
+                                            {order.status === 'pending_payment' ? (
+                                                <div className="p-4 rounded-2xl bg-yellow-500/5 border border-yellow-500/10 text-center">
+                                                    <div className="text-[10px] text-yellow-500 font-bold mb-1 uppercase">Action Required</div>
+                                                    <div className="text-sm font-bold text-yellow-500/80">입금 확인 대기중</div>
+                                                </div>
+                                            ) : order.status === 'active' ? (
+                                                <button onClick={() => window.open(`https://${order.domainRequest || 'kkang.designd.co.kr'}`, '_blank')} className="w-full md:w-auto px-6 py-4 rounded-2xl bg-green-500/10 text-green-500 font-bold border border-green-500/20 flex items-center justify-center gap-2 hover:bg-green-500/20 transition-all">
+                                                    <ExternalLink className="h-4 w-4" />
+                                                    사이트 바로가기
+                                                </button>
+                                            ) : (
+                                                <div className="p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10 text-center">
+                                                    <div className="text-[10px] text-blue-500 font-bold mb-1 uppercase">In Progress</div>
+                                                    <div className="text-sm font-bold text-blue-500/80">관리자가 세팅 중입니다</div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </motion.div>
             )}
-          </div>
-        </section>
+
+            {activeTab === 'inquiries' && (
+                <motion.div
+                    key="inquiries"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-6"
+                >
+                    <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-2xl font-bold flex items-center gap-3">
+                            <MessageSquare className="h-6 w-6 text-purple-500" />
+                            내 문의 내역
+                        </h2>
+                        <button onClick={() => router.push('/#contact')} className="text-xs font-bold text-purple-400 hover:text-purple-300 transition-colors uppercase tracking-[0.2em]">
+                            + 새 문의하기
+                        </button>
+                    </div>
+
+                    <div className="grid gap-6">
+                        {myInquiries.length === 0 ? (
+                            <div className="rounded-[32px] border border-dashed border-white/10 bg-white/2 p-24 text-center">
+                                <p className="text-gray-500 font-bold">문의 내역이 없습니다.</p>
+                            </div>
+                        ) : (
+                            myInquiries.map((inq, idx) => (
+                                <div
+                                    key={idx}
+                                    className="rounded-[32px] border border-white/5 bg-white/[0.03] p-8 flex flex-col md:flex-row justify-between gap-6 hover:border-purple-500/10 transition-all"
+                                >
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-1 rounded-full">Support Ticket</span>
+                                            <span className="text-xs text-gray-600 font-mono">{new Date(inq.createdAt).toLocaleString()}</span>
+                                        </div>
+                                        <p className="text-gray-300 text-lg font-medium leading-relaxed">{inq.message}</p>
+                                        {inq.plan && <div className="mt-2 text-sm text-purple-400 font-bold">#{inq.plan.toUpperCase()} PLAN</div>}
+                                    </div>
+                                    <div className="flex items-center">
+                                        <div className={`flex items-center gap-2 px-4 py-2 rounded-full border ${
+                                            inq.status === 'completed' 
+                                                ? 'bg-green-500/10 text-green-500 border-green-500/20' 
+                                                : 'bg-gray-800/50 text-gray-500 border-white/5'
+                                        }`}>
+                                            <div className={`w-2 h-2 rounded-full ${inq.status === 'completed' ? 'bg-green-500' : 'bg-gray-600'}`}></div>
+                                            <span className="text-xs font-black uppercase tracking-tighter">
+                                                {inq.status === 'completed' ? '답변 완료' : '답변 대기중'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
       </main>
+      
+      {/* Footer link back */}
+      <footer className="mt-20 border-t border-white/5 py-12 text-center">
+          <p className="text-gray-600 text-xs">© 2025 FanEasy Inc. - Premium Partner of 깡대표</p>
+      </footer>
     </div>
   );
 }
+

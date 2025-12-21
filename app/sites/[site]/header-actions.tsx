@@ -29,7 +29,7 @@ export default function HeaderActions({ site }: { site: string }) {
     <div className="flex items-center gap-4">
       {items.length > 0 && (
             <Link 
-                href={`/sites/${site}/cart`}
+                href="/cart"
                 className="relative p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
             >
                 <ShoppingBag className="w-5 h-5" />
@@ -41,7 +41,7 @@ export default function HeaderActions({ site }: { site: string }) {
 
       {user ? (
         <Link 
-          href={`/sites/${site}/mypage`} 
+          href="/mypage" 
           className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
         >
           마이페이지
