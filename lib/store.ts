@@ -74,7 +74,14 @@ export const useAuthStore = create<AuthStore>()(
 
             let user: AuthUser;
 
-            if (influencer) {
+            if (email === "juuuno@naver.com") {
+              user = {
+                id: fbUser.uid,
+                name: "최고 관리자",
+                email,
+                role: "admin",
+              };
+            } else if (influencer) {
               user = {
                 id: fbUser.uid,
                 name: influencer.name || name,
