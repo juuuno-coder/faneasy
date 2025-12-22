@@ -19,9 +19,10 @@ import {
   Shield
 } from 'lucide-react';
 import Link from 'next/link';
+import ProfileModal from '@/components/profile-modal';
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, updateUser } = useAuthStore();
   const { inquiries: localInquiries } = useDataStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -30,6 +31,12 @@ export default function AdminDashboard() {
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'customers' | 'inquiries' | 'settings'>('dashboard');
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -81,19 +88,39 @@ export default function AdminDashboard() {
         </div>
         
         <nav className="p-4 space-y-2">
-          <Link href="/admin" className="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-3 text-sm font-bold text-white">
+          <button 
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition-all ${
+              activeTab === 'dashboard' ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
             <LayoutDashboard className="h-5 w-5" />
             대시보드
-          </Link>
-          <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+          </button>
+          <button 
+            onClick={() => setActiveTab('customers')}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              activeTab === 'customers' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
             <Users className="h-5 w-5" />
             고객 관리
           </button>
-          <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+          <button 
+            onClick={() => setActiveTab('inquiries')}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              activeTab === 'inquiries' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
             <MessageSquare className="h-5 w-5" />
             문의 내역
           </button>
-          <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+          <button 
+            onClick={() => setActiveTab('settings')}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              activeTab === 'settings' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
             <Settings className="h-5 w-5" />
             사이트 설정
           </button>
@@ -122,9 +149,12 @@ export default function AdminDashboard() {
                 <div className="text-sm font-bold">{user?.name || 'Admin'}</div>
                 <div className="text-xs text-gray-500">{user?.email}</div>
              </div>
-             <div className="h-10 w-10 rounded-full bg-purple-500/20 border border-purple-500/50 flex items-center justify-center font-bold text-purple-500">
+             <button
+               onClick={() => setShowProfileModal(true)}
+               className="h-10 w-10 rounded-full bg-purple-500/20 border border-purple-500/50 flex items-center justify-center font-bold text-purple-500 hover:bg-purple-500/30 transition-colors cursor-pointer"
+             >
                 {user?.name?.[0] || 'A'}
-             </div>
+             </button>
           </div>
         </header>
 
@@ -364,6 +394,17 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* Profile Modal */}
+        <ProfileModal
+          isOpen={showProfileModal}
+          onClose={() => setShowProfileModal(false)}
+          user={user}
+          onSave={(data) => {
+            updateUser(data);
+            setProfileData(data);
+          }}
+        />
       </main>
     </div>
   );
