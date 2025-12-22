@@ -72,23 +72,34 @@ export const useAuthStore = create<AuthStore>()(
             const influencer = mockInfluencers.find((i) => i.email === email);
             const fan = mockFans.find((f) => f.email === email);
 
-            const user = influencer
-              ? {
-                  id: fbUser.uid,
-                  name: influencer.name || name,
-                  email,
-                  role: "influencer" as UserRole,
-                  subdomain: influencer.subdomain,
-                }
-              : fan
-              ? {
-                  id: fbUser.uid,
-                  name: fan.name || name,
-                  email,
-                  role: "fan" as UserRole,
-                  slug: fan.slug,
-                }
-              : { id: fbUser.uid, name, email, role: "fan" as UserRole };
+            let user: AuthUser;
+
+            if (email === "juuuno@naver.com") {
+              user = {
+                id: fbUser.uid,
+                name: "최고 관리자",
+                email,
+                role: "admin",
+              };
+            } else if (influencer) {
+              user = {
+                id: fbUser.uid,
+                name: influencer.name || name,
+                email,
+                role: "influencer",
+                subdomain: influencer.subdomain,
+              };
+            } else if (fan) {
+              user = {
+                id: fbUser.uid,
+                name: fan.name || name,
+                email,
+                role: "fan",
+                slug: fan.slug,
+              };
+            } else {
+              user = { id: fbUser.uid, name, email, role: "fan" };
+            }
 
             get().login(user, token);
           });
