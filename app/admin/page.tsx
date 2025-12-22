@@ -131,12 +131,22 @@ export default function AdminDashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-4 mb-12">
           {[
-            { label: '전체 문의', value: inquiries.length, icon: MessageSquare, color: 'blue' },
-            { label: '오늘 새 문의', value: inquiries.filter(i => new Date(i.createdAt).toDateString() === new Date().toDateString()).length, icon: Clock, color: 'purple' },
-            { label: '상담 완료', value: 0, icon: CheckCircle2, color: 'green' },
-            { label: '누적 방문자', value: '1.2k', icon: Users, color: 'amber' },
+            { label: '전체 문의', value: inquiries.length, icon: MessageSquare, color: 'blue', action: 'inquiries' },
+            { label: '오늘 새 문의', value: inquiries.filter(i => new Date(i.createdAt).toDateString() === new Date().toDateString()).length, icon: Clock, color: 'purple', action: 'inquiries' },
+            { label: '상담 완료', value: 0, icon: CheckCircle2, color: 'green', action: null },
+            { label: '누적 방문자', value: '1.2k', icon: Users, color: 'amber', action: null },
           ].map((stat, i) => (
-            <div key={i} className="rounded-3xl border border-white/5 bg-white/2 p-6">
+            <button
+              key={i}
+              onClick={() => {
+                if (stat.action === 'inquiries') {
+                  document.getElementById('inquiries-section')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className={`rounded-3xl border border-white/5 bg-white/2 p-6 text-left transition-all ${
+                stat.action ? 'hover:bg-white/5 hover:border-purple-500/30 cursor-pointer active:scale-95' : ''
+              }`}
+            >
               <div className="flex items-center justify-between mb-4">
                 <div className={`rounded-xl bg-${stat.color}-500/10 p-2 text-${stat.color}-500`}>
                   <stat.icon className="h-5 w-5" />
@@ -145,12 +155,12 @@ export default function AdminDashboard() {
               </div>
               <div className="text-2xl font-bold">{stat.value}</div>
               <div className="text-sm text-gray-500">{stat.label}</div>
-            </div>
+            </button>
           ))}
         </div>
 
         {/* Recent Inquiries Section */}
-        <div className="rounded-3xl border border-white/5 bg-white/2 p-8">
+        <div id="inquiries-section" className="rounded-3xl border border-white/5 bg-white/2 p-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold">최근 문의 내역</h2>
             <button className="text-sm text-purple-400 hover:underline">전체보기</button>
