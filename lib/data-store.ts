@@ -16,6 +16,7 @@ export interface Template {
   description: string;
   thumbnailUrl?: string; // URL to image
   demoUrl?: string;
+  slug: string;
   category: "marketing" | "fandom" | "business";
   layoutId: "limited-marketing" | "growth-marketing" | "tech-solution" | "default"; // To identify which code layout to use
 }
@@ -55,6 +56,7 @@ export const useDataStore = create<DataStore>()(
           description: "프리미엄 1인 마케팅 에이전시를 위한 블랙 & 옐로우 하이엔드 테마",
           category: "marketing",
           demoUrl: "https://kkang.designd.co.kr/sites/fan1",
+          slug: "fan1",
           layoutId: "limited-marketing",
         },
         {
@@ -63,6 +65,7 @@ export const useDataStore = create<DataStore>()(
           description: "신뢰감을 주는 화이트&딥그린 컬러의 기업형 성장 마케팅 테마",
           category: "marketing",
           demoUrl: "https://kkang.designd.co.kr/sites/fan2",
+          slug: "fan2",
           layoutId: "growth-marketing",
         },
         {
@@ -71,6 +74,7 @@ export const useDataStore = create<DataStore>()(
           description: "데이터 사이언스와 인공지능 기반의 고도화된 기술 지향 마케팅 테마",
           category: "marketing",
           demoUrl: "https://kkang.designd.co.kr/sites/fan3",
+          slug: "fan3",
           layoutId: "tech-solution",
         }
       ],
