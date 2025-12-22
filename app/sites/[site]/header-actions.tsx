@@ -25,11 +25,22 @@ export default function HeaderActions({ site }: { site: string }) {
     );
   }
 
+  // Determine if we are on a subdomain to handle links correctly
+  const getSiteLink = (path: string) => {
+    if (typeof window !== 'undefined') {
+       const host = window.location.hostname;
+       // If hostname is exactly the site or ends with the site subdomain patterns, and NOT localhost/www
+       const isSubdomain = (host.includes('faneasy.kr') || host.includes('designd.co.kr')) && !host.startsWith('www.') && !host.includes('localhost');
+       if (isSubdomain) return path;
+    }
+    return `/sites/${site}${path}`;
+  };
+
   return (
     <div className="flex items-center gap-4">
       {items.length > 0 && (
             <Link 
-                href="/cart"
+                href={getSiteLink('/cart')}
                 className="relative p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
             >
                 <ShoppingBag className="w-5 h-5" />
@@ -41,7 +52,7 @@ export default function HeaderActions({ site }: { site: string }) {
 
       {user ? (
         <Link 
-          href="/mypage" 
+          href={getSiteLink('/mypage')} 
           className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
         >
           마이페이지

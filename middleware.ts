@@ -46,17 +46,14 @@ export function middleware(req: NextRequest) {
   // Rewrite the request to /sites/[subdomain]
   console.log(`Rewriting subdomain ${currentHost} to /sites/${currentHost}`);
 
-  // Check if the path is a fan sub-page (e.g., /fan1, /fan2)
-  const pathSegments = url.pathname.split('/').filter(Boolean);
-  
-  if (pathSegments.length > 0) {
-    // This could be a fan sub-page like /fan1
-    // Rewrite to /sites/[subdomain]/[fanSlug]
-    url.pathname = `/sites/${currentHost}${url.pathname}`;
-  } else {
-    // Main influencer page
-    url.pathname = `/sites/${currentHost}${url.pathname}`;
+  // IMPORTANT: If the path already starts with /sites/, it's likely a recursive request or a direct link.
+  // We should NOT double-prefix it.
+  if (url.pathname.startsWith("/sites/")) {
+    return NextResponse.next();
   }
+
+  // Rewrite to the appropriate site folder
+  url.pathname = `/sites/${currentHost}${url.pathname}`;
 
   return NextResponse.rewrite(url);
 }
