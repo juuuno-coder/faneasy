@@ -9,7 +9,7 @@ export async function sendEmailNotification(inquiry: {
   plan?: string;
 }) {
   // Create transporter using Gmail SMTP
-  const transporter = nodemailer.createTransporter({
+  const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: process.env.EMAIL_USER, // Your Gmail address
