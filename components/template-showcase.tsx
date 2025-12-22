@@ -39,7 +39,7 @@ export default function TemplateShowcase() {
               className="group relative rounded-3xl border border-white/10 bg-black/40 overflow-hidden hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)]"
             >
               {/* Thumbnail Area - Simulating a Screenshot */}
-              <div className="aspect-[4/3] bg-gray-900 relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+              <div className="aspect-4/3 bg-gray-900 relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
                 {template.thumbnailUrl ? (
                   <img
                     src={template.thumbnailUrl}
@@ -79,11 +79,11 @@ export default function TemplateShowcase() {
                   </div>
                 )}
 
-                {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm">
                    <a 
-                     href={template.demoUrl} 
+                     href={template.demoUrl?.includes('localhost') ? `https://kkang.designd.co.kr/sites/${template.demoUrl.split('//')[1].split(':')[0]}` : (template.demoUrl || '#')} 
                      target="_blank"
+                     rel="noopener noreferrer"
                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-colors"
                    >
                      <Monitor className="h-4 w-4" />

@@ -224,7 +224,7 @@ export default function MyPage() {
 
                     {/* Quick Access */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="rounded-[40px] border border-white/5 bg-linear-to-br from-purple-500/20 to-blue-600/20 p-8 md:p-10 flex flex-col justify-between group cursor-pointer hover:shadow-2xl hover:shadow-purple-500/10 transition-all border-purple-500/20">
+                        <div className="rounded-[40px] border border-white/5 bg-linear-to-br from-purple-500/20 to-blue-600/20 p-8 md:p-10 flex flex-col justify-between group cursor-pointer hover:shadow-2xl hover:shadow-purple-500/10 transition-all">
                             <div>
                                 <h3 className="text-2xl font-bold mb-4">프로젝트 추가 신청하기</h3>
                                 <p className="text-gray-400 mb-8 max-w-xs">다른 템플릿이나 추가 서비스가 필요하신가요?</p>

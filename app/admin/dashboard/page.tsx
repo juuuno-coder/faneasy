@@ -99,7 +99,7 @@ export default function AdminDashboard() {
             { label: '상담 완료', value: 0, icon: CheckCircle2, color: 'green' },
             { label: '누적 방문자', value: '1.2k', icon: Users, color: 'amber' },
           ].map((stat, i) => (
-            <div key={i} className="rounded-3xl border border-white/5 bg-white/[0.02] p-6">
+            <div key={i} className="rounded-3xl border border-white/5 bg-white/2 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className={`rounded-xl bg-${stat.color}-500/10 p-2 text-${stat.color}-500`}>
                   <stat.icon className="h-5 w-5" />
@@ -113,7 +113,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Inquiries Section */}
-        <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-8">
+        <div className="rounded-3xl border border-white/5 bg-white/2 p-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold">최근 문의 내역</h2>
             <button className="text-sm text-purple-400 hover:underline">전체보기</button>

@@ -336,7 +336,7 @@ export default async function SitePage({
 
               <div className="mt-12">
                  <h4 className="text-center text-sm font-bold text-gray-400 mb-8 uppercase tracking-widest">Trusted by Industry Leaders</h4>
-                 <div className="h-[20rem] rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden">
+                 <div className="h-80 rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden">
                     <InfiniteMovingCards
                         items={[
                           { quote: "매출이 300% 성장했습니다. 놀라운 성과입니다.", name: "김대표", title: "스타트업 CEO" },
