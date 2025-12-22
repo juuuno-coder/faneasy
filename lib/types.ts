@@ -176,6 +176,7 @@ export interface Inquiry {
   company?: string;
   message: string;
   plan: "basic" | "pro" | "master";
+  desiredDomain?: string; // 희망 도메인
   status: "pending" | "contacted" | "completed";
   createdAt: Date;
 }

@@ -25,6 +25,7 @@ export default function InquiryForm({
     email: "",
     phone: "",
     company: "",
+    desiredDomain: "",
     message: "",
     plan: "pro" as "basic" | "pro" | "master",
   });
@@ -51,6 +52,7 @@ export default function InquiryForm({
         email: formData.email,
         phone: formData.phone,
         company: formData.company,
+        desiredDomain: formData.desiredDomain,
         message: formData.message,
         plan: formData.plan,
         status: 'pending',
@@ -90,6 +92,7 @@ export default function InquiryForm({
         email: user?.email || "",
         phone: "",
         company: "",
+        desiredDomain: "",
         message: "",
         plan: "pro",
       });
@@ -200,6 +203,21 @@ export default function InquiryForm({
         />
       </div>
 
+      <div className="space-y-2">
+        <label className={labelClass}>
+          희망 도메인 (선택)
+        </label>
+        <input
+          type="text"
+          value={formData.desiredDomain}
+          onChange={(e) =>
+            setFormData({ ...formData, desiredDomain: e.target.value })
+          }
+          className={inputClass}
+          placeholder="예: mybrand.com"
+        />
+      </div>
+
       <div className="space-y-4">
         <label className={labelClass}>
           구매 희망 플랜
@@ -230,13 +248,13 @@ export default function InquiryForm({
         <label className={labelClass}>문의내용</label>
         <textarea
           required
-          rows={4}
+          rows={6}
           value={formData.message}
           onChange={(e) =>
             setFormData({ ...formData, message: e.target.value })
           }
-          className={`${inputClass} resize-none`}
-          placeholder="요청사항이나 궁금하신 점을 자유롭게 적어주세요."
+          className={inputClass}
+          placeholder="[추가 요청사항]&#10;1. &#10;2. &#10;3. "
         />
       </div>
 

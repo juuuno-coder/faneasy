@@ -234,6 +234,10 @@ export default function AdminDashboard() {
                       {(selectedInquiry as any).plan || 'N/A'}
                     </span>
                   </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">희망 도메인</p>
+                    <p className="text-gray-900 font-medium">{(selectedInquiry as any).desiredDomain || '정보 없음'}</p>
+                  </div>
                 </div>
                 <div className="pt-6 border-t border-gray-100">
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">문의 내용</p>
