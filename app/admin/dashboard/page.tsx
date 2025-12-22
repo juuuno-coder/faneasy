@@ -27,6 +27,9 @@ export default function AdminDashboard() {
   const [mounted, setMounted] = useState(false);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+  const [showReplyModal, setShowReplyModal] = useState(false);
+  const [replyMessage, setReplyMessage] = useState('');
+  const [sendingReply, setSendingReply] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -246,12 +249,103 @@ export default function AdminDashboard() {
                 >
                   닫기
                 </button>
-                <a 
-                  href={`mailto:${selectedInquiry.email}`}
+                <button 
+                  onClick={() => {
+                    setShowReplyModal(true);
+                    setReplyMessage(`안녕하세요 ${selectedInquiry.name}님,\n\n문의 주셔서 감사합니다.\n\n`);
+                  }}
                   className="flex-1 py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-center transition-colors"
                 >
                   답장하기
-                </a>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reply Modal */}
+        {showReplyModal && selectedInquiry && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+              <div className="p-8 border-b border-gray-100 flex justify-between items-start bg-linear-to-r from-purple-50 to-indigo-50">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">답장 작성</h3>
+                  <p className="text-sm text-gray-500">받는 사람: {selectedInquiry.email}</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    setShowReplyModal(false);
+                    setReplyMessage('');
+                  }}
+                  className="p-2 hover:bg-white rounded-full transition-colors"
+                >
+                  <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-8">
+                <div className="mb-4">
+                  <label className="block text-sm font-bold text-gray-700 mb-2">메시지</label>
+                  <textarea
+                    value={replyMessage}
+                    onChange={(e) => setReplyMessage(e.target.value)}
+                    rows={10}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                    placeholder="답장 내용을 입력하세요..."
+                  />
+                </div>
+              </div>
+              <div className="p-6 bg-gray-50 flex gap-3">
+                <button 
+                  onClick={() => {
+                    setShowReplyModal(false);
+                    setReplyMessage('');
+                  }}
+                  className="flex-1 py-3 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-bold transition-colors"
+                  disabled={sendingReply}
+                >
+                  취소
+                </button>
+                <button 
+                  onClick={async () => {
+                    if (!replyMessage.trim()) {
+                      alert('메시지를 입력해주세요.');
+                      return;
+                    }
+                    
+                    setSendingReply(true);
+                    try {
+                      const response = await fetch('/api/send-reply', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          to: selectedInquiry.email,
+                          name: selectedInquiry.name,
+                          message: replyMessage,
+                        }),
+                      });
+
+                      if (response.ok) {
+                        alert('답장이 성공적으로 발송되었습니다!');
+                        setShowReplyModal(false);
+                        setReplyMessage('');
+                        setSelectedInquiry(null);
+                      } else {
+                        throw new Error('Failed to send reply');
+                      }
+                    } catch (error) {
+                      console.error('Reply error:', error);
+                      alert('답장 발송에 실패했습니다. 다시 시도해주세요.');
+                    } finally {
+                      setSendingReply(false);
+                    }
+                  }}
+                  className="flex-1 py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={sendingReply}
+                >
+                  {sendingReply ? '발송 중...' : '발송하기'}
+                </button>
               </div>
             </div>
           </div>
