@@ -20,6 +20,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
+import CustomersTab from '@/components/admin/customers-tab';
+import InquiriesTab from '@/components/admin/inquiries-tab';
+import SettingsTab from '@/components/admin/settings-tab';
 
 export default function AdminDashboard() {
   const { user, logout, updateUser } = useAuthStore();
@@ -141,8 +144,18 @@ export default function AdminDashboard() {
       <main className="ml-64 flex-1 p-8">
         <header className="mb-12 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">대시보드</h1>
-            <p className="text-gray-400 text-sm mt-1">실시간 문의 현황 및 통계를 확인하세요.</p>
+            <h1 className="text-3xl font-bold">
+              {activeTab === 'dashboard' && '대시보드'}
+              {activeTab === 'customers' && '고객 관리'}
+              {activeTab === 'inquiries' && '문의 내역'}
+              {activeTab === 'settings' && '사이트 설정'}
+            </h1>
+            <p className="text-gray-400 text-sm mt-1">
+              {activeTab === 'dashboard' && '실시간 문의 현황 및 통계를 확인하세요.'}
+              {activeTab === 'customers' && '고객 정보를 관리하고 분석하세요.'}
+              {activeTab === 'inquiries' && '모든 문의 내역을 확인하고 관리하세요.'}
+              {activeTab === 'settings' && '사이트 설정을 변경하고 최적화하세요.'}
+            </p>
           </div>
           <div className="flex items-center gap-4">
              <div className="text-right">
@@ -158,6 +171,9 @@ export default function AdminDashboard() {
           </div>
         </header>
 
+        {/* Dashboard Tab Content */}
+        {activeTab === 'dashboard' && (
+          <>
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-4 mb-12">
           {[
@@ -231,6 +247,22 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
+          </>
+        )}
+
+        {/* Customers Tab Content */}
+        {activeTab === 'customers' && <CustomersTab />}
+
+        {/* Inquiries Tab Content */}
+        {activeTab === 'inquiries' && (
+          <InquiriesTab 
+            inquiries={inquiries} 
+            onSelectInquiry={setSelectedInquiry}
+          />
+        )}
+
+        {/* Settings Tab Content */}
+        {activeTab === 'settings' && <SettingsTab />}
 
         {/* Inquiry Detail Modal */}
         {selectedInquiry && (
