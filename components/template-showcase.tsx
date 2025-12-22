@@ -81,7 +81,7 @@ export default function TemplateShowcase() {
 
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm">
                    <a 
-                     href={template.demoUrl?.includes('localhost') ? `https://kkang.designd.co.kr/sites/${template.demoUrl.split('//')[1].split(':')[0]}` : (template.demoUrl || '#')} 
+                     href={template.demoUrl?.includes('localhost') ? `https://kkang.designd.co.kr/sites/${template.demoUrl.includes('//') ? template.demoUrl.split('//')[1].split('.')[0] : 'fan1'}` : (template.demoUrl || '#')} 
                      target="_blank"
                      rel="noopener noreferrer"
                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-colors"

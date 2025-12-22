@@ -133,7 +133,7 @@ export default async function SitePage({
               defaultValue={
                 <>
                   오직 소수의 클라이언트만을 위한 프리미엄 솔루션. <br />
-                  귀사의 비즈니스를 확실한 성공으로 이끌어드립니다.
+                  여러분의 비즈니스를 확실한 성공으로 이끌어드립니다.
                 </>
               }
             />
