@@ -134,7 +134,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                       <div className="text-sm font-medium text-gray-300">{inquiry.subject || '프로젝트 문의'}</div>
+                       <div className="text-sm font-medium text-gray-300">{(inquiry as any).plan || '프로젝트 문의'}</div>
                        <div className="text-xs text-gray-500">{new Date(inquiry.createdAt).toLocaleString()}</div>
                     </div>
                     <div className="rounded-full bg-purple-500/10 px-3 py-1 text-[10px] font-bold text-purple-400 border border-purple-500/20">
