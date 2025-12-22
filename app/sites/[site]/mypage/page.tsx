@@ -199,21 +199,21 @@ export default function MyPage() {
                 >
                     {/* Dashboard Stats */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="group rounded-[32px] border border-white/5 bg-white/[0.02] p-8 transition-all hover:border-purple-500/30 hover:bg-white/[0.04] shadow-lg">
+                        <div className="group rounded-[32px] border border-white/5 bg-white/2 p-8 transition-all hover:border-purple-500/30 hover:bg-white/4 shadow-lg">
                             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform">
                                 <ShoppingBag className="h-6 w-6" />
                             </div>
                             <div className="text-3xl font-black mb-1">{myOrders.length}</div>
                             <div className="text-sm font-bold text-gray-500 uppercase tracking-wider">전체 신청 내역</div>
                         </div>
-                        <div className="group rounded-[32px] border border-white/5 bg-white/[0.02] p-8 transition-all hover:border-blue-500/30 hover:bg-white/[0.04] shadow-lg">
+                        <div className="group rounded-[32px] border border-white/5 bg-white/2 p-8 transition-all hover:border-blue-500/30 hover:bg-white/4 shadow-lg">
                             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
                                 <Layout className="h-6 w-6" />
                             </div>
                             <div className="text-3xl font-black mb-1">{myOrders.filter(o => o.status === 'active').length}</div>
                             <div className="text-sm font-bold text-gray-500 uppercase tracking-wider">정상 운영중인 사이트</div>
                         </div>
-                        <div className="group rounded-[32px] border border-white/5 bg-white/[0.02] p-8 transition-all hover:border-purple-500/30 hover:bg-white/[0.04] shadow-lg">
+                        <div className="group rounded-[32px] border border-white/5 bg-white/2 p-8 transition-all hover:border-purple-500/30 hover:bg-white/4 shadow-lg">
                             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform">
                                 <MessageSquare className="h-6 w-6" />
                             </div>
@@ -277,7 +277,7 @@ export default function MyPage() {
                             myOrders.map((order) => (
                                 <div
                                     key={order.id}
-                                    className="rounded-[32px] border border-white/5 bg-white/[0.03] overflow-hidden hover:border-purple-500/20 transition-all p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 group"
+                                    className="rounded-[32px] border border-white/5 bg-white/3 overflow-hidden hover:border-purple-500/20 transition-all p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 group"
                                 >
                                     <div className="flex-1 space-y-4">
                                         <div className="flex items-center gap-4">
@@ -381,7 +381,7 @@ export default function MyPage() {
                             myInquiries.map((inq, idx) => (
                                 <div
                                     key={idx}
-                                    className="rounded-[32px] border border-white/5 bg-white/[0.03] p-8 flex flex-col md:flex-row justify-between gap-6 hover:border-purple-500/10 transition-all"
+                                    className="rounded-[32px] border border-white/5 bg-white/3 p-8 flex flex-col md:flex-row justify-between gap-6 hover:border-purple-500/10 transition-all"
                                 >
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-4">

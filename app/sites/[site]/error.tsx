@@ -36,7 +36,7 @@ export default function Error({
             className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-4 font-bold text-black transition-all hover:bg-gray-200 active:scale-95"
           >
             <RotateCcw className="h-5 w-5" />
-            다시 시ed하기
+            다시 시도하기
           </button>
           
           <Link
