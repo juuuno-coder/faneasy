@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
+import { useDataStore } from "@/lib/data-store";
 import { getFan } from "@/lib/data";
-import type { Fan } from "@/lib/types";
+import type { Fan, Inquiry } from "@/lib/types";
 import {
   LayoutDashboard,
   MessageSquare,
