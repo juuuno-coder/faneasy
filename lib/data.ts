@@ -79,7 +79,7 @@ export const mockInfluencers: Influencer[] = [
     id: 'inf-1',
     subdomain: 'kkang',
     name: '깡대표',
-    email: 'kkang@faneasy.kr',
+    email: 'juuuno@naver.com',
     // bcrypt hash of "password123"
     passwordHash: '$2a$10$rKZLvXz8Y9qXqN5xN5xN5.N5xN5xN5xN5xN5xN5xN5xN5xN5xN5xN',
     role: 'influencer',
