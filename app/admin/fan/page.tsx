@@ -26,10 +26,13 @@ const DesignEditor = dynamic(() => import("../influencer/design-editor"), { ssr:
 export default function FanAdminDashboard() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const { inquiries: allInquiries, getInquiriesByOwner } = useDataStore();
   const [activeTab, setActiveTab] = useState<
     "overview" | "inquiries" | "domain" | "billing" | "design"
   >("overview");
   const [fan, setFan] = useState<Fan | undefined>(undefined);
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+  const [myInquiries, setMyInquiries] = useState<Inquiry[]>([]);
 
   useEffect(() => {
     if (!user || user.role !== "fan") {
@@ -38,7 +41,11 @@ export default function FanAdminDashboard() {
     }
     const foundFan = getFan("inf-1", user.slug || "fan1");
     setFan(foundFan);
-  }, [user, router]);
+
+    if (user.id) {
+      setMyInquiries(getInquiriesByOwner(user.id));
+    }
+  }, [user, router, getInquiriesByOwner]);
 
   if (!user || !fan) return null;
 
@@ -46,12 +53,12 @@ export default function FanAdminDashboard() {
     <div className="flex h-screen bg-white text-black font-sans admin-surface">
       {/* Sidebar */}
       <aside className="w-64 border-r border-white/10 bg-black/50 backdrop-blur-xl flex flex-col">
-        <div className="flex h-16 items-center border-b border-white/10 px-6 gap-2">
-          <div className="h-6 w-6 rounded bg-gray-200 flex items-center justify-center font-bold text-xs text-gray-800">
+        <div className="flex h-16 items-center border-b border-white/10 px-6 gap-3">
+          <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-sm text-white shadow-lg shadow-indigo-500/20 shrink-0">
             A
           </div>
-          <span className="text-lg font-bold tracking-tight">
-            에이전시 관리
+          <span className="text-lg font-bold tracking-tight text-white whitespace-nowrap">
+            전시관
           </span>
           <div className="ml-auto hidden md:block">
             {/* dynamic client component */}
@@ -92,9 +99,11 @@ export default function FanAdminDashboard() {
             >
               <Users className="h-5 w-5" />
               리드·문의
-              <span className="ml-auto bg-white/5 text-white text-[10px] px-1.5 rounded-full">
-                3
-              </span>
+              {myInquiries.length > 0 && (
+                <span className="ml-auto bg-indigo-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                  {myInquiries.length}
+                </span>
+              )}
             </button>
             <button
               onClick={() => setActiveTab("design")}
@@ -247,41 +256,158 @@ export default function FanAdminDashboard() {
                 </button>
               </div>
               <div className="divide-y divide-white/5">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-sm text-gray-800">
-                        JS
+                {myInquiries.length > 0 ? (
+                  myInquiries.slice(0, 5).map((inquiry) => (
+                    <div
+                      key={inquiry.id}
+                      onClick={() => setSelectedInquiry(inquiry)}
+                      className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-sm text-white">
+                          {inquiry.name[0]}
+                        </div>
+                        <div>
+                          <p className="font-bold text-sm group-hover:text-indigo-400 transition-colors">{inquiry.name}</p>
+                          <p className="text-xs text-gray-400">
+                            {inquiry.plan?.toUpperCase()} 플랜 문의 • {new Date(inquiry.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-sm">James Smith</p>
-                        <p className="text-xs text-gray-400">
-                          프로젝트 문의 • 2시간 전
-                        </p>
-                      </div>
+                      <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded border border-indigo-500/20 uppercase">
+                        신규
+                      </span>
                     </div>
-                    <span className="px-2 py-1 bg-white/5 text-white text-xs rounded border border-white/10">
-                      신규
-                    </span>
+                  ))
+                ) : (
+                  <div className="p-12 text-center text-gray-500 text-sm">
+                    최근 문의가 없습니다.
                   </div>
-                ))}
+                )}
               </div>
             </div>
+
+            {/* Inquiry Detail Modal Overlay */}
+            {selectedInquiry && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+                  <div className="p-8 border-b border-gray-100 flex justify-between items-start">
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-1">문의 상세 내용</h3>
+                      <p className="text-sm text-gray-500">{new Date(selectedInquiry.createdAt).toLocaleString()}</p>
+                    </div>
+                    <button 
+                      onClick={() => setSelectedInquiry(null)}
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                      <LogOut className="h-5 w-5 text-gray-400 rotate-180" />
+                    </button>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">신청인</p>
+                        <p className="text-gray-900 font-medium">{selectedInquiry.name}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">연락처</p>
+                        <p className="text-gray-900 font-medium">{selectedInquiry.phone}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">이메일</p>
+                        <p className="text-gray-900 font-medium">{selectedInquiry.email}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">회사/단체</p>
+                        <p className="text-gray-900 font-medium">{selectedInquiry.company || '정보 없음'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">선택 플랜</p>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 uppercase">
+                          {selectedInquiry.plan}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="pt-6 border-t border-gray-100">
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">문의 내용</p>
+                      <div className="bg-gray-50 rounded-2xl p-4 text-gray-700 leading-relaxed whitespace-pre-wrap min-h-[100px]">
+                        {selectedInquiry.message}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-6 bg-gray-50 flex gap-3">
+                    <button 
+                      onClick={() => setSelectedInquiry(null)}
+                      className="flex-1 py-3 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-bold transition-colors"
+                    >
+                      닫기
+                    </button>
+                    <a 
+                      href={`mailto:${selectedInquiry.email}`}
+                      className="flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-center transition-colors"
+                    >
+                      답장하기
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === "inquiries" && (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-gray-500">
-            <MessageSquare className="mx-auto h-12 w-12 opacity-50 mb-4" />
-            <h3 className="text-gray-900 text-lg font-bold mb-2">
-              리드 관리
-            </h3>
-            <p className="max-w-md mx-auto">
-              웹사이트의 문의 폼을 통해 들어온 모든 잠재 고객 목록이 여기에 표시됩니다.
-            </p>
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-white/5 text-gray-400 uppercase text-[10px] tracking-wider font-bold">
+                  <tr>
+                    <th className="px-6 py-4">신청인 / 정보</th>
+                    <th className="px-6 py-4">플랜</th>
+                    <th className="px-6 py-4">문의 요약</th>
+                    <th className="px-6 py-4">날짜</th>
+                    <th className="px-6 py-4">동작</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {myInquiries.length > 0 ? (
+                    myInquiries.map((inquiry) => (
+                      <tr key={inquiry.id} className="hover:bg-white/5 transition-colors group">
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-white">{inquiry.name}</div>
+                          <div className="text-xs text-gray-500">{inquiry.email}</div>
+                          <div className="text-xs text-gray-500">{inquiry.phone}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase">
+                            {inquiry.plan}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-gray-300 truncate max-w-xs">{inquiry.message}</div>
+                        </td>
+                        <td className="px-6 py-4 text-gray-500">
+                          {new Date(inquiry.createdAt).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4">
+                          <button 
+                            onClick={() => setSelectedInquiry(inquiry)}
+                            className="text-xs font-bold text-indigo-400 hover:text-indigo-300 underline"
+                          >
+                            상세보기
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                        문의 내역이 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

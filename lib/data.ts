@@ -167,6 +167,28 @@ export const mockFans: Fan[] = [
       canManageProducts: false,
       canViewAnalytics: false
     }
+  },
+  {
+    id: 'fan-3',
+    influencerId: 'inf-1', // 깡대표
+    slug: 'fan3',
+    name: '팬3',
+    email: 'fan3@example.com',
+    passwordHash: '$2a$10$rKZLvXz8Y9qXqN5xN5xN5.N5xN5xN5xN5xN5xN5xN5xN5xN5xN5xN',
+    role: 'fan',
+    createdAt: new Date('2024-03-01'),
+    updatedAt: new Date('2024-03-01'),
+    pageSettings: {
+      title: '팬3의 공간',
+      description: '도도마케팅 공식 팬페이지',
+      theme: 'dark',
+      primaryColor: '#6366F1',
+    },
+    permissions: {
+      canEditContent: true,
+      canManageProducts: true,
+      canViewAnalytics: true
+    }
   }
 ];
 
