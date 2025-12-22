@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
 import { useDataStore } from "@/lib/data-store";
 import { getFan } from "@/lib/data";
+import { db } from "@/lib/firebaseClient";
+import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 import type { Fan, Inquiry } from "@/lib/types";
 import {
   LayoutDashboard,
@@ -43,8 +45,34 @@ export default function FanAdminDashboard() {
     const foundFan = getFan("inf-1", user.slug || "fan1");
     setFan(foundFan);
 
+    // 1. Listen to real-time inquiries from Firestore
     if (user.id) {
-      setMyInquiries(getInquiriesByOwner(user.id));
+      const q = query(
+        collection(db, "inquiries"),
+        where("ownerId", "==", user.id),
+        orderBy("createdAt", "desc")
+      );
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const firestoreInquiries = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as any[];
+        
+        // Merge or replace local list
+        // For the best "Real-time" effect, we prefer Firestor data
+        if (firestoreInquiries.length > 0) {
+          setMyInquiries(firestoreInquiries);
+        } else {
+          // Fallback to local mock data if Firestore is empty (optional)
+          setMyInquiries(getInquiriesByOwner(user.id));
+        }
+      }, (error) => {
+        console.error("Firestore listener error:", error);
+        setMyInquiries(getInquiriesByOwner(user.id)); // Fallback on error
+      });
+
+      return () => unsubscribe();
     }
   }, [user, router, getInquiriesByOwner]);
 

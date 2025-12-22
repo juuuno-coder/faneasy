@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Send } from "lucide-react";
 import { useAuthStore } from "@/lib/store";
 import { useDataStore } from "@/lib/data-store";
+import { db } from "@/lib/firebaseClient";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function InquiryForm({
   influencerId,
@@ -42,48 +44,48 @@ export default function InquiryForm({
     e.preventDefault();
     setStatus("loading");
 
-    // Simulate Network
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const newInquiry = {
-      id: `inq-${Date.now()}`,
-      ownerId: influencerId,
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      company: formData.company,
-      message: formData.message,
-      plan: formData.plan,
-      status: 'pending' as const,
-      createdAt: new Date(),
-    };
-
-    addInquiry(newInquiry);
-    
-    // Notify Admin (Integrated in Phase 1)
     try {
-      await fetch('/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          type: 'inquiry',
-          data: newInquiry 
-        })
-      });
-    } catch (e) {
-      console.error('Notification failed', e);
-    }
+      const newInquiry = {
+        ownerId: influencerId,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company,
+        message: formData.message,
+        plan: formData.plan,
+        status: 'pending',
+        createdAt: new Date().toISOString(), // Use ISO string for consistency
+      };
 
-    setStatus("success");
-    
-    setFormData({
-      name: user?.name || "", 
-      email: user?.email || "",
-      phone: "",
-      company: "",
-      message: "",
-      plan: "pro",
-    });
+      // 1. Save to Firebase Firestore
+      await addDoc(collection(db, "inquiries"), {
+        ...newInquiry,
+        serverCreatedAt: serverTimestamp(), // For accurate server-side timing
+      });
+
+      // 2. Sync to local store for immediate UI updates
+      addInquiry({
+        ...newInquiry,
+        id: `inq-${Date.now()}`,
+        createdAt: new Date(),
+        status: 'pending' as any,
+      });
+
+      setStatus("success");
+      
+      setFormData({
+        name: user?.name || "", 
+        email: user?.email || "",
+        phone: "",
+        company: "",
+        message: "",
+        plan: "pro",
+      });
+
+    } catch (error) {
+      console.error("Inquiry submission failed:", error);
+      setStatus("error");
+    }
   };
 
   const isBold = variant === "bold";
