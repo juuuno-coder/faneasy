@@ -61,7 +61,7 @@ ${inquiry.message}
           </div>
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
-            <a href="https://kkang.designd.co.kr/admin/dashboard" style="display: inline-block; background-color: #667eea; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold;">관리자 페이지에서 확인하기</a>
+            <a href="https://kkang.designd.co.kr/admin" style="display: inline-block; background-color: #667eea; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold;">관리자 페이지에서 확인하기</a>
           </div>
         </div>
         <div style="text-align: center; margin-top: 20px; color: #6b7280; font-size: 12px;">

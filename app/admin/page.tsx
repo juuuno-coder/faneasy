@@ -81,7 +81,7 @@ export default function AdminDashboard() {
         </div>
         
         <nav className="p-4 space-y-2">
-          <Link href="/admin/dashboard" className="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-3 text-sm font-bold text-white">
+          <Link href="/admin" className="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-3 text-sm font-bold text-white">
             <LayoutDashboard className="h-5 w-5" />
             대시보드
           </Link>
