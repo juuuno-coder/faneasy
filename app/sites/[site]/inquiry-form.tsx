@@ -63,7 +63,19 @@ export default function InquiryForm({
         serverCreatedAt: serverTimestamp(), // For accurate server-side timing
       });
 
-      // 2. Sync to local store for immediate UI updates
+      // 2. Send email notification
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newInquiry),
+        });
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+        // Don't block the submission if email fails
+      }
+
+      // 3. Sync to local store for immediate UI updates
       addInquiry({
         ...newInquiry,
         id: `inq-${Date.now()}`,

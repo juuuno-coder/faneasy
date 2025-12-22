@@ -4,6 +4,9 @@ import { useDataStore } from '@/lib/data-store';
 import { useAuthStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { db } from '@/lib/firebaseClient';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import type { Inquiry } from '@/lib/types';
 import { 
   Users, 
   MessageSquare, 
@@ -19,9 +22,11 @@ import Link from 'next/link';
 
 export default function AdminDashboard() {
   const { user, logout } = useAuthStore();
-  const { inquiries } = useDataStore();
+  const { inquiries: localInquiries } = useDataStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -29,6 +34,35 @@ export default function AdminDashboard() {
       // router.push('/login'); // Temporarily disabled for dev convenience or strictly enforce:
     }
   }, [user, mounted, router]);
+
+  // Real-time Firestore listener
+  useEffect(() => {
+    if (!mounted) return;
+
+    const q = query(
+      collection(db, "inquiries"),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const firestoreInquiries = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt || new Date().toISOString()
+      })) as Inquiry[];
+      
+      if (firestoreInquiries.length > 0) {
+        setInquiries(firestoreInquiries);
+      } else {
+        setInquiries(localInquiries);
+      }
+    }, (error) => {
+      console.error("Firestore listener error:", error);
+      setInquiries(localInquiries);
+    });
+
+    return () => unsubscribe();
+  }, [mounted, localInquiries]);
 
   if (!mounted) return null;
 
@@ -121,8 +155,11 @@ export default function AdminDashboard() {
 
           <div className="space-y-4">
             {inquiries.length > 0 ? (
-              inquiries.slice(-5).reverse().map((inquiry, i) => (
-                <div key={i} className="group flex items-center justify-between rounded-2xl border border-white/5 bg-black/20 p-4 transition-all hover:bg-white/5">
+              inquiries.slice(0, 10).map((inquiry, i) => (
+                <div 
+                  key={inquiry.id || i} 
+                  onClick={() => setSelectedInquiry(inquiry)}
+                  className="group flex items-center justify-between rounded-2xl border border-white/5 bg-black/20 p-4 transition-all hover:bg-white/5 cursor-pointer">
                   <div className="flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-linear-to-br from-gray-700 to-gray-800 flex items-center justify-center font-bold text-xs">
                         {inquiry.name[0]}
@@ -151,6 +188,74 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
+
+        {/* Inquiry Detail Modal */}
+        {selectedInquiry && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedInquiry(null)}>
+            <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
+              <div className="p-8 border-b border-gray-100 flex justify-between items-start bg-gradient-to-r from-purple-50 to-indigo-50">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">문의 상세 내용</h3>
+                  <p className="text-sm text-gray-500">{new Date(selectedInquiry.createdAt).toLocaleString()}</p>
+                </div>
+                <button 
+                  onClick={() => setSelectedInquiry(null)}
+                  className="p-2 hover:bg-white rounded-full transition-colors"
+                >
+                  <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-8 space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">신청인</p>
+                    <p className="text-gray-900 font-medium">{selectedInquiry.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">연락처</p>
+                    <p className="text-gray-900 font-medium">{selectedInquiry.phone}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">이메일</p>
+                    <p className="text-gray-900 font-medium">{selectedInquiry.email}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">회사/단체</p>
+                    <p className="text-gray-900 font-medium">{selectedInquiry.company || '정보 없음'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">선택 플랜</p>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700 uppercase">
+                      {(selectedInquiry as any).plan || 'N/A'}
+                    </span>
+                  </div>
+                </div>
+                <div className="pt-6 border-t border-gray-100">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">문의 내용</p>
+                  <div className="bg-gray-50 rounded-2xl p-4 text-gray-700 leading-relaxed whitespace-pre-wrap min-h-[100px]">
+                    {selectedInquiry.message}
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 bg-gray-50 flex gap-3">
+                <button 
+                  onClick={() => setSelectedInquiry(null)}
+                  className="flex-1 py-3 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-bold transition-colors"
+                >
+                  닫기
+                </button>
+                <a 
+                  href={`mailto:${selectedInquiry.email}`}
+                  className="flex-1 py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-center transition-colors"
+                >
+                  답장하기
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

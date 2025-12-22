@@ -42,7 +42,14 @@ export function middleware(req: NextRequest) {
       return NextResponse.next();
   }
 
-  // 2. Otherwise, it is a SUBDOMAIN (e.g. "iu", "bts", "kkang")
+  // 2. Allow /admin, /login, /api routes to pass through without rewriting
+  if (url.pathname.startsWith("/admin") || 
+      url.pathname.startsWith("/login") || 
+      url.pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
+
+  // 3. Otherwise, it is a SUBDOMAIN (e.g. "iu", "bts", "kkang")
   // Rewrite the request to /sites/[subdomain]
   console.log(`Rewriting subdomain ${currentHost} to /sites/${currentHost}`);
 
