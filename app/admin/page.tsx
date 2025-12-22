@@ -5,7 +5,7 @@ import { useAuthStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebaseClient';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, where } from 'firebase/firestore';
 import type { Inquiry } from '@/lib/types';
 import { 
   Users, 
@@ -16,13 +16,15 @@ import {
   CheckCircle2,
   Clock,
   ChevronRight,
-  Shield
+  Shield,
+  Globe
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
 import CustomersTab from '@/components/admin/customers-tab';
 import InquiriesTab from '@/components/admin/inquiries-tab';
 import SettingsTab from '@/components/admin/settings-tab';
+import SiteTreeView from '@/components/admin/site-tree-view';
 
 export default function AdminDashboard() {
   const { user, logout, updateUser } = useAuthStore();
@@ -34,7 +36,7 @@ export default function AdminDashboard() {
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'customers' | 'inquiries' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'customers' | 'inquiries' | 'settings'>('dashboard');
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
@@ -43,19 +45,36 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setMounted(true);
-    if (mounted && (!user || user.role !== 'influencer')) {
-      // router.push('/login'); // Temporarily disabled for dev convenience or strictly enforce:
-    }
+    // Allow all roles to access admin dashboard
   }, [user, mounted, router]);
 
-  // Real-time Firestore listener
+  // Real-time Firestore listener with role-based filtering
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !user) return;
 
-    const q = query(
-      collection(db, "inquiries"),
-      orderBy("createdAt", "desc")
-    );
+    // Build query based on user role
+    let q;
+    if (user.role === 'admin') {
+      // Admin sees all inquiries
+      q = query(
+        collection(db, "inquiries"),
+        orderBy("createdAt", "desc")
+      );
+    } else if (user.role === 'influencer') {
+      // Influencer sees only their inquiries
+      q = query(
+        collection(db, "inquiries"),
+        where("ownerId", "==", user.id),
+        orderBy("createdAt", "desc")
+      );
+    } else {
+      // Fan sees only their inquiries
+      q = query(
+        collection(db, "inquiries"),
+        where("ownerId", "==", user.id),
+        orderBy("createdAt", "desc")
+      );
+    }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const firestoreInquiries = snapshot.docs.map(doc => ({
@@ -67,7 +86,11 @@ export default function AdminDashboard() {
       if (firestoreInquiries.length > 0) {
         setInquiries(firestoreInquiries);
       } else {
-        setInquiries(localInquiries);
+        // Filter local inquiries by role as well
+        const filteredLocal = user.role === 'admin' 
+          ? localInquiries 
+          : localInquiries.filter(inq => inq.ownerId === user.id);
+        setInquiries(filteredLocal);
       }
     }, (error) => {
       console.error("Firestore listener error:", error);
@@ -99,6 +122,15 @@ export default function AdminDashboard() {
           >
             <LayoutDashboard className="h-5 w-5" />
             대시보드
+          </button>
+          <button 
+            onClick={() => setActiveTab('structure')}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              activeTab === 'structure' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Globe className="h-5 w-5" />
+            사이트 구조
           </button>
           <button 
             onClick={() => setActiveTab('customers')}
@@ -144,14 +176,23 @@ export default function AdminDashboard() {
       <main className="ml-64 flex-1 p-8">
         <header className="mb-12 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">
-              {activeTab === 'dashboard' && '대시보드'}
-              {activeTab === 'customers' && '고객 관리'}
-              {activeTab === 'inquiries' && '문의 내역'}
-              {activeTab === 'settings' && '사이트 설정'}
-            </h1>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-bold">
+                {activeTab === 'dashboard' && '대시보드'}
+                {activeTab === 'structure' && '사이트 구조'}
+                {activeTab === 'customers' && '고객 관리'}
+                {activeTab === 'inquiries' && '문의 내역'}
+                {activeTab === 'settings' && '사이트 설정'}
+              </h1>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                {user?.role === 'admin' && '전체 플랫폼'}
+                {user?.role === 'influencer' && `${user?.subdomain || '인플루언서'} 관리`}
+                {user?.role === 'fan' && '팬 페이지'}
+              </span>
+            </div>
             <p className="text-gray-400 text-sm mt-1">
               {activeTab === 'dashboard' && '실시간 문의 현황 및 통계를 확인하세요.'}
+              {activeTab === 'structure' && '사이트 계층 구조와 연결 관계를 확인하세요.'}
               {activeTab === 'customers' && '고객 정보를 관리하고 분석하세요.'}
               {activeTab === 'inquiries' && '모든 문의 내역을 확인하고 관리하세요.'}
               {activeTab === 'settings' && '사이트 설정을 변경하고 최적화하세요.'}
@@ -250,6 +291,14 @@ export default function AdminDashboard() {
           </>
         )}
 
+        {/* Site Structure Tab Content */}
+        {activeTab === 'structure' && (
+          <SiteTreeView 
+            userRole={(user?.role as 'admin' | 'influencer' | 'fan') || 'admin'} 
+            userId={user?.id}
+          />
+        )}
+
         {/* Customers Tab Content */}
         {activeTab === 'customers' && <CustomersTab />}
 
@@ -268,7 +317,7 @@ export default function AdminDashboard() {
         {selectedInquiry && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedInquiry(null)}>
             <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
-              <div className="p-8 border-b border-gray-100 flex justify-between items-start bg-gradient-to-r from-purple-50 to-indigo-50">
+              <div className="p-8 border-b border-gray-100 flex justify-between items-start bg-linear-to-r from-purple-50 to-indigo-50">
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-1">문의 상세 내용</h3>
                   <p className="text-sm text-gray-500">{new Date(selectedInquiry.createdAt).toLocaleString()}</p>
@@ -341,7 +390,7 @@ export default function AdminDashboard() {
 
         {/* Reply Modal */}
         {showReplyModal && selectedInquiry && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
             <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
               <div className="p-8 border-b border-gray-100 flex justify-between items-start bg-linear-to-r from-purple-50 to-indigo-50">
                 <div>
