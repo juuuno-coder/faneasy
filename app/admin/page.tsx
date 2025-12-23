@@ -300,7 +300,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Customers Tab Content */}
-        {activeTab === 'customers' && <CustomersTab />}
+        {activeTab === 'customers' && <CustomersTab inquiries={inquiries} />}
 
         {/* Inquiries Tab Content */}
         {activeTab === 'inquiries' && (
@@ -441,13 +441,26 @@ export default function AdminDashboard() {
                     
                     setSendingReply(true);
                     try {
-                      const response = await fetch('/api/send-reply', {
+                      const response = await fetch('/api/send-email', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                           to: selectedInquiry.email,
-                          name: selectedInquiry.name,
-                          message: replyMessage,
+                          subject: `[FanEasy] ${selectedInquiry.name}님의 문의에 대한 답변입니다.`,
+                          html: `
+                            <div style="font-family: sans-serif; line-height: 1.6;">
+                              <p>안녕하세요, ${selectedInquiry.name}님.</p>
+                              <p>FanEasy 관리자입니다.</p>
+                              <br/>
+                              <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px;">
+                                ${replyMessage.replace(/\n/g, '<br/>')}
+                              </div>
+                              <br/>
+                              <p>추가 문의사항이 있으시면 언제든지 연락주세요.</p>
+                              <p>감사합니다.</p>
+                            </div>
+                          `,
+                          replyTo: user?.email // Admin's email as reply-to
                         }),
                       });
 

@@ -180,3 +180,15 @@ export interface Inquiry {
   status: "pending" | "contacted" | "completed";
   createdAt: Date;
 }
+
+export interface SiteSettings {
+  id: string; // subdomain or userId
+  ownerId: string;
+  siteName: string;
+  siteDescription: string;
+  domain: string;
+  primaryColor: string;
+  seoTitle: string;
+  seoDescription: string;
+  updatedAt: string;
+}

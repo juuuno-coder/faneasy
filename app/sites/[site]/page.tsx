@@ -50,6 +50,8 @@ export async function generateMetadata(
   };
 }
 
+import ThemeWrapper from "./theme-wrapper";
+
 export default async function SitePage({
   params,
 }: {
@@ -58,6 +60,9 @@ export default async function SitePage({
   const { site } = await params;
   const siteSlug = site.toLowerCase().trim();
   const creator = getCreator(siteSlug);
+  
+  // Custom Live News: Fetch specific news for the site if available, otherwise generic
+  const news = await getLiveNews(siteSlug);
 
   if (!creator) {
     notFound();
@@ -65,29 +70,47 @@ export default async function SitePage({
 
   // If it's kkang, show the Agency Landing Page
   if (siteSlug === "kkang") {
-    return <AgencyLandingPage site={siteSlug} />;
+    return (
+      <>
+        <ThemeWrapper site={siteSlug} />
+        <AgencyLandingPage site={siteSlug} />
+      </>
+    );
   }
 
   // Custom Design for 'fan1' (MZ Marketing Reference)
   if (siteSlug === "fan1") {
-    return <MZMarketing site={siteSlug} />;
+    return (
+      <>
+        <ThemeWrapper site={siteSlug} />
+        <MZMarketing site={siteSlug} />
+      </>
+    );
   }
  
   // Custom Design for 'fan2' (Growth Marketing - Bburi Theme)
   if (siteSlug === "fan2") {
-    return <GrowthMarketing site={siteSlug} />;
+    return (
+      <>
+        <ThemeWrapper site={siteSlug} />
+        <GrowthMarketing site={siteSlug} />
+      </>
+    );
   }
 
   // Custom Design for 'fan3' (AD-TECH Solution - DDMKT Theme)
   if (siteSlug === "fan3") {
-    return <TechMarketing site={siteSlug} />;
+    return (
+      <>
+        <ThemeWrapper site={siteSlug} />
+        <TechMarketing site={siteSlug} />
+      </>
+    );
   }
-
-  // Fetch Live News (Legacy/Generic)
-  const news = await getLiveNews(creator.name);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
+      <ThemeWrapper site={siteSlug} />
       {/* Hero Section */}
       <div className="relative h-[60vh] w-full overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/50 to-black z-10" />
