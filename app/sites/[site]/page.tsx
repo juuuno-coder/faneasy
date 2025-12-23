@@ -69,6 +69,18 @@ export default async function SitePage({
     notFound();
   }
 
+  // If it's bizon, show the BizonMarketing Landing Page
+  if (siteSlug === "bizon") {
+    const BizonMarketing = (await import("./bizon-marketing")).default;
+    return (
+      <>
+        <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
+        <BizonMarketing site={siteSlug} />
+      </>
+    );
+  }
+
   // If it's kkang, show the Agency Landing Page
   if (siteSlug === "kkang") {
     return (

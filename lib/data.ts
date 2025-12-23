@@ -19,6 +19,14 @@ export const creators: Creator[] = [
     image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&q=80"
   },
   {
+    subdomain: "bizon",
+    name: "비즈온마케팅",
+    theme: "light", 
+    bio: "우리는 '대행'이 아니라 매출 실험을 설계합니다. 프랜차이즈 지점 전용 마케팅.",
+    stats: { fans: "300+", posts: "지점" },
+    image: "/bizon-logo.png"
+  },
+  {
     subdomain: "iu",
     name: "IU (아이유)",
     theme: "purple", 
