@@ -102,7 +102,7 @@ export default function AdminDashboard() {
         if ((inq as any).createdAt?.toDate) {
              dateKey = (inq as any).createdAt.toDate().toISOString().split('T')[0];
         } else if (typeof inq.createdAt === 'string') {
-             dateKey = inq.createdAt.split('T')[0]; // ISO string
+             dateKey = (inq.createdAt as unknown as string).split('T')[0]; // ISO string
         }
         if (dateKey) {
             inquiryCounts[dateKey] = (inquiryCounts[dateKey] || 0) + 1;
