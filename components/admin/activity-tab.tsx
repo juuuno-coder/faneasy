@@ -5,13 +5,28 @@ import {
   User, 
   Settings, 
   MessageSquare, 
-  LogOut, 
   LogIn,
   ShieldAlert,
   Edit
 } from 'lucide-react';
+import { useAuthStore } from '@/lib/store';
 
 export default function ActivityTab() {
+  const { user } = useAuthStore();
+  const isDark = user?.role === 'owner';
+
+  const theme = {
+    card: isDark ? 'bg-white/2 border-white/5' : 'bg-white/60 border-white/40 shadow-xl backdrop-blur-xl',
+    textHeader: isDark ? 'text-white' : 'text-gray-900',
+    textStrong: isDark ? 'text-gray-200' : 'text-gray-800',
+    textWeak: isDark ? 'text-gray-400' : 'text-gray-500',
+    border: isDark ? 'border-white/5' : 'border-gray-100',
+    timeline: isDark ? 'bg-white/10' : 'bg-gray-200',
+    itemHover: isDark ? 'hover:bg-white/5' : 'hover:bg-purple-50/50',
+    iconBgBase: isDark ? 'bg-[#0A0A0B]' : 'bg-white', // Timeline line blocker
+    button: isDark ? 'text-gray-500 hover:text-white' : 'text-gray-500 hover:text-purple-600',
+  };
+
   const activities = [
     {
       id: 1,
@@ -22,7 +37,7 @@ export default function ActivityTab() {
       timestamp: '방금 전',
       icon: MessageSquare,
       color: 'text-green-500',
-      bg: 'bg-green-500/10'
+      bg: isDark ? 'bg-green-500/10' : 'bg-green-50 border-green-100'
     },
     {
       id: 2,
@@ -33,7 +48,7 @@ export default function ActivityTab() {
       timestamp: '15분 전',
       icon: Settings,
       color: 'text-purple-500',
-      bg: 'bg-purple-500/10'
+      bg: isDark ? 'bg-purple-500/10' : 'bg-purple-50 border-purple-100'
     },
     {
       id: 3,
@@ -44,7 +59,7 @@ export default function ActivityTab() {
       timestamp: '1시간 전',
       icon: LogIn,
       color: 'text-blue-500',
-      bg: 'bg-blue-500/10'
+      bg: isDark ? 'bg-blue-500/10' : 'bg-blue-50 border-blue-100'
     },
     {
       id: 4,
@@ -55,7 +70,7 @@ export default function ActivityTab() {
       timestamp: '2시간 전',
       icon: User,
       color: 'text-yellow-500',
-      bg: 'bg-yellow-500/10'
+      bg: isDark ? 'bg-yellow-500/10' : 'bg-yellow-50 border-yellow-100'
     },
     {
       id: 5,
@@ -66,7 +81,7 @@ export default function ActivityTab() {
       timestamp: '어제',
       icon: Edit,
       color: 'text-gray-400',
-      bg: 'bg-white/5'
+      bg: isDark ? 'bg-white/5' : 'bg-gray-100 border-gray-200'
     },
     {
       id: 6,
@@ -77,24 +92,24 @@ export default function ActivityTab() {
       timestamp: '2일 전',
       icon: ShieldAlert,
       color: 'text-red-500',
-      bg: 'bg-red-500/10'
+      bg: isDark ? 'bg-red-500/10' : 'bg-red-50 border-red-100'
     },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold flex items-center gap-2">
-          <Clock className="h-5 w-5 text-gray-400" />
+        <h3 className={`text-xl font-bold flex items-center gap-2 ${theme.textHeader}`}>
+          <Clock className={`h-5 w-5 ${theme.textWeak}`} />
           활동 로그
         </h3>
-        <span className="text-xs text-gray-500">최근 30일간의 활동 내역입니다.</span>
+        <span className={`text-xs ${theme.textWeak}`}>최근 30일간의 활동 내역입니다.</span>
       </div>
 
-      <div className="rounded-3xl border border-white/5 bg-white/2 overflow-hidden">
+      <div className={`rounded-3xl border overflow-hidden ${theme.card}`}>
         <div className="relative">
           {/* Timeline Line */}
-          <div className="absolute left-8 top-0 bottom-0 w-px bg-white/10 z-0" />
+          <div className={`absolute left-8 top-0 bottom-0 w-px z-0 ${theme.timeline}`} />
 
           <div className="space-y-0 z-10 relative">
             {activities.map((activity, index) => {
@@ -102,25 +117,25 @@ export default function ActivityTab() {
               return (
                 <div 
                   key={activity.id}
-                  className="flex items-start gap-4 p-6 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0"
+                  className={`flex items-start gap-4 p-6 transition-colors border-b last:border-0 ${theme.itemHover} ${theme.border}`}
                 >
                   <div className={`
                     h-10 w-10 flex-shrink-0 rounded-full flex items-center justify-center 
-                    border border-white/5 ${activity.bg} ${activity.color} z-10 bg-[#1A1A1A]
+                    border ${theme.border} ${activity.bg} ${activity.color} z-10 ${theme.iconBgBase}
                   `}>
                     <Icon className="h-5 w-5" />
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="font-bold text-sm text-gray-200">
+                      <p className={`font-bold text-sm ${theme.textStrong}`}>
                         {activity.user}
-                        <span className="font-normal text-gray-500 mx-2">•</span>
-                        <span className="text-gray-400 font-normal">{activity.action}</span>
+                        <span className={`font-normal mx-2 ${theme.textWeak}`}>•</span>
+                        <span className={`font-normal ${theme.textWeak}`}>{activity.action}</span>
                       </p>
-                      <time className="text-xs text-gray-500 whitespace-nowrap">{activity.timestamp}</time>
+                      <time className={`text-xs whitespace-nowrap ${theme.textWeak}`}>{activity.timestamp}</time>
                     </div>
-                    <p className="text-sm text-gray-400 truncate">{activity.target}</p>
+                    <p className={`text-sm truncate ${theme.textWeak}`}>{activity.target}</p>
                   </div>
                 </div>
               );
@@ -130,7 +145,7 @@ export default function ActivityTab() {
       </div>
       
       <div className="text-center">
-        <button className="text-sm text-gray-500 hover:text-white hover:underline transition-colors">
+        <button className={`text-sm underline-offset-4 hover:underline transition-colors ${theme.button}`}>
           이전 내역 더보기
         </button>
       </div>

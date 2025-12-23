@@ -110,10 +110,10 @@ export default function UsersTab() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-[#1A1A1C] border border-white/5 rounded-2xl overflow-hidden">
+      <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-2xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-black/20 text-gray-400">
+            <thead className="bg-purple-50/50 text-gray-600 border-b border-purple-100">
               <tr>
                 <th className="px-6 py-4 font-medium">사용자 정보</th>
                 <th className="px-6 py-4 font-medium">역할 (Role)</th>
@@ -122,7 +122,7 @@ export default function UsersTab() {
                 <th className="px-6 py-4 font-medium text-right">관리</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-purple-100">
               {filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
@@ -131,15 +131,15 @@ export default function UsersTab() {
                 </tr>
               ) : (
                 filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-white/5 transition-colors">
+                  <tr key={user.id} className="hover:bg-purple-50/30 transition-colors">
                     {/* User Info */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold uppercase">
+                        <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold uppercase shadow-sm">
                           {user.name?.[0] || 'U'}
                         </div>
                         <div>
-                          <div className="font-bold text-white">{user.name}</div>
+                          <div className="font-bold text-gray-900">{user.name}</div>
                           <div className="text-xs text-gray-500">{user.email}</div>
                         </div>
                       </div>
@@ -151,7 +151,7 @@ export default function UsersTab() {
                         <select
                           value={editForm.role}
                           onChange={(e) => setEditForm({ ...editForm, role: e.target.value as UserRole })}
-                          className="bg-[#0A0A0B] border border-white/20 rounded px-2 py-1 text-xs focus:border-purple-500 outline-none"
+                          className="bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-purple-500 outline-none text-gray-700 shadow-sm"
                         >
                           <option value="user">User (팬)</option>
                           <option value="owner">Owner (사이트 주인)</option>
@@ -159,11 +159,11 @@ export default function UsersTab() {
                           <option value="super_admin">Super Admin</option>
                         </select>
                       ) : (
-                        <span className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${
-                          user.role === 'super_admin' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                          user.role === 'owner' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                          user.role === 'admin' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                          'bg-gray-500/10 text-gray-400 border-gray-500/20'
+                        <span className={`inline-flex px-2 py-1 rounded-md text-xs font-medium border shadow-sm ${
+                          user.role === 'super_admin' ? 'bg-red-50 text-red-600 border-red-100' :
+                          user.role === 'owner' ? 'bg-purple-50 text-purple-600 border-purple-100' :
+                          user.role === 'admin' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                          'bg-gray-50 text-gray-500 border-gray-100'
                         }`}>
                           {user.role === 'super_admin' ? '최고관리자' :
                            user.role === 'owner' ? '사이트 소유자' :
@@ -181,31 +181,31 @@ export default function UsersTab() {
                             value={editForm.subdomain}
                             onChange={(e) => setEditForm({ ...editForm, subdomain: e.target.value })}
                             placeholder="subdomain"
-                            className="bg-[#0A0A0B] border border-white/20 rounded px-2 py-1 text-xs w-24 focus:border-purple-500 outline-none"
+                            className="bg-white border border-gray-200 rounded px-2 py-1 text-xs w-24 focus:border-purple-500 outline-none text-gray-700"
                           />
-                          <span className="text-xs text-gray-500">.faneasy.kr</span>
+                          <span className="text-xs text-gray-400">.faneasy.kr</span>
                         </div>
                       ) : (
                         user.subdomain ? (
                           <div className="flex items-center gap-2">
-                            <span className="text-purple-400 font-mono text-xs">{user.subdomain}</span>
+                            <span className="text-purple-600 font-mono text-xs font-medium bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100">{user.subdomain}</span>
                             <a 
                               href={`/sites/${user.subdomain}`} 
                               target="_blank" 
                               rel="noreferrer"
-                              className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded hover:bg-white/20 text-gray-300"
+                              className="text-[10px] bg-white border border-gray-200 px-1.5 py-0.5 rounded hover:bg-gray-50 text-gray-500 transition-colors shadow-sm"
                             >
                               이동
                             </a>
                           </div>
                         ) : (
-                          <span className="text-gray-600 text-xs">-</span>
+                          <span className="text-gray-300 text-xs">-</span>
                         )
                       )}
                     </td>
 
                     {/* Created At */}
-                    <td className="px-6 py-4 text-gray-400 text-xs tabular-nums">
+                    <td className="px-6 py-4 text-gray-500 text-xs tabular-nums">
                       {user.createdAt?.seconds 
                         ? new Date(user.createdAt.seconds * 1000).toLocaleDateString() 
                         : 'Unknown'}
@@ -218,14 +218,14 @@ export default function UsersTab() {
                           <button
                             onClick={() => handleSave(user.id)}
                             disabled={saving}
-                            className="p-1.5 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 transition-colors"
+                            className="p-1.5 bg-green-50 text-green-600 rounded hover:bg-green-100 transition-colors border border-green-100"
                           >
                             <Check className="w-4 h-4" />
                           </button>
                           <button
                             onClick={handleCancel}
                             disabled={saving}
-                            className="p-1.5 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors"
+                            className="p-1.5 bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors border border-red-100"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -233,7 +233,7 @@ export default function UsersTab() {
                       ) : (
                         <button
                           onClick={() => handleEdit(user)}
-                          className="bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1 ml-auto"
+                          className="bg-white hover:bg-gray-50 text-gray-600 px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm text-xs font-medium transition-all flex items-center gap-1 ml-auto"
                         >
                           <Edit2 className="w-3 h-3" />
                           관리

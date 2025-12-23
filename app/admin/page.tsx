@@ -195,6 +195,21 @@ export default function AdminDashboard() {
     return () => unsubscribe();
   }, [mounted, localInquiries]);
 
+  // Theme Configuration
+  const role = user?.role || 'user';
+  const isDark = role === 'owner'; // Only 'owner' uses Dark Mode
+
+  const theme = {
+    bg: isDark ? 'bg-[#0A0A0B]' : role === 'super_admin' ? 'bg-linear-to-br from-indigo-50 via-white to-purple-50' : 'bg-white',
+    text: isDark ? 'text-white' : 'text-slate-900',
+    sidebar: isDark ? 'bg-black/50 border-white/5' : role === 'super_admin' ? 'bg-white/40 backdrop-blur-xl border-white/20 shadow-2xl z-50' : 'bg-white border-slate-200',
+    divider: isDark ? 'border-white/5' : 'border-slate-200',
+    navActive: isDark ? 'bg-white/10 text-white' : 'bg-purple-100 text-purple-700 shadow-sm',
+    navInactive: isDark ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900',
+    iconActive: isDark ? 'text-white' : 'text-purple-600',
+    iconInactive: isDark ? 'text-gray-400' : 'text-slate-400',
+  };
+
   if (!mounted) {
     return (
       <div className="flex h-screen bg-[#0E0E0E] text-white overflow-hidden">
@@ -231,13 +246,13 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#0A0A0B] text-white font-sans">
+    <div className={`flex min-h-screen font-sans ${theme.bg} ${theme.text}`}>
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 border-r border-white/5 bg-black/50 backdrop-blur-xl">
-        <div className="flex h-16 items-center flex-col justify-center border-b border-white/5 px-6">
+      <aside className={`fixed left-0 top-0 h-full w-64 border-r backdrop-blur-xl transition-colors duration-300 ${theme.sidebar} ${theme.divider}`}>
+        <div className={`flex h-16 items-center flex-col justify-center border-b px-6 ${theme.divider}`}>
           <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-purple-500" />
-            <span className="font-bold tracking-tight">FANEASY ADMIN</span>
+            <Shield className={`h-5 w-5 ${theme.iconActive}`} />
+            <span className={`font-bold tracking-tight ${theme.text}`}>FANEASY ADMIN</span>
           </div>
         </div>
         
@@ -245,59 +260,55 @@ export default function AdminDashboard() {
           <button 
             onClick={() => setActiveTab('dashboard')}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition-all ${
-              activeTab === 'dashboard' ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              activeTab === 'dashboard' ? theme.navActive : theme.navInactive
             }`}
           >
-            <LayoutDashboard className="h-5 w-5" />
+            <LayoutDashboard className={`h-5 w-5 ${activeTab === 'dashboard' ? theme.iconActive : theme.iconInactive}`} />
             대시보드
           </button>
           <button 
             onClick={() => setActiveTab('structure')}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-              activeTab === 'structure' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              activeTab === 'structure' ? theme.navActive : theme.navInactive
             }`}
           >
-            <Globe className="h-5 w-5" />
+            <Globe className={`h-5 w-5 ${activeTab === 'structure' ? theme.iconActive : theme.iconInactive}`} />
             사이트 구조
           </button>
           <button 
             onClick={() => setActiveTab('customers')}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-              activeTab === 'customers' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              activeTab === 'customers' ? theme.navActive : theme.navInactive
             }`}
           >
-            <Users className="h-5 w-5" />
+            <Users className={`h-5 w-5 ${activeTab === 'customers' ? theme.iconActive : theme.iconInactive}`} />
             고객 관리
           </button>
           <button 
             onClick={() => setActiveTab('inquiries')}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-              activeTab === 'inquiries' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              activeTab === 'inquiries' ? theme.navActive : theme.navInactive
             }`}
           >
-            <MessageSquare className="h-5 w-5" />
+            <MessageSquare className={`h-5 w-5 ${activeTab === 'inquiries' ? theme.iconActive : theme.iconInactive}`} />
             문의 내역
           </button>
           <button 
             onClick={() => { setActiveTab('subscription'); setShowMobileMenu(false); }}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-              activeTab === 'subscription' 
-                ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' 
-                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              activeTab === 'subscription' ? theme.navActive : theme.navInactive
             }`}
           >
-            <CreditCard className="h-5 w-5" />
+            <CreditCard className={`h-5 w-5 ${activeTab === 'subscription' ? theme.iconActive : theme.iconInactive}`} />
             구독 관리
           </button>
           <button 
             onClick={() => { setActiveTab('activity'); setShowMobileMenu(false); }}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-              activeTab === 'activity' 
-                ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' 
-                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              activeTab === 'activity' ? theme.navActive : theme.navInactive
             }`}
           >
-            <Clock className="h-5 w-5" />
+            <Clock className={`h-5 w-5 ${activeTab === 'activity' ? theme.iconActive : theme.iconInactive}`} />
             활동 로그
           </button>
           
@@ -306,22 +317,21 @@ export default function AdminDashboard() {
             <button 
               onClick={() => { setActiveTab('users'); setShowMobileMenu(false); }}
               className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                activeTab === 'users' 
-                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' 
-                  : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                activeTab === 'users' ? theme.navActive : theme.navInactive
               }`}
             >
-              <Users className="h-5 w-5" />
+              <Users className={`h-5 w-5 ${activeTab === 'users' ? theme.iconActive : theme.iconInactive}`} />
               사용자 관리
             </button>
           )}
+
           <button 
             onClick={() => { setActiveTab('settings'); setShowMobileMenu(false); }}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-              activeTab === 'settings' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              activeTab === 'settings' ? theme.navActive : theme.navInactive
             }`}
           >
-            <Settings className="h-5 w-5" />
+            <Settings className={`h-5 w-5 ${activeTab === 'settings' ? theme.iconActive : theme.iconInactive}`} />
             사이트 설정
           </button>
         </nav>
@@ -349,7 +359,7 @@ export default function AdminDashboard() {
             </button>
             <div>
               <div className="flex items-center gap-3 mb-1 md:mb-2">
-              <h1 className="text-3xl font-bold">
+              <h1 className={`text-3xl font-bold ${theme.text}`}>
                 {activeTab === 'dashboard' && '대시보드'}
                 {activeTab === 'structure' && '사이트 구조'}
                 {activeTab === 'customers' && '고객 관리'}
@@ -357,8 +367,13 @@ export default function AdminDashboard() {
                 {activeTab === 'settings' && '사이트 설정'}
                 {activeTab === 'subscription' && '구독 관리'}
                 {activeTab === 'activity' && '활동 로그'}
+                {activeTab === 'users' && '사용자 관리'}
               </h1>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
+                isDark 
+                  ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' 
+                  : 'bg-purple-100 text-purple-700 border-purple-200'
+              }`}>
                 {user?.role === 'super_admin' && '최고관리자'}
                 {user?.role === 'owner' && `${user?.subdomain || '사이트'} 소유자`}
                 {user?.role === 'admin' && '관리자'}
