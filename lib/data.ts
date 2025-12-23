@@ -130,75 +130,8 @@ export const mockInfluencers: Influencer[] = [
 ];
 
 // Mock Fan 데이터 (깡대표의 팬들)
-export const mockFans: Fan[] = [
-  {
-    id: 'fan-1',
-    influencerId: 'inf-1', // 깡대표
-    slug: 'fan1',
-    name: '팬1',
-    email: 'fan1@example.com',
-    passwordHash: '$2a$10$rKZLvXz8Y9qXqN5xN5xN5.N5xN5xN5xN5xN5xN5xN5xN5xN5xN5xN',
-    role: 'fan',
-    createdAt: new Date('2024-02-01'),
-    updatedAt: new Date('2024-02-01'),
-    pageSettings: {
-      title: '팬1의 공간',
-      description: '깡대표를 사랑하는 팬1의 페이지',
-      theme: 'dark',
-      primaryColor: '#EC4899',
-      banner: 'https://images.unsplash.com/photo-1628157588553-5eeea00af15c?w=1920&q=80'
-    },
-    permissions: {
-      canEditContent: true,
-      canManageProducts: true,
-      canViewAnalytics: true
-    }
-  },
-  {
-    id: 'fan-2',
-    influencerId: 'inf-1', // 깡대표
-    slug: 'fan2',
-    name: '팬2',
-    email: 'fan2@example.com',
-    passwordHash: '$2a$10$rKZLvXz8Y9qXqN5xN5xN5.N5xN5xN5xN5xN5xN5xN5xN5xN5xN5xN',
-    role: 'fan',
-    createdAt: new Date('2024-02-15'),
-    updatedAt: new Date('2024-02-15'),
-    pageSettings: {
-      title: '팬2의 공간',
-      description: '깡대표 팬클럽',
-      theme: 'light',
-      primaryColor: '#3B82F6',
-    },
-    permissions: {
-      canEditContent: true,
-      canManageProducts: false,
-      canViewAnalytics: false
-    }
-  },
-  {
-    id: 'fan-3',
-    influencerId: 'inf-1', // 깡대표
-    slug: 'fan3',
-    name: '팬3',
-    email: 'fan3@example.com',
-    passwordHash: '$2a$10$rKZLvXz8Y9qXqN5xN5xN5.N5xN5xN5xN5xN5xN5xN5xN5xN5xN5xN',
-    role: 'fan',
-    createdAt: new Date('2024-03-01'),
-    updatedAt: new Date('2024-03-01'),
-    pageSettings: {
-      title: '팬3의 공간',
-      description: '도도마케팅 공식 팬페이지',
-      theme: 'dark',
-      primaryColor: '#6366F1',
-    },
-    permissions: {
-      canEditContent: true,
-      canManageProducts: true,
-      canViewAnalytics: true
-    }
-  }
-];
+// Mock Fans (실제 데이터는 Firestore에서 가져옴)
+export const mockFans: Fan[] = [];
 
 // Helper functions
 export function getInfluencer(subdomain: string): Influencer | undefined {
