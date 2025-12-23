@@ -5,7 +5,7 @@ import { useAuthStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebaseClient';
-import { collection, query, orderBy, onSnapshot, where, doc, getDoc, writeBatch, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, where, doc, getDoc, writeBatch, getDocs, setDoc } from 'firebase/firestore';
 import type { Inquiry } from '@/lib/types';
 import { 
   Users, 
@@ -45,6 +45,32 @@ export default function AdminDashboard() {
   const { user, logout, updateUser } = useAuthStore();
   const { inquiries: localInquiries } = useDataStore();
   const router = useRouter();
+
+  const seedKkangFans = async () => {
+     if (!confirm('kkang 테스트용 팬 4명을 생성하시겠습니까?')) return;
+     try {
+         const fans = [
+             { name: 'Fan 1', email: 'fan1@kkang.test', role: 'user', joinedSite: 'kkang' },
+             { name: 'Fan 2', email: 'fan2@kkang.test', role: 'user', joinedSite: 'kkang' },
+             { name: 'Fan 3', email: 'fan3@kkang.test', role: 'user', joinedSite: 'kkang' },
+             { name: 'Fan 4', email: 'fan4@kkang.test', role: 'user', joinedSite: 'kkang' },
+         ];
+
+         for (const fan of fans) {
+             const fanId = `fan_${fan.name.replace(/\s/g, '')}_${Date.now()}`;
+             await setDoc(doc(db, 'users', fanId), {
+                 ...fan,
+                 createdAt: new Date(),
+                 uid: fanId
+             });
+         }
+         alert('팬 데이터 생성 완료! 페이지를 새로고침하세요.');
+         window.location.reload();
+     } catch (e: any) {
+         console.error(e);
+         alert('생성 실패: ' + e.message);
+     }
+  };
   const [mounted, setMounted] = useState(false);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
@@ -432,6 +458,14 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+             {user?.email === 'kgw2642@gmail.com' && (
+                <button 
+                    onClick={seedKkangFans}
+                    className="hidden md:block px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30"
+                >
+                  Fan Data 생성
+                </button>
+             )}
              <button 
                onClick={() => setActiveTab('inquiries')}
                className="relative p-2 hover:bg-white/5 rounded-full transition-colors"
