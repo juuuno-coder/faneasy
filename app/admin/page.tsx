@@ -5,7 +5,7 @@ import { useAuthStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebaseClient';
-import { collection, query, orderBy, onSnapshot, where, doc, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, where, doc, getDoc, writeBatch, getDocs } from 'firebase/firestore';
 import type { Inquiry } from '@/lib/types';
 import { 
   Users, 
@@ -18,11 +18,13 @@ import {
   ChevronRight,
   Shield,
   Globe,
+  Sun,
+  Moon,
+  CreditCard,
   Bell,
   Bot,
   Menu,
-  X,
-  CreditCard
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
@@ -57,12 +59,21 @@ export default function AdminDashboard() {
     email: user?.email || '',
   });
 
-  // Accurate Stats State
   const [stats, setStats] = useState({
     totalVisits: 0,
     todayVisits: 0,
     chartData: [] as any[]
   });
+  
+  // Theme State
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Set initial theme based on role (Owner defaults to Dark)
+  useEffect(() => {
+    if (user?.role === 'owner') {
+        setIsDarkMode(true);
+    }
+  }, [user]);
 
   // Fetch Visit Stats & Calculate Chart Data
   useEffect(() => {
@@ -120,7 +131,7 @@ export default function AdminDashboard() {
 
       const newChartData = sevenDays.map(date => ({
         name: date.slice(5), // MM-DD
-        visitors: dailyVisitCounts[date] || Math.floor(Math.random() * 5), // Mock past days if empty
+        visitors: dailyVisitCounts[date] || 0,
         inquiries: inquiryCounts[date] || 0
       }));
 
@@ -197,10 +208,10 @@ export default function AdminDashboard() {
 
   // Theme Configuration
   const role = user?.role || 'user';
-  const isDark = role === 'owner'; // Only 'owner' uses Dark Mode
+  const isDark = isDarkMode; // Use dynamic state instead of static check
 
   const theme = {
-    bg: isDark ? 'bg-[#0A0A0B]' : role === 'super_admin' ? 'bg-linear-to-br from-indigo-50 via-white to-purple-50' : 'bg-white',
+    bg: isDark ? 'bg-[#0A0A0B]' : role === 'super_admin' ? 'bg-linear-to-br from-indigo-50 via-white to-purple-50' : 'bg-gray-50',
     text: isDark ? 'text-white' : 'text-slate-900',
     sidebar: isDark ? 'bg-black/50 border-white/5' : role === 'super_admin' ? 'bg-white/40 backdrop-blur-xl border-white/20 shadow-2xl z-50' : 'bg-white border-slate-200',
     divider: isDark ? 'border-white/5' : 'border-slate-200',
@@ -208,6 +219,12 @@ export default function AdminDashboard() {
     navInactive: isDark ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900',
     iconActive: isDark ? 'text-white' : 'text-purple-600',
     iconInactive: isDark ? 'text-gray-400' : 'text-slate-400',
+    card: isDark ? 'rounded-3xl border border-white/5 bg-white/5 hover:bg-white/10' : 'rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-md hover:border-purple-200',
+    chartGrid: isDark ? 'rgba(255,255,255,0.1)' : '#E5E7EB',
+    tooltipBg: isDark ? '#1A1A1A' : '#FFFFFF',
+    tooltipBorder: isDark ? '#333' : '#E5E7EB',
+    tooltipText: isDark ? '#FFF' : '#111827',
+    itemBg: isDark ? 'border border-white/5 bg-black/20 hover:bg-white/5' : 'border border-gray-100 bg-gray-50 hover:bg-white hover:border-purple-200 hover:shadow-sm',
   };
 
   if (!mounted) {
@@ -253,9 +270,17 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-2">
             <Shield className={`h-5 w-5 ${theme.iconActive}`} />
             <span className={`font-bold tracking-tight ${theme.text}`}>
-              {user?.role === 'super_admin' ? 'DUS ADMIN' : 
-               user?.role === 'owner' ? `${(user.subdomain || user.name || 'SITE').toUpperCase()} ADMIN` : 
-               'FANEASY ADMIN'}
+              {(() => {
+                  if (user?.role === 'super_admin') return 'DUS ADMIN';
+                  // Sub-site Owner logic (e.g. bought a site from kkang)
+                  if (user?.role === 'owner' && (user as any).joinedSite) {
+                      return 'FANEASY ADMIN';
+                  }
+                  if (user?.role === 'owner') {
+                      return `${(user.subdomain || user.name || 'SITE').toUpperCase()} ADMIN`;
+                  }
+                  return 'FANEASY ADMIN';
+              })()}
             </span>
           </div>
         </div>
@@ -340,7 +365,18 @@ export default function AdminDashboard() {
           </button>
         </nav>
 
-        <div className="absolute bottom-4 w-full px-4">
+        <div className="absolute bottom-4 w-full px-4 space-y-2">
+          {/* Theme Toggle */}
+          <button 
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-black hover:bg-gray-100'
+            }`}
+          >
+            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            {isDarkMode ? '라이트 모드' : '다크 모드'}
+          </button>
+
           <button 
             onClick={() => { logout(); router.push('/'); }}
             className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-400/10 transition-all"
@@ -433,7 +469,7 @@ export default function AdminDashboard() {
           ].map((stat, i) => (
             <div
               key={i}
-              className="rounded-3xl border border-white/5 bg-white/2 p-6 text-left transition-all hover:bg-white/5"
+              className={`${theme.card} p-6 text-left transition-all`}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className={`rounded-xl bg-${stat.color}-500/10 p-2 text-${stat.color}-500`}>
@@ -449,18 +485,18 @@ export default function AdminDashboard() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Visitor Trend Chart */}
-          <div className="rounded-3xl border border-white/5 bg-white/2 p-6">
+          <div className={`${theme.card} p-6`}>
              <h3 className="text-lg font-bold mb-4">최근 7일 방문 및 문의</h3>
              <div className="h-64 w-full">
                <ResponsiveContainer width="100%" height="100%">
                  <LineChart data={stats.chartData.length > 0 ? stats.chartData : []}>
-                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                   <CartesianGrid strokeDasharray="3 3" stroke={theme.chartGrid} />
                    <XAxis dataKey="name" stroke="#6b7280" />
                    <YAxis yAxisId="left" stroke="#8B5CF6" />
                    <YAxis yAxisId="right" orientation="right" stroke="#10B981" />
                    <Tooltip 
-                     contentStyle={{ backgroundColor: '#1A1A1A', borderColor: '#333' }}
-                     itemStyle={{ color: '#fff' }}
+                     contentStyle={{ backgroundColor: theme.tooltipBg, borderColor: theme.tooltipBorder }}
+                     itemStyle={{ color: theme.tooltipText }}
                    />
                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
                    <Line yAxisId="left" type="monotone" dataKey="visitors" name="방문자" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
@@ -471,16 +507,16 @@ export default function AdminDashboard() {
           </div>
 
           {/* Inquiry Status Chart */}
-          <div className="rounded-3xl border border-white/5 bg-white/2 p-6">
+          <div className={`${theme.card} p-6`}>
              <h3 className="text-lg font-bold mb-4">문의 현황 분석</h3>
              <div className="h-64 w-full flex items-center justify-center">
                <ResponsiveContainer width="100%" height="100%">
                  <PieChart>
                    <Pie
                      data={[
-                       { name: '대기중', value: inquiries.filter(i => i.status === 'pending').length || 5 },
-                       { name: '상담중', value: inquiries.filter(i => (i as any).status === 'contacted').length || 3 },
-                       { name: '완료', value: inquiries.filter(i => (i as any).status === 'completed').length || 8 },
+                       { name: '대기중', value: inquiries.filter(i => i.status === 'pending').length },
+                       { name: '상담중', value: inquiries.filter(i => i.status === 'in_progress').length },
+                       { name: '완료', value: inquiries.filter(i => i.status === 'completed' || i.status === 'archived').length },
                      ]}
                      cx="50%"
                      cy="50%"
@@ -493,7 +529,7 @@ export default function AdminDashboard() {
                        <Cell key={`cell-${index}`} fill={color} />
                      ))}
                    </Pie>
-                   <Tooltip contentStyle={{ backgroundColor: '#1A1A1A', borderColor: '#333' }} itemStyle={{ color: '#fff' }} />
+                   <Tooltip contentStyle={{ backgroundColor: theme.tooltipBg, borderColor: theme.tooltipBorder }} itemStyle={{ color: theme.tooltipText }} />
                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
                  </PieChart>
                </ResponsiveContainer>
@@ -502,7 +538,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Inquiries Section */}
-        <div id="inquiries-section" className="rounded-3xl border border-white/5 bg-white/2 p-8">
+        <div id="inquiries-section" className={`${theme.card} p-8`}>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold">최근 문의 내역</h2>
             <button className="text-sm text-purple-400 hover:underline">전체보기</button>
@@ -514,7 +550,7 @@ export default function AdminDashboard() {
                 <div 
                   key={inquiry.id || i} 
                   onClick={() => setSelectedInquiry(inquiry)}
-                  className="group flex items-center justify-between rounded-2xl border border-white/5 bg-black/20 p-4 transition-all hover:bg-white/5 cursor-pointer">
+                  className={`group flex items-center justify-between rounded-2xl p-4 transition-all cursor-pointer ${theme.itemBg}`}>
                   <div className="flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-linear-to-br from-gray-700 to-gray-800 flex items-center justify-center font-bold text-xs">
                         {inquiry.name[0]}
@@ -550,7 +586,7 @@ export default function AdminDashboard() {
         {activeTab === 'structure' && (
           <SiteTreeView 
             userRole={user?.role || 'user'} 
-            userId={user?.id}
+            isDarkMode={isDarkMode}
           />
         )}
 
@@ -716,9 +752,35 @@ export default function AdminDashboard() {
           isOpen={showProfileModal}
           onClose={() => setShowProfileModal(false)}
           user={user}
-          onSave={(data) => {
-            updateUser(data);
+          onSave={async (data) => {
+            // 1. Update User Profile (users collection & store)
+            await updateUser(data);
             setProfileData(data);
+
+            // 2. Batch update Inquiries to sync name/email
+            try {
+                if (!user?.id) return;
+                
+                const batch = writeBatch(db);
+                const q = query(
+                    collection(db, 'inquiries'), 
+                    where('ownerId', '==', user.id)
+                );
+                const snapshot = await getDocs(q);
+                
+                if (!snapshot.empty) {
+                    snapshot.forEach((doc) => {
+                        batch.update(doc.ref, { 
+                            name: data.name,
+                            email: data.email,
+                        });
+                    });
+                    await batch.commit();
+                    console.log('Inquiries updated with new profile info');
+                }
+            } catch (error) {
+                console.error("Failed to sync profile to inquiries:", error);
+            }
           }}
         />
       </main>

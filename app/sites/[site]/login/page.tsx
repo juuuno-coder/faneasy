@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import { firebaseAuth, db } from "@/lib/firebaseClient";
 import { getInfluencer, getFan } from "@/lib/data";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function SiteLoginPage() {
   const router = useRouter();
@@ -26,7 +26,8 @@ export default function SiteLoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  const [name, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  // const [name, setName] = useState(""); // Removed name input
 
   // Fetch influencer data for branding
   const influencer = getInfluencer(site);
@@ -50,6 +51,25 @@ export default function SiteLoginPage() {
       const fbUser = cred.user;
       const token = await fbUser.getIdToken();
 
+      // Auto-Restore Missing Firestore Data
+      try {
+        const userRef = doc(db, 'users', fbUser.uid);
+        const userSnap = await getDoc(userRef);
+        
+        if (!userSnap.exists()) {
+             await setDoc(userRef, {
+                uid: fbUser.uid,
+                email: fbUser.email || '',
+                name: fbUser.displayName || fbUser.email?.split('@')[0] || 'User',
+                role: 'user',
+                joinedSite: site,
+                createdAt: new Date(),
+             });
+        }
+      } catch (err) {
+        console.error("Auto-restore failed:", err);
+      }
+
       // In a real app, successful Firebase login means they are authenticated globally.
       // But we might want to check if they have a profile on THIS site.
       // For now, we allow access but we should try to fetch their role specific to this site.
@@ -57,22 +77,24 @@ export default function SiteLoginPage() {
       // Ideally, we fetch user profile from Firestore: users/{uid}
       // If the user document says they are a fan of 'site', then good.
       
-      const user = {
+      const user: any = {
         id: fbUser.uid,
         name: fbUser.displayName || fbUser.email || "",
         email: fbUser.email || "",
-        role: "user" as const, // Default to user for site login
+        role: "user", // Default to user for site login
         // In real implementation, check if they are the influencer owner
-        ...(influencer?.email === fbUser.email ? { role: 'owner' as const, subdomain: site } : {})
+        ...(influencer?.email === fbUser.email ? { role: 'owner', subdomain: site } : {})
       };
       
       // If user is the influencer logging into their own page
       if (influencer?.email === fbUser.email) {
-          user.role = 'owner';
+          (user as any).role = 'owner';
       }
 
-      // Backdoor for Kkang Owner
-      if (fbUser.email === 'kgw2642@gmail.com') {
+      // Backdoor for Kkang Family (Owner & Members)
+      const emailLower = fbUser.email?.toLowerCase() || '';
+      
+      if (emailLower === 'kgw2642@gmail.com') {
          try {
            await setDoc(doc(db, 'users', fbUser.uid), {
              role: 'owner',
@@ -81,10 +103,25 @@ export default function SiteLoginPage() {
            }, { merge: true });
            
            user.role = 'owner';
-           (user as any).subdomain = 'kkang';
+           user.subdomain = 'kkang';
          } catch (e) {
            console.error("Backdoor failed", e);
          }
+      } else if (['wnrl5316@naver.com', 'didtmdguq632@naver.com'].includes(emailLower)) {
+          // Force join kkang site AND promote to sub-owner (User who bought a site)
+          const mySubdomain = emailLower.split('@')[0].replace(/[^a-zA-Z0-9]/g, ''); // Simple sanitize
+          try {
+             await setDoc(doc(db, 'users', fbUser.uid), {
+                joinedSite: 'kkang',
+                role: 'owner',
+                subdomain: mySubdomain,
+                updatedAt: new Date()
+             }, { merge: true });
+             
+             user.joinedSite = 'kkang';
+             (user as any).role = 'owner';
+             user.subdomain = mySubdomain;
+          } catch(e) { console.error(e); }
       }
 
       login(user, token);
@@ -108,6 +145,12 @@ export default function SiteLoginPage() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    
+    if (password !== confirmPassword) {
+        setError("비밀번호가 일치하지 않습니다.");
+        return;
+    }
+
     setLoading(true);
 
     try {
@@ -116,19 +159,20 @@ export default function SiteLoginPage() {
         email,
         password
       );
-      if (name) {
-        await updateProfile(cred.user, { displayName: name });
-      }
+      
+      // Default name from email
+      const defaultName = email.split('@')[0];
+      await updateProfile(cred.user, { displayName: defaultName });
 
       const token = await cred.user.getIdToken();
 
       // Create a user object that is associated with THIS site
-      const userInfo = {
+      const userInfo: any = {
         id: cred.user.uid,
-        name: cred.user.displayName || name || email,
+        name: defaultName,
         email: cred.user.email || "",
-        role: "user" as const,
-        joinedSite: site, // Mark them as joined from this site
+        role: "user",
+        joinedSite: site, 
       };
 
       // Firestore Save
@@ -145,7 +189,7 @@ export default function SiteLoginPage() {
         }, { merge: true });
 
         if (isKkangOwner) {
-            userInfo.role = 'owner';
+            (userInfo as any).role = 'owner';
             (userInfo as any).subdomain = 'kkang';
         }
       } catch (e) {
@@ -208,31 +252,7 @@ export default function SiteLoginPage() {
             onSubmit={showSignup ? handleSignup : handleSubmit}
             className="space-y-6"
           >
-            {/* Name (signup only) */}
-            {showSignup && (
-              <div>
-                <label
-                  htmlFor="name"
-                  className={`block text-sm font-medium mb-2 ${influencer.pageSettings?.theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}
-                >
-                  이름 (닉네임)
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className={`w-full pl-4 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                      influencer.pageSettings?.theme === 'light' 
-                      ? 'bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500' 
-                      : 'bg-white/5 border border-white/10 text-white placeholder-gray-500'
-                  }`}
-                  style={{ '--tw-ring-color': themeColor } as any}
-                  placeholder="홍길동"
-                  required={showSignup}
-                />
-              </div>
-            )}
+
 
             {/* Email Input */}
             <div>
@@ -287,6 +307,35 @@ export default function SiteLoginPage() {
                 />
               </div>
             </div>
+            
+            {/* Password Confirm (signup only) */}
+            {showSignup && (
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className={`block text-sm font-medium mb-2 ${influencer.pageSettings?.theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}
+                >
+                  비밀번호 확인
+                </label>
+                <div className="relative">
+                  <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 ${influencer.pageSettings?.theme === 'light' ? 'text-gray-400' : 'text-gray-400'}`} />
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={`w-full pl-11 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                        influencer.pageSettings?.theme === 'light' 
+                        ? 'bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500' 
+                        : 'bg-white/5 border border-white/10 text-white placeholder-gray-500'
+                    }`}
+                    style={{ '--tw-ring-color': themeColor } as any}
+                    placeholder="••••••••"
+                    required={showSignup}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Error Message */}
             {error && (

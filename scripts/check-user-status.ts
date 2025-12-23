@@ -1,5 +1,5 @@
 
-import { adminAuth, adminFirestore } from "@/lib/firebaseAdmin";
+import { adminAuth, adminFirestore } from "../lib/firebaseAdmin";
 
 async function main() {
   console.log("=== 🔍 Firebase Auth Users (가입된 계정) ===");
@@ -22,7 +22,7 @@ async function main() {
     } else {
       snapshot.forEach(doc => {
         const data = doc.data();
-        console.log(`  - [DB] Name: ${data.name} | Email: ${data.email} | Role: ${data.role}`);
+        console.log(`  - [DB] Name: ${data.name} | Email: ${data.email} | Role: ${data.role} | Subdomain: ${data.subdomain || 'N/A'}`);
       });
     }
 

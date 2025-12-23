@@ -1,17 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Globe, Save, Palette, Code, Loader2 } from 'lucide-react';
+import { Globe, Save, Palette, Code, Loader2, User as UserIcon, Lock } from 'lucide-react';
 import { db } from '@/lib/firebaseClient';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useAuthStore } from '@/lib/store';
 import type { SiteSettings } from '@/lib/types';
 import ImageUpload from '@/components/ui/image-upload';
 
 export default function SettingsTab() {
-  const { user } = useAuthStore();
+  const { user, login } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [profileSaving, setProfileSaving] = useState(false);
+
+  // Profile State
+  const [profileForm, setProfileForm] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    bio: ''
+  });
+
+  // Site Settings State
   const [settings, setSettings] = useState<SiteSettings>({
     id: '',
     ownerId: '',
@@ -26,18 +37,40 @@ export default function SettingsTab() {
     updatedAt: new Date().toISOString(),
   });
 
-  // Load settings from Firestore
+  // Load Data
   useEffect(() => {
-    const loadSettings = async () => {
+    const loadData = async () => {
       if (!user) return;
       
       try {
-        const docId = user.subdomain || user.id; 
-        const docRef = doc(db, 'site_settings', docId);
-        const docSnap = await getDoc(docRef);
+        // 1. Load Profile (from User Store or DB refresh)
+        // Ideally we fetch from DB to get 'address', 'phone' etc which might not be in auth token
+        const userRef = doc(db, 'users', user.id);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+            setProfileForm({
+                name: userData.name || user.name || '',
+                phone: userData.phone || '',
+                address: userData.address || '',
+                bio: userData.bio || ''
+            });
+        } else {
+            setProfileForm({
+                name: user.name || '',
+                phone: '',
+                address: '',
+                bio: ''
+            });
+        }
 
-        if (docSnap.exists()) {
-          setSettings(docSnap.data() as SiteSettings);
+        // 2. Load Site Settings
+        const docId = user.subdomain || user.id; 
+        const settingRef = doc(db, 'site_settings', docId);
+        const settingSnap = await getDoc(settingRef);
+
+        if (settingSnap.exists()) {
+          setSettings(settingSnap.data() as SiteSettings);
         } else {
           setSettings(prev => ({
             ...prev,
@@ -55,10 +88,32 @@ export default function SettingsTab() {
       }
     };
 
-    loadSettings();
+    loadData();
   }, [user]);
 
-  const handleSave = async () => {
+  const handleProfileSave = async () => {
+      if (!user) return;
+      setProfileSaving(true);
+      try {
+          const userRef = doc(db, 'users', user.id);
+          await updateDoc(userRef, {
+              ...profileForm,
+              updatedAt: new Date()
+          });
+          
+          // Update local store to reflect name change immediately if needed
+          // (Requires a way to update user in store, but simple login(newUser) might work or just let it be)
+          
+          alert('프로필이 업데이트되었습니다.');
+      } catch (e) {
+          console.error("Profile update failed", e);
+          alert("프로필 저장 실패");
+      } finally {
+          setProfileSaving(false);
+      }
+  };
+
+  const handleSiteSave = async () => {
     if (!user) return;
     setSaving(true);
 
@@ -75,7 +130,7 @@ export default function SettingsTab() {
 
       await setDoc(docRef, newSettings);
       setSettings(newSettings);
-      alert('설정이 성공적으로 저장되었습니다!');
+      alert('사이트 설정이 저장되었습니다!');
     } catch (error) {
       console.error('Failed to save settings:', error);
       alert('설정 저장 중 오류가 발생했습니다.');
@@ -93,8 +148,77 @@ export default function SettingsTab() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Site Information */}
+    <div className="space-y-8 max-w-4xl mx-auto pb-12">
+      
+      {/* 1. My Profile Section */}
+      <div className="rounded-3xl border border-white/5 bg-white/2 p-8">
+        <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-pink-500/10 flex items-center justify-center">
+                    <UserIcon className="h-5 w-5 text-pink-500" />
+                </div>
+                <div>
+                    <h3 className="text-xl font-bold">내 정보 수정</h3>
+                    <p className="text-sm text-gray-400">회원 정보를 관리합니다.</p>
+                </div>
+            </div>
+            <button
+                onClick={handleProfileSave}
+                disabled={profileSaving}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-bold transition-all flex items-center gap-2"
+            >
+                {profileSaving ? <Loader2 className="w-4 h-4 animate-spin"/> : <Save className="w-4 h-4"/>}
+                저장
+            </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div>
+                <label className="block text-sm font-bold text-gray-300 mb-2">이름 (Name)</label>
+                <input
+                    type="text"
+                    value={profileForm.name}
+                    onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    placeholder="홍길동"
+                />
+             </div>
+             <div>
+                <label className="block text-sm font-bold text-gray-300 mb-2">연락처 (Phone)</label>
+                <input
+                    type="tel"
+                    value={profileForm.phone}
+                    onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    placeholder="010-1234-5678"
+                />
+             </div>
+             <div className="md:col-span-2">
+                <label className="block text-sm font-bold text-gray-300 mb-2">주소 (Address)</label>
+                <input
+                    type="text"
+                    value={profileForm.address}
+                    onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    placeholder="서울특별시 강남구..."
+                />
+             </div>
+             <div className="md:col-span-2">
+                <label className="block text-sm font-bold text-gray-300 mb-2">소개 (Bio)</label>
+                <textarea
+                    rows={2}
+                    value={profileForm.bio}
+                    onChange={(e) => setProfileForm({...profileForm, bio: e.target.value})}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+                    placeholder="자기소개를 입력해주세요."
+                />
+             </div>
+        </div>
+      </div>
+
+      <div className="border-t border-white/5 my-8"></div>
+
+      {/* 2. Site Information */}
       <div className="rounded-3xl border border-white/5 bg-white/2 p-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
@@ -128,17 +252,20 @@ export default function SettingsTab() {
 
           <div>
             <label className="block text-sm font-bold text-gray-300 mb-2">도메인 (읽기 전용)</label>
-            <input
-              type="text"
-              value={settings.domain}
-              readOnly
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 focus:outline-none"
-            />
+            <div className="flex items-center gap-2">
+                <input
+                type="text"
+                value={settings.domain}
+                readOnly
+                className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 focus:outline-none"
+                />
+                <Lock className="w-4 h-4 text-gray-600" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Design Settings */}
+      {/* 3. Design Settings */}
       <div className="rounded-3xl border border-white/5 bg-white/2 p-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
@@ -187,7 +314,7 @@ export default function SettingsTab() {
         </div>
       </div>
 
-      {/* SEO Settings */}
+      {/* 4. SEO Settings */}
       <div className="rounded-3xl border border-white/5 bg-white/2 p-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="h-10 w-10 rounded-xl bg-green-500/10 flex items-center justify-center">
@@ -221,10 +348,10 @@ export default function SettingsTab() {
         </div>
       </div>
 
-      {/* Save Button */}
+      {/* Site Save Button */}
       <div className="flex justify-end sticky bottom-6">
         <button
-          onClick={handleSave}
+          onClick={handleSiteSave}
           disabled={saving}
           className="flex items-center gap-2 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple-900/20 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
         >

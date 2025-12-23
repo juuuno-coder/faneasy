@@ -197,6 +197,41 @@ export default function MyPage() {
                     exit={{ opacity: 0, y: -20 }}
                     className="space-y-12"
                 >
+                    {/* My Owned Site Section (For Sub-owners) */}
+                    {(user.role === 'owner' || (user as any).subdomain) && (user as any).subdomain && (
+                         <div className="rounded-[32px] border border-purple-500/30 bg-purple-500/5 p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 blur-[100px] pointer-events-none" />
+                             
+                             <div className="relative z-10 flex items-center gap-6 w-full md:w-auto">
+                                <div className="h-16 w-16 rounded-2xl bg-purple-500 flex flex-shrink-0 items-center justify-center text-white shadow-lg shadow-purple-500/30">
+                                   <Monitor className="h-8 w-8" />
+                                </div>
+                                <div>
+                                   <div className="text-sm font-bold text-purple-400 mb-1 uppercase tracking-wider">My Active Site</div>
+                                   <h3 className="text-2xl font-black text-white">{(user as any).subdomain.toUpperCase()} PAGE</h3>
+                                   <p className="text-gray-400 text-sm">현재 정상적으로 운영되고 있는 나만의 사이트입니다.</p>
+                                </div>
+                             </div>
+
+                             <div className="relative z-10 flex items-center gap-3 w-full md:w-auto">
+                                <button 
+                                  onClick={() => router.push(`/sites/${(user as any).subdomain}`)}
+                                  className="flex-1 md:flex-none px-6 py-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold transition-all flex items-center justify-center gap-2"
+                                >
+                                   <Globe className="h-4 w-4" />
+                                   사이트 보기
+                                </button>
+                                <button 
+                                  onClick={() => router.push('/admin')}
+                                  className="flex-1 md:flex-none px-6 py-4 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-all shadow-lg flex items-center justify-center gap-2"
+                                >
+                                   <Settings className="h-4 w-4" />
+                                   관리자 접속
+                                </button>
+                             </div>
+                         </div>
+                    )}
+
                     {/* Dashboard Stats */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="group rounded-[32px] border border-white/5 bg-white/2 p-8 transition-all hover:border-purple-500/30 hover:bg-white/4 shadow-lg">

@@ -25,14 +25,16 @@ export default function InquiriesTab({ inquiries, onSelectInquiry }: InquiriesTa
     text: isDark ? 'text-white' : 'text-gray-900',
     textSub: isDark ? 'text-gray-500' : 'text-gray-500',
     textDim: isDark ? 'text-gray-300' : 'text-gray-600',
-    avatar: isDark ? 'text-black' : 'text-white', // 
+    avatar: isDark ? 'text-black' : 'text-white',
+    badge: isDark ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : 'bg-purple-100 text-purple-600 border-purple-200',
   };
 
   const filteredInquiries = inquiries.filter(inquiry => {
     const matchesSearch = 
       inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       inquiry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inquiry.phone.includes(searchTerm);
+      inquiry.phone.includes(searchTerm) ||
+      ((inquiry as any).siteDomain || '').toLowerCase().includes(searchTerm.toLowerCase()); // Search by site
     
     const matchesStatus = statusFilter === 'all' || inquiry.status === statusFilter;
     
@@ -63,7 +65,7 @@ export default function InquiriesTab({ inquiries, onSelectInquiry }: InquiriesTa
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="이름, 이메일, 전화번호로 검색..."
+            placeholder="이름, 검색어, 사이트 도메인 검색..."
             className={`w-full pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 ${theme.input}`}
           />
         </div>
@@ -90,16 +92,24 @@ export default function InquiriesTab({ inquiries, onSelectInquiry }: InquiriesTa
                 className={`group flex items-center justify-between rounded-2xl border p-4 transition-all cursor-pointer ${theme.item}`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-xs bg-linear-to-br from-gray-700 to-gray-800 text-white shadow-sm`}>
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-xs bg-linear-to-br from-gray-700 to-gray-800 text-white shadow-sm shrink-0`}>
                     {inquiry.name[0]}
                   </div>
-                  <div>
-                    <div className={`font-bold ${theme.text}`}>{inquiry.name}</div>
-                    <div className={`text-xs ${theme.textSub}`}>{inquiry.email} | {inquiry.phone}</div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                         <div className={`font-bold truncate ${theme.text}`}>{inquiry.name}</div>
+                         {/* Site Badge */}
+                         {(inquiry as any).siteDomain && (
+                             <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border ${theme.badge}`}>
+                                {(inquiry as any).siteDomain}
+                             </span>
+                         )}
+                    </div>
+                    <div className={`text-xs truncate ${theme.textSub}`}>{inquiry.email} | {inquiry.phone}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
-                  <div className="text-right">
+                  <div className="text-right hidden sm:block">
                     <div className={`text-sm font-medium ${theme.textDim}`}>{(inquiry as any).plan || '프로젝트 문의'}</div>
                     <div className={`text-xs ${theme.textSub}`}>{new Date(inquiry.createdAt).toLocaleString()}</div>
                   </div>

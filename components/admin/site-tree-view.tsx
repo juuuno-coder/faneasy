@@ -1,204 +1,296 @@
 'use client';
 
-import { ChevronRight, ChevronDown, Globe, Users, ExternalLink, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, updateDoc, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebaseClient';
 import { UserRole } from '@/lib/types';
+import { 
+  ChevronRight, 
+  ChevronDown, 
+  Globe, 
+  User, 
+  MoreHorizontal, 
+  FolderPlus,
+  GripVertical
+} from 'lucide-react';
 
-interface SiteTreeViewProps {
-  userRole: UserRole;
-  userId?: string;
-}
-
-interface UserNode {
+interface UserData {
   id: string;
   name: string;
   email: string;
   role: UserRole;
   subdomain?: string;
-  joinedSite?: string;
-  createdAt?: any;
+  joinedSite?: string; // Parent site subdomain
+  photoURL?: string;
 }
 
-export default function SiteTreeView({ userRole, userId }: SiteTreeViewProps) {
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['root']));
-  const [users, setUsers] = useState<UserNode[]>([]);
-  const [loading, setLoading] = useState(true);
+interface TreeNode extends UserData {
+  children: TreeNode[];
+}
 
-  // Theme Configuration
-  const isDark = userRole === 'owner'; // Only owner gets dark mode
+interface SiteTreeViewProps {
+  userRole?: UserRole; // 'super_admin' | 'owner' | 'admin' | ...
+  currentSubdomain?: string; // For owners to filter their tree
+  isDarkMode?: boolean;
+}
+
+export default function SiteTreeView({ userRole, currentSubdomain, isDarkMode = false }: SiteTreeViewProps) {
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+  
+  const isSuperAdmin = userRole === 'super_admin';
+  const isOwner = userRole === 'owner';
+  const isDark = isDarkMode; // Sync with parent theme
+
+  // Theme Constants
   const theme = {
-    card: isDark ? 'bg-white/5 border-white/5' : 'bg-white/60 backdrop-blur-xl border-white/40 shadow-xl',
-    text: isDark ? 'text-white' : 'text-gray-900',
-    subText: isDark ? 'text-gray-400' : 'text-gray-500',
-    item: isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-gray-200 hover:bg-purple-50 hover:border-purple-200 shadow-sm',
-    icon: isDark ? 'text-gray-400' : 'text-gray-400',
-    line: isDark ? 'bg-white/10' : 'bg-gray-200',
+    text: isDark ? 'text-gray-200' : 'text-gray-900',
+    textDim: isDark ? 'text-gray-500' : 'text-gray-500',
+    bgHover: isDark ? 'hover:bg-white/5' : 'hover:bg-purple-50',
+    border: isDark ? 'border-white/5' : 'border-gray-100',
+    iconColor: isDark ? 'text-gray-400' : 'text-gray-400',
+    folderIcon: isDark ? 'text-purple-400' : 'text-purple-600',
+    dragOver: isDark ? 'bg-purple-500/20 border-purple-500' : 'bg-purple-100 border-purple-500',
   };
 
   useEffect(() => {
-    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+    // 1. Fetch ALL users needed to build the tree
+    // Ideally we fetch everything for Super Admin, or subtree for Owner.
+    // For simplicity, we fetch all users and filter in memory for displaying the tree.
+    // 2. Query all users (Removing orderBy to include legacy docs without createdAt)
+    const q = query(collection(db, 'users'));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedUsers = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as UserNode[];
+      const allUsers = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      })) as UserData[];
+
+      // 2. Build Tree Structure
+      const builtTree = buildTreeStructure(allUsers, isSuperAdmin ? undefined : currentSubdomain);
+      setNodes(builtTree);
       
-      setUsers(fetchedUsers);
-      setLoading(false);
+      // Auto-expand root nodes
+      const rootIds = builtTree.map(n => n.id);
+      setExpanded(prev => {
+          const next = new Set(prev);
+          rootIds.forEach(id => next.add(id));
+          return next;
+      });
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [isSuperAdmin, currentSubdomain]);
 
-  const toggleNode = (nodeId: string) => {
-    const newExpanded = new Set(expandedNodes);
-    if (newExpanded.has(nodeId)) {
-      newExpanded.delete(nodeId);
-    } else {
-      newExpanded.add(nodeId);
+  const buildTreeStructure = (users: UserData[], rootContext?: string): TreeNode[] => {
+    const nodeMap = new Map<string, TreeNode>();
+    const roots: TreeNode[] = [];
+
+    // Initialize nodes
+    users.forEach(u => {
+      // Key for linking: subdomain (if available) or id (for users without subdomain)
+      // Actually parent refers to 'joinedSite' which is a subdomain string.
+      // So we map 'subdomain' -> Node. 
+      // Users without subdomain cannot be parents, but they are children.
+      nodeMap.set(u.subdomain || `user_${u.id}`, { ...u, children: [] });
+    });
+
+    // Link Parent-Child
+    users.forEach(u => {
+        const myNodeKey = u.subdomain || `user_${u.id}`;
+        const node = nodeMap.get(myNodeKey);
+        if (!node) return;
+
+        // If I have a joinedSite, find that parent
+        if (u.joinedSite && nodeMap.has(u.joinedSite)) {
+            const parent = nodeMap.get(u.joinedSite);
+            parent?.children.push(node);
+        } else {
+            // No parent found in the list OR top-level
+            // If we are in "Owner Mode" (rootContext is set), we only want this node if it IS the rootContext
+            // OR if it's somehow top-level but arguably should be filtered out?
+            // Actually, if we are restricted to `currentSubdomain`, we simply find that specific node and return it as single root.
+            if (!rootContext) {
+                 roots.push(node);
+            }
+        }
+    });
+
+    // If Owner Mode, we only return the subtree starting from currentSubdomain
+    if (rootContext) {
+        if (nodeMap.has(rootContext)) {
+            return [nodeMap.get(rootContext)!];
+        }
+        return []; // Root not found
     }
-    setExpandedNodes(newExpanded);
+
+    return roots;
   };
 
-  const owners = users.filter(u => u.role === 'owner' && u.subdomain);
-  
-  const filteredOwners = userRole === 'owner' 
-    ? owners.filter(o => o.id === userId)
-    : owners;
+  const toggleExpand = (id: string) => {
+    setExpanded(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
-  if (loading) {
+  // --- Drag & Drop Handlers ---
+
+  const handleDragStart = (e: React.DragEvent, node: TreeNode) => {
+    if (!isSuperAdmin) return; // Only Super Admin can rearrange for now
+    e.dataTransfer.setData("nodeId", node.id);
+    e.dataTransfer.setData("subdomain", node.subdomain || '');
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, targetNode: TreeNode) => {
+    e.preventDefault();
+    if (!isSuperAdmin) return;
+    
+    // Can only drop onto Sites (nodes with subdomain), not leaf Users
+    if (!targetNode.subdomain) return;
+    
+    setDragOverId(targetNode.id);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverId(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetNode: TreeNode) => {
+    e.preventDefault();
+    setDragOverId(null);
+    if (!isSuperAdmin || !targetNode.subdomain) return;
+
+    const draggedId = e.dataTransfer.getData("nodeId");
+    
+    // Self check
+    if (draggedId === targetNode.id) return;
+
+    // Update Firestore
+    try {
+        const userRef = doc(db, 'users', draggedId);
+        await updateDoc(userRef, {
+            joinedSite: targetNode.subdomain,
+            updatedAt: new Date()
+        });
+        console.log(`Moved user ${draggedId} to ${targetNode.subdomain}`);
+    } catch (error) {
+        console.error("Move failed:", error);
+        alert("이동 실패: " + error);
+    }
+  };
+
+  // --- Recursive Node Component ---
+  
+  const TreeItem = ({ node, level }: { node: TreeNode, level: number }) => {
+    const hasChildren = node.children && node.children.length > 0;
+    const isExpanded = expanded.has(node.id);
+    const isSite = !!node.subdomain;
+    const isDraggingOver = dragOverId === node.id;
+
     return (
-      <div className="flex justify-center p-8">
-        <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+      <div className={`${level === 0 ? 'mb-2' : ''}`}>
+        <div 
+          draggable={isSuperAdmin}
+          onDragStart={(e) => handleDragStart(e, node)}
+          onDragOver={(e) => handleDragOver(e, node)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, node)}
+          className={`
+            group flex items-center gap-2 p-2 rounded-lg 
+            transition-all cursor-pointer select-none
+            ${theme.bgHover}
+            ${isDraggingOver ? `border-2 ${theme.dragOver}` : 'border border-transparent'}
+          `}
+          style={{ paddingLeft: `${level * 16 + 8}px` }}
+        >
+          {/* Expand/Collapse Toggle */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); toggleExpand(node.id); }}
+            className={`p-0.5 rounded hover:bg-black/5 ${theme.iconColor} ${!hasChildren && 'opacity-0'}`}
+          >
+            {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          </button>
+
+          {/* Icon */}
+          <div className={`
+             ${isSite ? theme.folderIcon : theme.iconColor} 
+             ${isSuperAdmin && 'cursor-grab active:cursor-grabbing'}
+          `}>
+             {isSite ? <Globe size={16} /> : <User size={16} />}
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+             <div className="flex items-center gap-2">
+                <span className={`font-medium text-sm truncate ${theme.text}`}>
+                    {node.subdomain ? node.subdomain : node.name}
+                </span>
+                {node.role !== 'user' && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded border border-white/10 ${theme.textDim} bg-white/5`}>
+                        {node.role === 'owner' ? 'OWNER' : node.role.toUpperCase()}
+                    </span>
+                )}
+             </div>
+             {isSite && node.name && node.name !== node.subdomain && (
+                 <div className={`text-xs ${theme.textDim} truncate`}>{node.name}</div>
+             )}
+              {/* Email display for leaf users */}
+             {!isSite && (
+                 <div className={`text-xs ${theme.textDim} truncate`}>{node.email}</div>
+             )}
+          </div>
+          
+          {/* Action Menu (Optional) */}
+          <button className={`opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/5 ${theme.iconColor}`}>
+             <MoreHorizontal size={14} />
+          </button>
+        </div>
+
+        {/* Children */}
+        {isExpanded && hasChildren && (
+          <div className="border-l border-white/5 ml-4">
+             {node.children.map(child => (
+                 <TreeItem key={child.id} node={child} level={level + 1} />
+             ))}
+          </div>
+        )}
       </div>
     );
-  }
+  };
 
   return (
-    <div className="space-y-4">
-      <div className={`rounded-3xl border p-6 ${theme.card}`}>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-            <Globe className="h-5 w-5 text-purple-500" />
-          </div>
-          <div>
-            <h3 className={`text-xl font-bold ${theme.text}`}>사이트 구조</h3>
-            <p className={`text-sm ${theme.subText}`}>
-              {(userRole === 'super_admin' || userRole === 'admin') && '전체 플랫폼 트리 구조'}
-              {userRole === 'owner' && '내 팬페이지 구조'}
-            </p>
-          </div>
+    <div className={`rounded-3xl border p-6 min-h-[400px] ${isDark ? 'bg-white/5 border-white/5' : 'bg-white/60 backdrop-blur-xl border-white/40 shadow-xl'}`}>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+           <h3 className={`text-xl font-bold ${theme.text}`}>사이트 구조도</h3>
+           <p className={`text-sm ${theme.textDim}`}>
+              {isSuperAdmin 
+                ? '드래그 앤 드롭으로 사이트 및 회원 구조를 변경할 수 있습니다.' 
+                : '내 사이트(조직)에 소속된 회원 구조입니다.'}
+           </p>
         </div>
-
-        <div className="space-y-2">
-          {/* Root Node */}
-          {(userRole === 'super_admin' || userRole === 'admin') && (
-            <div className="mb-4">
-              <button
-                onClick={() => toggleNode('root')}
-                className={`flex items-center gap-2 w-full p-3 rounded-xl transition-colors border ${
-                  isDark 
-                    ? 'bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20' 
-                    : 'bg-purple-50 border-purple-100 hover:bg-purple-100'
-                }`}
-              >
-                {expandedNodes.has('root') ? (
-                  <ChevronDown className="h-4 w-4 text-purple-400" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 text-purple-400" />
-                )}
-                <Globe className="h-5 w-5 text-purple-400" />
-                <span className={`font-bold ${theme.text}`}>FanEasy Platform</span>
-                <span className="ml-auto text-xs text-purple-300 bg-purple-500/20 px-2 py-1 rounded-full">
-                  {filteredOwners.length} 인플루언서
-                </span>
-              </button>
+        {isSuperAdmin && (
+            <div className={`text-xs px-3 py-1.5 rounded-full border ${theme.border} ${theme.textDim}`}>
+                편집 가능 모드
             </div>
-          )}
+        )}
+      </div>
 
-          {/* Owner Nodes */}
-          {(userRole === 'owner' || expandedNodes.has('root')) && filteredOwners.map((owner) => {
-            const siteFans = users.filter(u => 
-              u.role === 'user' && u.joinedSite === owner.subdomain
-            );
-            const isExpanded = expandedNodes.has(owner.id);
-
-            return (
-              <div key={owner.id} className="ml-6 space-y-2">
-                <button
-                  onClick={() => toggleNode(owner.id)}
-                  className={`flex items-center gap-2 w-full p-3 rounded-xl transition-colors group border ${theme.item}`}
-                >
-                  {siteFans.length > 0 ? (
-                    isExpanded ? (
-                      <ChevronDown className={`h-4 w-4 ${theme.icon}`} />
-                    ) : (
-                      <ChevronRight className={`h-4 w-4 ${theme.icon}`} />
-                    )
-                  ) : (
-                    <span className="w-4" />
-                  )}
-                  
-                  <div className="h-8 w-8 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center font-bold text-blue-500 text-sm">
-                    {owner.name?.[0] || 'O'}
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className={`font-bold ${theme.text}`}>{owner.name}</div>
-                    <div className={`text-xs ${theme.subText}`}>{owner.subdomain}.faneasy.kr</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${isDark ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
-                      <Users className="h-3 w-3" />
-                      {siteFans.length} 팬
-                    </span>
-                    <Link
-                      href={`/sites/${owner.subdomain}`}
-                      target="_blank"
-                      onClick={(e) => e.stopPropagation()}
-                      className={`p-1.5 rounded-lg transition-colors opacity-0 group-hover:opacity-100 ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}
-                    >
-                      <ExternalLink className={`h-4 w-4 ${theme.icon}`} />
-                    </Link>
-                  </div>
-                </button>
-
-                {/* Fan Nodes */}
-                {isExpanded && siteFans.length > 0 && (
-                  <div className="ml-6 space-y-2 relative">
-                    <div className={`absolute left-[-12px] top-0 bottom-4 w-px ${theme.line}`} />
-                    
-                    {siteFans.map((fan) => (
-                      <div
-                        key={fan.id}
-                        className={`flex items-center gap-2 p-3 rounded-xl border transition-colors group ml-2 relative ${theme.item}`}
-                      >
-                         <div className={`absolute left-[-20px] top-1/2 w-4 h-px ${theme.line}`} />
-
-                        <div className="h-6 w-6 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center font-bold text-green-500 text-xs">
-                          {fan.name?.[0] || 'U'}
-                        </div>
-                        <div className="flex-1">
-                          <div className={`font-medium text-sm ${theme.text}`}>{fan.name}</div>
-                          <div className={`text-xs ${theme.subText}`}>{fan.email}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
-          {filteredOwners.length === 0 && (
-            <div className={`py-8 text-center ${theme.subText}`}>
-              등록된 사이트가 없습니다.
+      <div className="space-y-1">
+        {nodes.length > 0 ? (
+            nodes.map(node => (
+                <TreeItem key={node.id} node={node} level={0} />
+            ))
+        ) : (
+            <div className={`text-center py-20 ${theme.textDim}`}>
+                구성원이 없습니다.
             </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import { Send } from "lucide-react";
@@ -6,6 +6,7 @@ import { useAuthStore } from "@/lib/store";
 import { useDataStore } from "@/lib/data-store";
 import { db } from "@/lib/firebaseClient";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useParams } from "next/navigation";
 
 export default function InquiryForm({
   influencerId,
@@ -16,6 +17,8 @@ export default function InquiryForm({
 }) {
   const { user } = useAuthStore();
   const { addInquiry } = useDataStore();
+  const params = useParams();
+  const currentSite = params?.site as string;
   
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
@@ -48,6 +51,7 @@ export default function InquiryForm({
     try {
       const newInquiry = {
         ownerId: influencerId,
+        siteDomain: currentSite || 'unknown', // Track origin site
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -56,16 +60,16 @@ export default function InquiryForm({
         message: formData.message,
         plan: formData.plan,
         status: 'pending',
-        createdAt: new Date().toISOString(), // Use ISO string for consistency
+        createdAt: new Date().toISOString(),
       };
 
       // 1. Save to Firebase Firestore
       await addDoc(collection(db, "inquiries"), {
         ...newInquiry,
-        serverCreatedAt: serverTimestamp(), // For accurate server-side timing
+        serverCreatedAt: serverTimestamp(),
       });
 
-      // 2. Send email notification
+      // 2. Send email notification (Optional)
       try {
         await fetch('/api/send-email', {
           method: 'POST',
@@ -74,7 +78,6 @@ export default function InquiryForm({
         });
       } catch (emailError) {
         console.error('Email notification failed:', emailError);
-        // Don't block the submission if email fails
       }
 
       // 3. Sync to local store for immediate UI updates
