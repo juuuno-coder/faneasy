@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebaseClient";
 import { mockInfluencers, mockFans } from "@/lib/data";
+import type { UserRole } from "@/lib/types";
 
 function LoginContent() {
   const router = useRouter();
@@ -87,8 +88,9 @@ function LoginContent() {
       login(user, token);
       
       // 리다이렉트 로직
+      const adminRoles: UserRole[] = ["super_admin", "owner", "admin"];
       const redirectUrl = searchParams.get("redirect") || 
-        (role === "super_admin" || role === "owner" || role === "admin" ? "/admin" : "/");
+        (adminRoles.includes(role) ? "/admin" : "/");
       router.push(redirectUrl);
     } catch (err: any) {
       setError(err?.message || "로그인 중 오류가 발생했습니다.");
