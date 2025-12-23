@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Shield,
   Globe,
-  Bell
+  Bell,
+  Bot
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
@@ -26,6 +27,10 @@ import CustomersTab from '@/components/admin/customers-tab';
 import InquiriesTab from '@/components/admin/inquiries-tab';
 import SettingsTab from '@/components/admin/settings-tab';
 import SiteTreeView from '@/components/admin/site-tree-view';
+import { 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
+} from 'recharts';
 
 export default function AdminDashboard() {
   const { user, logout, updateUser } = useAuthStore();
@@ -258,6 +263,68 @@ export default function AdminDashboard() {
           ))}
         </div>
 
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Visitor Trend Chart */}
+          <div className="rounded-3xl border border-white/5 bg-white/2 p-6">
+             <h3 className="text-lg font-bold mb-4">주간 방문자 및 문의 추이</h3>
+             <div className="h-64 w-full">
+               <ResponsiveContainer width="100%" height="100%">
+                 <LineChart data={[
+                   { name: '월', visitors: 400, inquiries: 24 },
+                   { name: '화', visitors: 300, inquiries: 18 },
+                   { name: '수', visitors: 550, inquiries: 35 },
+                   { name: '목', visitors: 450, inquiries: 28 },
+                   { name: '금', visitors: 600, inquiries: 42 },
+                   { name: '토', visitors: 350, inquiries: 15 },
+                   { name: '일', visitors: 420, inquiries: 20 },
+                 ]}>
+                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                   <XAxis dataKey="name" stroke="#6b7280" />
+                   <YAxis stroke="#6b7280" />
+                   <Tooltip 
+                     contentStyle={{ backgroundColor: '#1A1A1A', borderColor: '#333' }}
+                     itemStyle={{ color: '#fff' }}
+                   />
+                   <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                   <Line type="monotone" dataKey="visitors" name="방문자" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
+                   <Line type="monotone" dataKey="inquiries" name="문의" stroke="#10B981" strokeWidth={2} dot={{ r: 4 }} />
+                 </LineChart>
+               </ResponsiveContainer>
+             </div>
+          </div>
+
+          {/* Inquiry Status Chart */}
+          <div className="rounded-3xl border border-white/5 bg-white/2 p-6">
+             <h3 className="text-lg font-bold mb-4">문의 현황 분석</h3>
+             <div className="h-64 w-full flex items-center justify-center">
+               <ResponsiveContainer width="100%" height="100%">
+                 <PieChart>
+                   <Pie
+                     data={[
+                       { name: '대기중', value: inquiries.filter(i => i.status === 'pending').length || 5 },
+                       { name: '상담중', value: inquiries.filter(i => (i as any).status === 'contacted').length || 3 },
+                       { name: '완료', value: inquiries.filter(i => (i as any).status === 'completed').length || 8 },
+                     ]}
+                     cx="50%"
+                     cy="50%"
+                     innerRadius={60}
+                     outerRadius={80}
+                     paddingAngle={5}
+                     dataKey="value"
+                   >
+                     {[ '#EF4444', '#F59E0B', '#10B981' ].map((color, index) => (
+                       <Cell key={`cell-${index}`} fill={color} />
+                     ))}
+                   </Pie>
+                   <Tooltip contentStyle={{ backgroundColor: '#1A1A1A', borderColor: '#333' }} itemStyle={{ color: '#fff' }} />
+                   <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                 </PieChart>
+               </ResponsiveContainer>
+             </div>
+          </div>
+        </div>
+
         {/* Recent Inquiries Section */}
         <div id="inquiries-section" className="rounded-3xl border border-white/5 bg-white/2 p-8">
           <div className="flex items-center justify-between mb-8">
@@ -423,7 +490,29 @@ export default function AdminDashboard() {
               </div>
               <div className="p-8">
                 <div className="mb-4">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">메시지</label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-bold text-gray-700">메시지</label>
+                    <div className="flex gap-2">
+                      <select 
+                        className="px-2 py-1.5 bg-gray-100 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        onChange={(e) => {
+                          if (e.target.value) setReplyMessage(e.target.value.replace('{name}', selectedInquiry?.name || '고객'));
+                        }}
+                      >
+                        <option value="">템플릿 선택...</option>
+                        <option value="안녕하세요, {name}님.&#13;&#10;&#13;&#10;문의해주신 내용은 현재 담당 부서에서 확인 중입니다.&#13;&#10;최대한 빠른 시일 내에 답변 드리겠습니다.&#13;&#10;&#13;&#10;감사합니다.">접수 안내</option>
+                        <option value="안녕하세요, {name}님.&#13;&#10;&#13;&#10;요청하신 사항 처리가 완료되었습니다.&#13;&#10;이용해 주셔서 감사합니다.&#13;&#10;&#13;&#10;FanEasy 드림">처리 완료</option>
+                        <option value="안녕하세요, {name}님.&#13;&#10;&#13;&#10;정확한 안내를 위해 추가 정보가 필요합니다.&#13;&#10;번거로우시겠지만 회신 부탁드립니다.&#13;&#10;&#13;&#10;감사합니다.">정보 요청</option>
+                      </select>
+                      <button 
+                        onClick={() => setReplyMessage(`안녕하세요, ${selectedInquiry?.name}님.\n\n문의 주셔서 감사합니다. 보내주신 내용은 담당자가 확인 후 신속하게 답변 드리겠습니다.\n\n추가로 궁금하신 점이 있다면 언제든지 문의해 주세요.\n\n감사합니다.\nFanEasy 드림`)}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-bold hover:bg-purple-200 transition-colors border border-purple-200"
+                      >
+                        <Bot className="h-3 w-3" />
+                        AI 자동 완성
+                      </button>
+                    </div>
+                  </div>
                   <textarea
                     value={replyMessage}
                     onChange={(e) => setReplyMessage(e.target.value)}
