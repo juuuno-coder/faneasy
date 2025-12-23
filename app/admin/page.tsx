@@ -71,6 +71,45 @@ export default function AdminDashboard() {
          alert('생성 실패: ' + e.message);
      }
   };
+
+  const migrateKkangData = async () => {
+     if (!confirm('오늘 생성된 데이터(문의, 회원)를 모두 kkang 소유로 변경하시겠습니까?')) return;
+     try {
+         const today = new Date();
+         today.setHours(0,0,0,0);
+         const todayIso = today.toISOString();
+
+         // 1. Inquiries
+         const inqQuery = query(collection(db, 'inquiries'), where('createdAt', '>=', todayIso));
+         const inqSnap = await getDocs(inqQuery);
+         const batch = writeBatch(db);
+         
+         inqSnap.docs.forEach(d => {
+             batch.update(doc(db, 'inquiries', d.id), { ownerId: user?.id });
+         });
+
+         // 2. Users (Recent 20 users)
+         const userQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc')); 
+         const userSnap = await getDocs(userQuery);
+         const recentUsers = userSnap.docs.slice(0, 20);
+         
+         recentUsers.forEach(d => {
+             const userData = d.data();
+             if (userData.role === 'super_admin' || userData.role === 'owner') return;
+             // Adopt orphan users or explicitly forced ones if valid
+             if (!userData.joinedSite) {
+                 batch.update(doc(db, 'users', d.id), { joinedSite: 'kkang', role: 'user' });
+             }
+         });
+
+         await batch.commit();
+         alert(`데이터 이전 완료! (문의 ${inqSnap.size}건 업데이트, 회원 연결 완료)`);
+         window.location.reload();
+     } catch (e: any) {
+         console.error(e);
+         alert('실패: ' + e.message);
+     }
+  };
   const [mounted, setMounted] = useState(false);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
@@ -218,15 +257,11 @@ export default function AdminDashboard() {
       if (firestoreInquiries.length > 0) {
         setInquiries(firestoreInquiries);
       } else {
-        // Filter local inquiries by role as well
-        const filteredLocal = user.role === 'admin' 
-          ? localInquiries 
-          : localInquiries.filter(inq => inq.ownerId === user.id);
-        setInquiries(filteredLocal);
+        setInquiries([]);
       }
     }, (error) => {
       console.error("Firestore listener error:", error);
-      setInquiries(localInquiries);
+      setInquiries([]);
     });
 
     return () => unsubscribe();
@@ -459,12 +494,20 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-4">
              {user?.email === 'kgw2642@gmail.com' && (
+                <>
                 <button 
                     onClick={seedKkangFans}
                     className="hidden md:block px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30"
                 >
                   Fan Data 생성
                 </button>
+                <button 
+                      onClick={migrateKkangData}
+                      className="hidden md:block px-3 py-1.5 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition-colors shadow-lg shadow-green-500/30"
+                  >
+                    데이터 가져오기
+                  </button>
+                </>
              )}
              <button 
                onClick={() => setActiveTab('inquiries')}
@@ -638,7 +681,7 @@ export default function AdminDashboard() {
         {/* Settings Tab Content */}
         {activeTab === 'settings' && <SettingsTab />}
         {/* Subscription Tab Content */}
-        {activeTab === 'subscription' && <SubscriptionTab />}
+        {activeTab === 'subscription' && <SubscriptionTab isDarkMode={isDark} />}
         {activeTab === 'activity' && <ActivityTab />}
         {activeTab === 'users' && <UsersTab />}
 

@@ -79,7 +79,7 @@ const PLANS: Plan[] = [
   }
 ];
 
-export default function SubscriptionTab() {
+export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean }) {
   const { user } = useAuthStore();
   const [currentPlan, setCurrentPlan] = useState('free');
   const [nextPaymentDate, setNextPaymentDate] = useState('');
@@ -235,7 +235,9 @@ export default function SubscriptionTab() {
               relative rounded-3xl p-8 border transition-all duration-300
               ${currentPlan === plan.id 
                 ? 'bg-purple-600/10 border-purple-500 ring-1 ring-purple-500/50' 
-                : 'bg-white/2 border-white/5 hover:border-white/10 hover:bg-white/5'}
+                : isDarkMode 
+                  ? 'bg-white/2 border-white/5 hover:border-white/10 hover:bg-white/5'
+                  : 'bg-white border-gray-200 hover:shadow-md'}
             `}
           >
             {plan.recommended && (
@@ -247,7 +249,7 @@ export default function SubscriptionTab() {
             <div className="mb-6">
               <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-white">
+                <span className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   {plan.price === 0 ? '무료' : `₩${plan.price.toLocaleString()}`}
                 </span>
                 <span className="text-gray-400 text-sm">/{plan.period}</span>
@@ -256,7 +258,7 @@ export default function SubscriptionTab() {
 
             <ul className="space-y-4 mb-8">
               {plan.features.map((feature, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-sm text-gray-300">
+                <li key={idx} className={`flex items-start gap-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                   <div className={`mt-0.5 h-4 w-4 rounded-full flex items-center justify-center ${currentPlan === plan.id ? 'bg-purple-500' : 'bg-gray-700'}`}>
                     <Check className="h-2 w-2 text-white" />
                   </div>
