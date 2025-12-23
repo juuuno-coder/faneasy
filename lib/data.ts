@@ -90,7 +90,7 @@ export const mockInfluencers: Influencer[] = [
     email: 'juuuno@naver.com',
     // bcrypt hash of "password123"
     passwordHash: '$2a$10$rKZLvXz8Y9qXqN5xN5xN5.N5xN5xN5xN5xN5xN5xN5xN5xN5xN5xN',
-    role: 'influencer',
+    role: 'owner',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     pageSettings: {
@@ -112,7 +112,7 @@ export const mockInfluencers: Influencer[] = [
     name: 'IU',
     email: 'iu@faneasy.kr',
     passwordHash: '$2a$10$rKZLvXz8Y9qXqN5xN5xN5.N5xN5xN5xN5xN5xN5xN5xN5xN5xN5xN',
-    role: 'influencer',
+    role: 'owner',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     pageSettings: {
