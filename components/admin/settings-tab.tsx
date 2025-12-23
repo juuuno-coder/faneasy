@@ -6,6 +6,7 @@ import { db } from '@/lib/firebaseClient';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useAuthStore } from '@/lib/store';
 import type { SiteSettings } from '@/lib/types';
+import ImageUpload from '@/components/ui/image-upload';
 
 export default function SettingsTab() {
   const { user } = useAuthStore();
@@ -18,6 +19,8 @@ export default function SettingsTab() {
     siteDescription: '팬들과 소통하는 가장 쉬운 방법',
     domain: '',
     primaryColor: '#8B5CF6',
+    logoUrl: '',
+    bannerUrl: '',
     seoTitle: 'FanEasy Page',
     seoDescription: 'Welcome to my FanEasy page',
     updatedAt: new Date().toISOString(),
@@ -29,14 +32,13 @@ export default function SettingsTab() {
       if (!user) return;
       
       try {
-        const docId = user.subdomain || user.id; // Use subdomain as ID for influencers, or userID for others
+        const docId = user.subdomain || user.id; 
         const docRef = doc(db, 'site_settings', docId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           setSettings(docSnap.data() as SiteSettings);
         } else {
-          // Initialize default settings based on user info
           setSettings(prev => ({
             ...prev,
             id: docId,
@@ -132,7 +134,6 @@ export default function SettingsTab() {
               readOnly
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 focus:outline-none"
             />
-            <p className="text-xs text-gray-500 mt-2">* 도메인 변경은 고객센터에 문의해 주세요.</p>
           </div>
         </div>
       </div>
@@ -146,7 +147,25 @@ export default function SettingsTab() {
           <h3 className="text-xl font-bold">디자인 설정</h3>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             {/* Logo Upload */}
+             <ImageUpload 
+               label="사이트 로고"
+               value={settings.logoUrl || ''}
+               onChange={(url) => setSettings({ ...settings, logoUrl: url })}
+               aspectRatio="square"
+             />
+
+             {/* Banner Upload */}
+             <ImageUpload 
+               label="메인 배너 이미지"
+               value={settings.bannerUrl || ''}
+               onChange={(url) => setSettings({ ...settings, bannerUrl: url })}
+               aspectRatio="video"
+             />
+          </div>
+
           <div>
             <label className="block text-sm font-bold text-gray-300 mb-2">메인 컬러 (Theme Color)</label>
             <div className="flex gap-4 items-center">
@@ -164,7 +183,6 @@ export default function SettingsTab() {
                 placeholder="#000000"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-2">이 색상은 버튼, 링크 및 주요 강조 요소에 적용됩니다.</p>
           </div>
         </div>
       </div>

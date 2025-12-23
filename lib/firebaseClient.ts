@@ -1,6 +1,8 @@
 import { getApp, initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,6 +21,7 @@ if (!getApps().length) {
 export const firebaseApp = getApp();
 export const firebaseAuth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
+export const storage = getStorage(firebaseApp);
 
 export async function initFirebaseAnalytics() {
   if (typeof window === "undefined") return;

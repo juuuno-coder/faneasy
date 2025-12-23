@@ -188,6 +188,8 @@ export interface SiteSettings {
   siteDescription: string;
   domain: string;
   primaryColor: string;
+  logoUrl?: string;     // Added
+  bannerUrl?: string;   // Added
   seoTitle: string;
   seoDescription: string;
   updatedAt: string;

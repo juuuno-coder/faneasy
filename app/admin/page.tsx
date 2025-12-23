@@ -17,7 +17,8 @@ import {
   Clock,
   ChevronRight,
   Shield,
-  Globe
+  Globe,
+  Bell
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
@@ -199,6 +200,17 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-4">
+             <button 
+               onClick={() => setActiveTab('inquiries')}
+               className="relative p-2 hover:bg-white/5 rounded-full transition-colors"
+               title="새 문의 내역"
+             >
+               <Bell className="h-5 w-5 text-gray-400 hover:text-white transition-colors" />
+               {inquiries.filter(i => i.status === 'pending').length > 0 && (
+                 <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+               )}
+             </button>
+             <div className="h-8 w-[1px] bg-white/10 mx-2" />
              <div className="text-right">
                 <div className="text-sm font-bold">{user?.name || 'Admin'}</div>
                 <div className="text-xs text-gray-500">{user?.email}</div>
