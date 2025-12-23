@@ -1,16 +1,15 @@
-'use client';
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   CreditCard, 
   Check, 
-  Zap, 
-  Shield, 
   Clock,
   ChevronRight,
   Download,
   AlertCircle
 } from 'lucide-react';
+import { useAuthStore } from '@/lib/store';
+import { db } from '@/lib/firebaseClient';
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 
 interface Plan {
   id: string;
@@ -64,25 +63,83 @@ const PLANS: Plan[] = [
 ];
 
 export default function SubscriptionTab() {
+  const { user } = useAuthStore();
   const [currentPlan, setCurrentPlan] = useState('free');
+  const [nextPaymentDate, setNextPaymentDate] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
 
+  useEffect(() => {
+    const fetchSubscription = async () => {
+      if (!user) return;
+      
+      try {
+        const docId = user.subdomain || user.id;
+        const docRef = doc(db, 'site_settings', docId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setCurrentPlan(data.subscriptionPlan || 'free');
+          setNextPaymentDate(data.nextPaymentDate || '');
+        }
+      } catch (error) {
+        console.error("Error fetching subscription:", error);
+      } finally {
+        setInitializing(false);
+      }
+    };
+
+    fetchSubscription();
+  }, [user]);
+
   // Mock Payment Function (Simulating PortOne)
-  const handleSubscribe = (plan: Plan) => {
-    if (plan.id === currentPlan) return;
+  const handleSubscribe = async (plan: Plan) => {
+    if (plan.id === currentPlan || !user) return;
     
     if (confirm(`'${plan.name}' 요금제로 변경하시겠습니까?\n월 ${plan.price.toLocaleString()}원이 결제됩니다.`)) {
       setLoading(true);
       
       // Simulate API call / PortOne Window open
-      setTimeout(() => {
-        setLoading(false);
-        setCurrentPlan(plan.id);
-        alert(`결제가 성공적으로 완료되었습니다!\n이제 '${plan.name}' 멤버십이 적용됩니다.`);
+      setTimeout(async () => {
+        try {
+          const docId = user.subdomain || user.id;
+          const docRef = doc(db, 'site_settings', docId);
+          
+          // Calculate next month date
+          const nextDate = new Date();
+          nextDate.setMonth(nextDate.getMonth() + 1);
+          const nextDateStr = nextDate.toISOString().split('T')[0];
+
+          await updateDoc(docRef, {
+            subscriptionPlan: plan.id,
+            nextPaymentDate: nextDateStr,
+            updatedAt: new Date().toISOString()
+          }).catch(async (e) => {
+            // Document might not exist, create it if update fails
+            await setDoc(docRef, {
+               ownerId: user.id,
+               subscriptionPlan: plan.id,
+               nextPaymentDate: nextDateStr,
+               updatedAt: new Date().toISOString()
+            }, { merge: true });
+          });
+
+          setCurrentPlan(plan.id);
+          setNextPaymentDate(nextDateStr);
+          alert(`결제가 성공적으로 완료되었습니다!\n이제 '${plan.name}' 멤버십이 적용됩니다.`);
+        } catch (error) {
+          console.error("Payment Error:", error);
+          alert("결제 처리 중 오류가 발생했습니다.");
+        } finally {
+          setLoading(false);
+        }
       }, 1500);
     }
   };
+
+  if (initializing) return <div className="p-8 text-center text-gray-500">정보를 불러오는 중...</div>;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -97,7 +154,7 @@ export default function SubscriptionTab() {
                 <Check className="h-3 w-3" />
                 구독 중 (Active)
               </span>
-              <span className="text-gray-400 text-sm">다음 결제일: 2026. 01. 23</span>
+              <span className="text-gray-400 text-sm">다음 결제일: {nextPaymentDate || '-'}</span>
             </div>
             <h2 className="text-3xl font-bold mb-2">
               {PLANS.find(p => p.id === currentPlan)?.name} Plan

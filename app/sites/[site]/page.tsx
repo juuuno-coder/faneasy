@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import HeaderActions from "./header-actions";
+import ViewTracker from "@/components/analytics/view-tracker";
 import AgencyLandingPage from "./agency-landing-page";
 import TechMarketing from "./tech-marketing";
 import GrowthMarketing from "./growth-marketing";
@@ -73,6 +74,7 @@ export default async function SitePage({
     return (
       <>
         <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
         <AgencyLandingPage site={siteSlug} />
       </>
     );
@@ -83,6 +85,7 @@ export default async function SitePage({
     return (
       <>
         <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
         <MZMarketing site={siteSlug} />
       </>
     );
@@ -93,6 +96,7 @@ export default async function SitePage({
     return (
       <>
         <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
         <GrowthMarketing site={siteSlug} />
       </>
     );
@@ -103,6 +107,7 @@ export default async function SitePage({
     return (
       <>
         <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
         <TechMarketing site={siteSlug} />
       </>
     );
