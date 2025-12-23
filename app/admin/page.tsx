@@ -1,6 +1,6 @@
 'use client';
 
-import { useDataStore } from '@/lib/data-store';
+
 import { useAuthStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -43,73 +43,9 @@ import {
 
 export default function AdminDashboard() {
   const { user, logout, updateUser } = useAuthStore();
-  const { inquiries: localInquiries } = useDataStore();
   const router = useRouter();
 
-  const seedKkangFans = async () => {
-     if (!confirm('kkang 테스트용 팬 4명을 생성하시겠습니까?')) return;
-     try {
-         const fans = [
-             { name: 'Fan 1', email: 'fan1@kkang.test', role: 'user', joinedSite: 'kkang' },
-             { name: 'Fan 2', email: 'fan2@kkang.test', role: 'user', joinedSite: 'kkang' },
-             { name: 'Fan 3', email: 'fan3@kkang.test', role: 'user', joinedSite: 'kkang' },
-             { name: 'Fan 4', email: 'fan4@kkang.test', role: 'user', joinedSite: 'kkang' },
-         ];
 
-         for (const fan of fans) {
-             const fanId = `fan_${fan.name.replace(/\s/g, '')}_${Date.now()}`;
-             await setDoc(doc(db, 'users', fanId), {
-                 ...fan,
-                 createdAt: new Date(),
-                 uid: fanId
-             });
-         }
-         alert('팬 데이터 생성 완료! 페이지를 새로고침하세요.');
-         window.location.reload();
-     } catch (e: any) {
-         console.error(e);
-         alert('생성 실패: ' + e.message);
-     }
-  };
-
-  const migrateKkangData = async () => {
-     if (!confirm('오늘 생성된 데이터(문의, 회원)를 모두 kkang 소유로 변경하시겠습니까?')) return;
-     try {
-         const today = new Date();
-         today.setHours(0,0,0,0);
-         const todayIso = today.toISOString();
-
-         // 1. Inquiries
-         const inqQuery = query(collection(db, 'inquiries'), where('createdAt', '>=', todayIso));
-         const inqSnap = await getDocs(inqQuery);
-         const batch = writeBatch(db);
-         
-         inqSnap.docs.forEach(d => {
-             batch.update(doc(db, 'inquiries', d.id), { ownerId: user?.id });
-         });
-
-         // 2. Users (Recent 20 users)
-         const userQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc')); 
-         const userSnap = await getDocs(userQuery);
-         const recentUsers = userSnap.docs.slice(0, 20);
-         
-         recentUsers.forEach(d => {
-             const userData = d.data();
-             if (userData.role === 'super_admin' || userData.role === 'owner') return;
-             // Adopt orphan users or explicitly forced ones if valid
-             if (!userData.joinedSite) {
-                 batch.update(doc(db, 'users', d.id), { joinedSite: 'kkang', role: 'user' });
-             }
-         });
-
-         await batch.commit();
-         alert(`데이터 이전 완료! (문의 ${inqSnap.size}건 업데이트, 회원 연결 완료)`);
-         window.location.reload();
-     } catch (e: any) {
-         console.error(e);
-         alert('실패: ' + e.message);
-     }
-  };
   const [mounted, setMounted] = useState(false);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
@@ -231,8 +167,8 @@ export default function AdminDashboard() {
 
     // Build query based on user role
     let q;
-    if (user.role === 'super_admin') {
-      // 최고관리자는 모든 문의 조회
+    if (user.role === 'super_admin' || user.email === 'kgw2642@gmail.com') {
+      // 최고관리자 및 깡대표는 모든 문의 조회
       q = query(
         collection(db, "inquiries"),
         orderBy("createdAt", "desc")
@@ -265,7 +201,7 @@ export default function AdminDashboard() {
     });
 
     return () => unsubscribe();
-  }, [mounted, localInquiries]);
+  }, [mounted]);
 
   // Theme Configuration
   const role = user?.role || 'user';
@@ -493,22 +429,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-             {user?.email === 'kgw2642@gmail.com' && (
-                <>
-                <button 
-                    onClick={seedKkangFans}
-                    className="hidden md:block px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30"
-                >
-                  Fan Data 생성
-                </button>
-                <button 
-                      onClick={migrateKkangData}
-                      className="hidden md:block px-3 py-1.5 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition-colors shadow-lg shadow-green-500/30"
-                  >
-                    데이터 가져오기
-                  </button>
-                </>
-             )}
+
              <button 
                onClick={() => setActiveTab('inquiries')}
                className="relative p-2 hover:bg-white/5 rounded-full transition-colors"
