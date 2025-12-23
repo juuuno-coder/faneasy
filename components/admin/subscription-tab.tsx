@@ -22,6 +22,18 @@ interface Plan {
 
 const PLANS: Plan[] = [
   {
+    id: 'free',
+    name: 'FREE',
+    price: 0,
+    period: '월',
+    features: [
+      '초기세팅한 홈페이지 유지',
+      '기본형 고객 DB 유지',
+      '하단 배너 광고 삽입',
+      '직접 이미지/문구 수정 불가'
+    ]
+  },
+  {
     id: 'basic',
     name: 'BASIC',
     price: 20000,
@@ -69,7 +81,7 @@ const PLANS: Plan[] = [
 
 export default function SubscriptionTab() {
   const { user } = useAuthStore();
-  const [currentPlan, setCurrentPlan] = useState('basic');
+  const [currentPlan, setCurrentPlan] = useState('free');
   const [nextPaymentDate, setNextPaymentDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
@@ -86,7 +98,7 @@ export default function SubscriptionTab() {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setCurrentPlan(data.subscriptionPlan || 'basic');
+          setCurrentPlan(data.subscriptionPlan || 'free');
           setNextPaymentDate(data.nextPaymentDate || '');
         }
       } catch (error) {
@@ -215,7 +227,7 @@ export default function SubscriptionTab() {
       )}
 
       {/* Plan Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {PLANS.map((plan) => (
           <div 
             key={plan.id}
