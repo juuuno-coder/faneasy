@@ -530,7 +530,7 @@ export default function AdminDashboard() {
         {/* Site Structure Tab Content */}
         {activeTab === 'structure' && (
           <SiteTreeView 
-            userRole={(user?.role as 'admin' | 'influencer' | 'fan') || 'admin'} 
+            userRole={user?.role || 'user'} 
             userId={user?.id}
           />
         )}
