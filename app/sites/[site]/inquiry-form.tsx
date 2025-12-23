@@ -14,7 +14,7 @@ export default function InquiryForm({
   variant = "default",
 }: {
   influencerId: string;
-  variant?: "default" | "bold" | "clean";
+  variant?: "default" | "bold" | "clean" | "tech";
 }) {
   const { user } = useAuthStore();
   const { addInquiry } = useDataStore();
@@ -125,24 +125,31 @@ export default function InquiryForm({
 
   const isBold = variant === "bold";
   const isClean = variant === "clean";
+  const isTech = variant === "tech";
   
   // Theme classes
   const inputClass = isBold
     ? "w-full rounded-none border-2 border-white/20 bg-black/50 px-4 py-3 text-white focus:border-[#FFE400] focus:outline-none transition-all placeholder:text-gray-600 font-bold"
     : isClean
     ? "w-full rounded-2xl border border-gray-100 bg-gray-50/50 px-6 py-4 text-gray-900 focus:border-green-500 focus:bg-white focus:outline-none transition-all placeholder:text-gray-400 font-medium shadow-sm hover:border-gray-200"
+    : isTech
+    ? "w-full rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-white focus:border-indigo-500 focus:bg-white/10 focus:outline-none transition-all placeholder:text-gray-500 font-medium shadow-2xl hover:border-white/20"
     : "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all";
     
   const labelClass = isBold
     ? "text-sm font-bold text-[#FFE400] uppercase tracking-wider"
     : isClean
     ? "text-xs font-black text-gray-400 uppercase tracking-widest pl-2"
+    : isTech
+    ? "text-xs font-black text-indigo-400 uppercase tracking-[0.2em] pl-2"
     : "text-sm font-medium text-gray-400";
     
   const buttonClass = isBold
     ? "w-full rounded-none bg-[#FFE400] py-4 font-black text-black transition-all hover:bg-yellow-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed border-2 border-[#FFE400]"
     : isClean
     ? "w-full rounded-2xl bg-gray-900 py-5 font-black text-white transition-all hover:bg-gray-800 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-gray-200"
+    : isTech
+    ? "w-full rounded-2xl bg-indigo-600 py-5 font-black text-white transition-all hover:bg-indigo-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(79,70,229,0.5)]"
     : "w-full rounded-xl bg-purple-500 py-4 font-bold text-white transition-all hover:bg-purple-600 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(139,92,246,0.4)]";
 
   if (status === "success") {
@@ -253,9 +260,13 @@ export default function InquiryForm({
                     ? formData.plan === plan
                         ? "border-2 border-[#FFE400] bg-[#FFE400] text-black font-black"
                         : "border-2 border-white/20 bg-transparent text-gray-500 hover:border-[#FFE400] hover:text-[#FFE400]"
-                    : formData.plan === plan
-                        ? "rounded-xl border border-purple-500 bg-purple-500/20 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]"
-                        : "rounded-xl border border-white/10 bg-white/5 text-gray-400 hover:bg-white/10"
+                    : isTech
+                        ? formData.plan === plan
+                            ? "rounded-2xl border border-indigo-500 bg-indigo-500/20 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]"
+                            : "rounded-2xl border border-white/10 bg-white/5 text-gray-400 hover:bg-white/10 hover:border-white/20"
+                        : formData.plan === plan
+                            ? "rounded-xl border border-purple-500 bg-purple-500/20 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+                            : "rounded-xl border border-white/10 bg-white/5 text-gray-400 hover:bg-white/10"
               }`}
             >
               <div className="text-sm font-bold uppercase">{plan}</div>

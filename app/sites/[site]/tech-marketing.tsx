@@ -21,11 +21,11 @@ export default function TechMarketing({ site }: { site: string }) {
             </h1>
           </div>
           
-          <nav className="hidden md:flex gap-10 text-sm font-bold tracking-tight text-gray-400 transition-all">
+          <nav className="hidden md:flex items-center gap-10 text-sm font-bold tracking-tight text-gray-400 transition-all">
             <a href="#about" className="hover:text-white transition-colors">회사소개</a>
             <a href="#solutions" className="hover:text-white transition-colors">서비스</a>
             <a href="#portfolio" className="hover:text-white transition-colors">성공사례</a>
-            <a href="#contact" className="hover:text-white bg-indigo-600 px-6 py-2.5 rounded-full text-white hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all">상담신청</a>
+            <a href="#contact" className="hover:text-white bg-indigo-600 px-6 py-2.5 rounded-full text-white hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center">상담신청</a>
           </nav>
           <HeaderActions site={site} />
         </div>
@@ -220,7 +220,7 @@ export default function TechMarketing({ site }: { site: string }) {
                   <div className="absolute top-0 right-0 p-12">
                      <Zap className="h-8 w-8 text-indigo-500 opacity-20" />
                   </div>
-                  <InquiryForm influencerId="inf-1" variant="clean" />
+                  <InquiryForm influencerId="inf-1" variant="tech" />
               </div>
            </div>
       </section>

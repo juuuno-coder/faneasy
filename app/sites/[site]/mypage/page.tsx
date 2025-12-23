@@ -26,6 +26,9 @@ import {
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Order, Inquiry } from "@/lib/types";
+import ProfileModal from "@/components/profile-modal";
+import { db } from "@/lib/firebaseClient";
+import { doc, updateDoc } from "firebase/firestore";
 
 // Helper to map plan IDs to names
 const PLAN_NAMES: Record<string, string> = {
@@ -43,6 +46,8 @@ export default function MyPage() {
   const [myOrders, setMyOrders] = useState<Order[]>([]);
   const [myInquiries, setMyInquiries] = useState<Inquiry[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'inquiries'>('overview');
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const { updateUser } = useAuthStore();
 
   useEffect(() => {
     if (user) {
@@ -54,6 +59,21 @@ export default function MyPage() {
     }
     setLoading(false);
   }, [user, allOrders, allInquiries]);
+
+  const handleSaveProfile = async (data: { name: string; email: string }) => {
+    if (!user) return;
+    try {
+        const userRef = doc(db, 'users', user.id);
+        await updateDoc(userRef, {
+            name: data.name,
+            updatedAt: new Date().toISOString()
+        });
+        updateUser({ name: data.name });
+    } catch (error) {
+        console.error("Profile update failed:", error);
+        throw error;
+    }
+  };
 
   if (loading) {
     return (
@@ -115,29 +135,44 @@ export default function MyPage() {
             <span>깡대표 x 디어스</span>
           </Link>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            {/* User Profile Info - Clickable */}
             <button 
-                onClick={() => { logout(); router.push('/'); }}
-                className="p-2 text-gray-500 hover:text-red-400 transition-colors"
-                title="로그아웃"
+                onClick={() => setIsProfileModalOpen(true)}
+                className="flex items-center gap-3 group transition-all"
             >
-                <LogOut className="h-5 w-5" />
-            </button>
-            <div className="h-8 w-px bg-white/10 mx-2"></div>
-            <div className="flex items-center gap-3 pl-2">
-                <div className="text-right hidden sm:block">
-                    <div className="text-sm font-bold leading-none">{user.name} 님</div>
-                    <div className="text-[10px] text-purple-400 font-medium">VIP MEMBER</div>
-                </div>
-                <div className="h-10 w-10 rounded-2xl bg-linear-to-br from-purple-500 to-blue-600 p-[1px] shadow-lg shadow-purple-500/20">
+                <div className="h-10 w-10 rounded-2xl bg-linear-to-br from-purple-500 to-blue-600 p-[1px] shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform">
                     <div className="h-full w-full rounded-[14px] bg-black flex items-center justify-center">
                         <User className="h-5 w-5 text-white" />
                     </div>
                 </div>
-            </div>
+                <div className="text-left hidden sm:block">
+                    <div className="text-sm font-bold leading-none group-hover:text-purple-400 transition-colors">{user.name} 님</div>
+                    <div className="text-[10px] text-purple-400 font-medium mt-1">VIP MEMBER</div>
+                </div>
+            </button>
+
+            <div className="h-8 w-px bg-white/10 mx-2"></div>
+            
+            {/* Logout on far right */}
+            <button 
+                onClick={() => { logout(); router.push('/'); }}
+                className="p-2 text-gray-500 hover:text-red-400 transition-all hover:scale-110"
+                title="로그아웃"
+            >
+                <LogOut className="h-5 w-5" />
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Profile Modal */}
+      <ProfileModal 
+        isOpen={isProfileModalOpen} 
+        onClose={() => setIsProfileModalOpen(false)} 
+        user={user} 
+        onSave={handleSaveProfile}
+      />
 
       <main className="mx-auto max-w-6xl px-6 py-12">
         {/* Profile Card */}

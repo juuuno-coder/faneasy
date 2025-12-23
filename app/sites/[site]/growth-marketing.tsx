@@ -21,7 +21,7 @@ export default function GrowthMarketing({ site }: { site: string }) {
             </h1>
           </div>
           
-          <nav className="hidden md:flex gap-8 text-sm font-semibold text-gray-500">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-500">
             <a href="#about" className="hover:text-green-600 transition-colors">ABOUT</a>
             <a href="#services" className="hover:text-green-600 transition-colors">SERVICES</a>
             <a href="#portfolio" className="hover:text-green-600 transition-colors">PORTFOLIO</a>
@@ -144,11 +144,11 @@ export default function GrowthMarketing({ site }: { site: string }) {
                { title: "CRM 마케팅", desc: "충성 고객 확보를 위한 알림톡/뉴스레터 관리", icon: "05" },
                { title: "SEO/검색최적화", desc: "사이트 구조 개선 및 오가닉 트래픽 증대", icon: "06" },
              ].map((item, i) => (
-                <div key={i} className="group p-8 border border-gray-100 rounded-2xl hover:border-green-200 hover:shadow-xl hover:shadow-green-500/5 transition-all bg-white relative overflow-hidden">
+                <div key={i} className="group p-8 border border-gray-100 rounded-2xl hover:border-green-200 hover:shadow-[0_20px_40px_rgba(34,197,94,0.1)] transition-all bg-white relative overflow-hidden active:scale-[0.98]">
                    <div className="absolute top-0 right-0 p-6 text-6xl font-black text-gray-50 opacity-50 group-hover:text-green-50 transition-colors select-none">
                       {item.icon}
                    </div>
-                   <h3 className="text-xl font-bold text-gray-900 mb-3 relative z-10">{item.title}</h3>
+                   <h3 className="text-xl font-bold text-gray-900 mb-3 relative z-10 group-hover:text-green-600 transition-colors">{item.title}</h3>
                    <p className="text-gray-500 relative z-10">{item.desc}</p>
                 </div>
              ))}
@@ -190,14 +190,14 @@ export default function GrowthMarketing({ site }: { site: string }) {
                           </ul>
                         </div>
                         <div className="lg:w-1/2 w-full">
-                          <div className="relative group overflow-hidden rounded-2xl shadow-2xl shadow-gray-200">
+                           <div className="relative group overflow-hidden rounded-2xl shadow-2xl shadow-gray-200 aspect-video lg:aspect-[4/3]">
                              <img 
-                               src="https://images.unsplash.com/photo-1551288049-bbbda536ad0a?q=80&w=2670&auto=format&fit=crop" 
+                               src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop" 
                                alt="Marketing Dashboard" 
-                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                              />
-                             <div className="absolute inset-0 bg-green-900/10 group-hover:bg-transparent transition-colors"></div>
-                          </div>
+                             <div className="absolute inset-0 bg-green-900/5 group-hover:bg-transparent transition-colors"></div>
+                           </div>
                         </div>
                       </div>
                   }

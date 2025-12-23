@@ -328,7 +328,7 @@ export default function AdminDashboard() {
             }`}
           >
             <Globe className={`h-5 w-5 ${activeTab === 'structure' ? theme.iconActive : theme.iconInactive}`} />
-            사이트 구조
+            사이트 개설 현황
           </button>
           <button 
             onClick={() => setActiveTab('customers')}
@@ -391,7 +391,7 @@ export default function AdminDashboard() {
           </button>
         </nav>
 
-        <div className="absolute bottom-4 w-full px-4 space-y-2">
+        <div className="absolute bottom-4 w-full px-4">
           {/* Theme Toggle */}
           <button 
             onClick={() => setIsDarkMode(!isDarkMode)}
@@ -401,14 +401,6 @@ export default function AdminDashboard() {
           >
             {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             {isDarkMode ? '라이트 모드' : '다크 모드'}
-          </button>
-
-          <button 
-            onClick={() => { logout(); router.push('/'); }}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-400/10 transition-all"
-          >
-            <LogOut className="h-5 w-5" />
-            로그아웃
           </button>
         </div>
       </aside>
@@ -427,7 +419,7 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-3 mb-1 md:mb-2">
               <h1 className={`text-3xl font-bold ${theme.text}`}>
                 {activeTab === 'dashboard' && '대시보드'}
-                {activeTab === 'structure' && '사이트 구조'}
+                {activeTab === 'structure' && '사이트 개설 현황'}
                 {activeTab === 'customers' && '고객 관리'}
                 {activeTab === 'inquiries' && '문의 내역'}
                 {activeTab === 'settings' && '사이트 설정'}
@@ -448,7 +440,7 @@ export default function AdminDashboard() {
             </div>
             <p className="text-gray-400 text-sm mt-1">
               {activeTab === 'dashboard' && '실시간 문의 현황 및 통계를 확인하세요.'}
-              {activeTab === 'structure' && '사이트 계층 구조와 연결 관계를 확인하세요.'}
+              {activeTab === 'structure' && '계열사 및 하위 사이트의 개설 상태와 관리 구조를 확인하세요.'}
               {activeTab === 'customers' && '고객 정보를 관리하고 분석하세요.'}
               {activeTab === 'inquiries' && '모든 문의 내역을 확인하고 관리하세요.'}
               {activeTab === 'settings' && '사이트 설정을 변경하고 최적화하세요.'}
@@ -459,6 +451,7 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-4">
 
+          <div className="flex items-center gap-4">
              <button 
                onClick={() => setActiveTab('inquiries')}
                className="relative p-2 hover:bg-white/5 rounded-full transition-colors"
@@ -469,17 +462,34 @@ export default function AdminDashboard() {
                  <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
                )}
              </button>
+             
              <div className="h-8 w-[1px] bg-white/10 mx-2" />
-             <div className="text-right">
-                <div className="text-sm font-bold">{user?.name || 'Admin'}</div>
-                <div className="text-xs text-gray-500">{user?.email}</div>
-             </div>
-             <button
+             
+             {/* Profile Info - Clickable User Area */}
+             <button 
                onClick={() => setShowProfileModal(true)}
-               className="h-10 w-10 rounded-full bg-purple-500/20 border border-purple-500/50 flex items-center justify-center font-bold text-purple-500 hover:bg-purple-500/30 transition-colors cursor-pointer"
+               className="flex items-center gap-3 group transition-all"
              >
-                {user?.name?.[0] || 'A'}
+                <div className="h-10 w-10 rounded-full bg-purple-500/20 border border-purple-500/50 flex items-center justify-center font-bold text-purple-500 group-hover:scale-110 transition-transform">
+                   {user?.name?.[0] || 'A'}
+                </div>
+                <div className="text-left hidden sm:block">
+                   <div className="text-sm font-bold group-hover:text-purple-400 transition-colors">{user?.name || 'Admin'}</div>
+                   <div className="text-[10px] text-gray-500">{user?.email}</div>
+                </div>
              </button>
+
+             <div className="h-8 w-[1px] bg-white/10 mx-2" />
+
+             {/* Logout Button */}
+             <button 
+               onClick={() => { logout(); router.push('/'); }}
+               className="p-2 text-gray-400 hover:text-red-400 transition-all hover:scale-110"
+               title="로그아웃"
+             >
+               <LogOut className="h-5 w-5" />
+             </button>
+          </div>
           </div>
         </header>
 
