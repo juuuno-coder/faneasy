@@ -8,22 +8,22 @@ import { useCartStore } from '@/lib/cart-store';
 import { Loader2, ArrowLeft, CheckCircle2, CreditCard } from 'lucide-react';
 import { getCreator } from '@/lib/data';
 
-// Pricing Data
+// Pricing Data (VAT 별도)
 const PLANS = {
   basic: {
     name: 'BASIC',
-    price: 300000,
-    monthly: 20000,
+    price: 300000,        // VAT 별도
+    monthly: 22000,       // VAT 포함
   },
   pro: {
     name: 'PRO',
-    price: 500000,
-    monthly: 30000,
+    price: 500000,        // VAT 별도
+    monthly: 33000,       // VAT 포함
   },
   master: {
     name: 'MASTER',
-    price: 700000,
-    monthly: 50000,
+    price: 700000,        // VAT 별도
+    monthly: 55000,       // VAT 포함
   }
 };
 
@@ -48,7 +48,9 @@ function CheckoutForm() {
     monthly: singlePlan.monthly
   }];
 
-  const totalPrice = isCartMode ? getCartTotal() : singlePlan.price;
+  const subtotal = isCartMode ? getCartTotal() : singlePlan.price;
+  const vat = Math.round(subtotal * 0.1); // VAT 10%
+  const totalPrice = subtotal + vat; // 총 결제금액 (VAT 포함)
   const totalMonthly = isCartMode ? getCartMonthly() : singlePlan.monthly;
 
   const site = params?.site as string;
@@ -391,9 +393,13 @@ function CheckoutForm() {
                <div className="mb-6 space-y-2">
                  <div className="flex justify-between text-gray-400">
                    <span>제작 비용 (일회성)</span>
-                   <span>{totalPrice.toLocaleString()}원</span>
+                   <span>{subtotal.toLocaleString()}원</span>
                  </div>
                  <div className="flex justify-between text-gray-400">
+                   <span>부가가치세 (VAT 10%)</span>
+                   <span>{vat.toLocaleString()}원</span>
+                 </div>
+                 <div className="flex justify-between text-gray-400 pt-2 border-t border-white/5">
                    <span>월 관리비 (결제)</span>
                    <span>{totalMonthly.toLocaleString()}원/월</span>
                  </div>
@@ -406,7 +412,7 @@ function CheckoutForm() {
                  <span>총 결제금액</span>
                  <span className="text-purple-400">{totalPrice.toLocaleString()}원</span>
                </div>
-               <p className="mt-2 text-right text-xs text-gray-500">VAT 포함</p>
+               <p className="mt-2 text-right text-xs text-gray-500">초기 개발비 + VAT 포함</p>
              </div>
              
              {/* Security Badge */}

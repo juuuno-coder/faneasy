@@ -36,7 +36,7 @@ const PLANS: Plan[] = [
   {
     id: 'basic',
     name: 'BASIC',
-    price: 20000,
+    price: 22000,
     period: '월',
     features: [
       '타사 랜딩 페이지 수준 베이직 디자인',
@@ -50,7 +50,7 @@ const PLANS: Plan[] = [
   {
     id: 'pro',
     name: 'PRO',
-    price: 30000,
+    price: 33000,
     period: '월',
     recommended: true,
     features: [
@@ -66,7 +66,7 @@ const PLANS: Plan[] = [
   {
     id: 'master',
     name: 'MASTER',
-    price: 50000,
+    price: 55000,
     period: '월',
     features: [
       '모든 PRO 기능 포함',
