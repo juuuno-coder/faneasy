@@ -8,22 +8,29 @@ import { useCartStore } from '@/lib/cart-store';
 import { Loader2, ArrowLeft, CheckCircle2, CreditCard } from 'lucide-react';
 import { getCreator } from '@/lib/data';
 
-// Pricing Data (VAT 별도)
+import { 
+  calculatePriceWithVAT, 
+  calculateTotalWithVAT, 
+  INITIAL_SETUP_PRICES, 
+  MONTHLY_SUBSCRIPTION_PLANS 
+} from '@/lib/pricing';
+
+// Pricing Data Configuration
 const PLANS = {
   basic: {
     name: 'BASIC',
-    price: 300000,        // VAT 별도
-    monthly: 22000,       // VAT 포함
+    price: INITIAL_SETUP_PRICES.basic, // VAT 별도
+    monthly: MONTHLY_SUBSCRIPTION_PLANS.basic, // VAT 포함
   },
   pro: {
     name: 'PRO',
-    price: 500000,        // VAT 별도
-    monthly: 33000,       // VAT 포함
+    price: INITIAL_SETUP_PRICES.pro, // VAT 별도
+    monthly: MONTHLY_SUBSCRIPTION_PLANS.pro, // VAT 포함
   },
   master: {
     name: 'MASTER',
-    price: 700000,        // VAT 별도
-    monthly: 55000,       // VAT 포함
+    price: INITIAL_SETUP_PRICES.master, // VAT 별도
+    monthly: MONTHLY_SUBSCRIPTION_PLANS.master, // VAT 포함
   }
 };
 
@@ -41,17 +48,28 @@ function CheckoutForm() {
   const { items: cartItems, totalPrice: getCartTotal, totalMonthly: getCartMonthly, clearCart } = useCartStore();
   const isCartMode = mode === 'cart';
 
+  // Calculate Prices using Utility
+  let subtotal = 0;
+  let totalMonthly = 0;
+
+  if (isCartMode) {
+    subtotal = getCartTotal(); 
+    totalMonthly = getCartMonthly();
+  } else {
+    subtotal = singlePlan.price;
+    totalMonthly = singlePlan.monthly;
+  }
+
+  // Apply VAT Calculation
+  const { vat, total: totalPrice } = calculatePriceWithVAT(subtotal);
+  
+  // Cart Items Setup
   const checkoutItems = isCartMode ? cartItems : [{
     id: planId,
     name: singlePlan.name,
     price: singlePlan.price,
     monthly: singlePlan.monthly
   }];
-
-  const subtotal = isCartMode ? getCartTotal() : singlePlan.price;
-  const vat = Math.round(subtotal * 0.1); // VAT 10%
-  const totalPrice = subtotal + vat; // 총 결제금액 (VAT 포함)
-  const totalMonthly = isCartMode ? getCartMonthly() : singlePlan.monthly;
 
   const site = params?.site as string;
   const creator = getCreator(site);
