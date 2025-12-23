@@ -30,6 +30,7 @@ import CustomersTab from '@/components/admin/customers-tab';
 import InquiriesTab from '@/components/admin/inquiries-tab';
 import SettingsTab from '@/components/admin/settings-tab';
 import ActivityTab from '@/components/admin/activity-tab';
+import UsersTab from '@/components/admin/users-tab';
 import SubscriptionTab from '@/components/admin/subscription-tab';
 import SiteTreeView from '@/components/admin/site-tree-view';
 import InquiryManagementModal from '@/components/admin/inquiry-management-modal';
@@ -48,7 +49,7 @@ export default function AdminDashboard() {
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'customers' | 'inquiries' | 'settings' | 'activity' | 'subscription'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'customers' | 'inquiries' | 'settings' | 'activity' | 'subscription' | 'users'>('dashboard');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -299,6 +300,21 @@ export default function AdminDashboard() {
             <Clock className="h-5 w-5" />
             활동 로그
           </button>
+          
+          {/* User Management (Super Admin Only) */}
+          {user?.role === 'super_admin' && (
+            <button 
+              onClick={() => { setActiveTab('users'); setShowMobileMenu(false); }}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                activeTab === 'users' 
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' 
+                  : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <Users className="h-5 w-5" />
+              사용자 관리
+            </button>
+          )}
           <button 
             onClick={() => { setActiveTab('settings'); setShowMobileMenu(false); }}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
@@ -535,6 +551,7 @@ export default function AdminDashboard() {
         {/* Subscription Tab Content */}
         {activeTab === 'subscription' && <SubscriptionTab />}
         {activeTab === 'activity' && <ActivityTab />}
+        {activeTab === 'users' && <UsersTab />}
 
 
         {/* Inquiry Management Modal */}
