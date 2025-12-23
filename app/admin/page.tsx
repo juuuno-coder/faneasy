@@ -416,7 +416,7 @@ export default function AdminDashboard() {
                     value={replyMessage}
                     onChange={(e) => setReplyMessage(e.target.value)}
                     rows={10}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none text-gray-900 bg-white"
                     placeholder="답장 내용을 입력하세요..."
                   />
                 </div>
