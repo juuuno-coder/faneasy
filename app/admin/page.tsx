@@ -19,13 +19,16 @@ import {
   Shield,
   Globe,
   Bell,
-  Bot
+  Bot,
+  Menu,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
 import CustomersTab from '@/components/admin/customers-tab';
 import InquiriesTab from '@/components/admin/inquiries-tab';
 import SettingsTab from '@/components/admin/settings-tab';
+import ActivityTab from '@/components/admin/activity-tab';
 import SiteTreeView from '@/components/admin/site-tree-view';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -42,7 +45,8 @@ export default function AdminDashboard() {
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'customers' | 'inquiries' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'customers' | 'inquiries' | 'settings' | 'activity'>('dashboard');
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
@@ -106,7 +110,40 @@ export default function AdminDashboard() {
     return () => unsubscribe();
   }, [mounted, localInquiries]);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="flex h-screen bg-[#0E0E0E] text-white overflow-hidden">
+        {/* Skeleton Sidebar */}
+        <div className="w-64 border-r border-white/5 bg-black/50 p-6 hidden md:block">
+          <div className="h-8 w-32 bg-white/10 rounded-lg mb-10 animate-pulse" />
+          <div className="space-y-4">
+             {[1, 2, 3, 4, 5].map(i => (
+               <div key={i} className="h-12 w-full bg-white/5 rounded-xl animate-pulse" />
+             ))}
+          </div>
+        </div>
+        {/* Skeleton Main */}
+        <div className="flex-1 p-8">
+           <div className="flex justify-between items-center mb-12">
+             <div>
+               <div className="h-8 w-48 bg-white/10 rounded-lg mb-2 animate-pulse" />
+               <div className="h-4 w-64 bg-white/5 rounded-lg animate-pulse" />
+             </div>
+             <div className="h-10 w-10 rounded-full bg-white/10 animate-pulse" />
+           </div>
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+             {[1, 2, 3, 4].map(i => (
+               <div key={i} className="h-32 bg-white/5 rounded-3xl animate-pulse" />
+             ))}
+           </div>
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="h-64 bg-white/5 rounded-3xl animate-pulse" />
+              <div className="h-64 bg-white/5 rounded-3xl animate-pulse" />
+           </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-[#0A0A0B] text-white font-sans">
@@ -157,7 +194,18 @@ export default function AdminDashboard() {
             문의 내역
           </button>
           <button 
-            onClick={() => setActiveTab('settings')}
+            onClick={() => { setActiveTab('activity'); setShowMobileMenu(false); }}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              activeTab === 'activity' 
+                ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' 
+                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Clock className="h-5 w-5" />
+            활동 로그
+          </button>
+          <button 
+            onClick={() => { setActiveTab('settings'); setShowMobileMenu(false); }}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
               activeTab === 'settings' ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'
             }`}
@@ -179,16 +227,24 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 flex-1 p-8">
-        <header className="mb-12 flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
+      <main className="ml-0 md:ml-64 flex-1 p-4 md:p-8 transition-all duration-300">
+        <header className="mb-8 md:mb-12 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setShowMobileMenu(true)}
+              className="md:hidden p-2 hover:bg-white/10 rounded-lg text-white"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            <div>
+              <div className="flex items-center gap-3 mb-1 md:mb-2">
               <h1 className="text-3xl font-bold">
                 {activeTab === 'dashboard' && '대시보드'}
                 {activeTab === 'structure' && '사이트 구조'}
                 {activeTab === 'customers' && '고객 관리'}
                 {activeTab === 'inquiries' && '문의 내역'}
                 {activeTab === 'settings' && '사이트 설정'}
+                {activeTab === 'activity' && '활동 로그'}
               </h1>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
                 {user?.role === 'admin' && '전체 플랫폼'}
@@ -202,7 +258,9 @@ export default function AdminDashboard() {
               {activeTab === 'customers' && '고객 정보를 관리하고 분석하세요.'}
               {activeTab === 'inquiries' && '모든 문의 내역을 확인하고 관리하세요.'}
               {activeTab === 'settings' && '사이트 설정을 변경하고 최적화하세요.'}
+              {activeTab === 'activity' && '관리자 활동 및 보안 로그를 확인하세요.'}
             </p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
              <button 
@@ -391,6 +449,7 @@ export default function AdminDashboard() {
 
         {/* Settings Tab Content */}
         {activeTab === 'settings' && <SettingsTab />}
+        {activeTab === 'activity' && <ActivityTab />}
 
         {/* Inquiry Detail Modal */}
         {selectedInquiry && (
