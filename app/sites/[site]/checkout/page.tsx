@@ -394,9 +394,12 @@ function CheckoutForm() {
                    <span>{totalPrice.toLocaleString()}원</span>
                  </div>
                  <div className="flex justify-between text-gray-400">
-                   <span>월 관리비 (합계)</span>
+                   <span>월 관리비 (결제)</span>
                    <span>{totalMonthly.toLocaleString()}원/월</span>
                  </div>
+                 <p className="text-xs text-green-400 pl-2 border-l-2 border-green-500/30 bg-green-500/5 p-2 rounded">
+                   💡 월 관리비는 사이트 배포가 시작되면 청구됩니다.
+                 </p>
                </div>
 
                <div className="flex justify-between border-t border-white/10 pt-6 text-xl font-bold">
