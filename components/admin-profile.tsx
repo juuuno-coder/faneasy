@@ -52,7 +52,7 @@ export default function AdminProfile() {
         <div className="hidden md:block text-left">
           <div className="text-sm font-medium">{user.name}</div>
           <div className="text-xs text-gray-500">
-            {user.role === "influencer"
+            {user.role === "owner"
               ? `${user.subdomain}.faneasy.kr`
               : user.email}
           </div>

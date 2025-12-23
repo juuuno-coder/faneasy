@@ -60,21 +60,21 @@ export default function SiteLoginPage() {
         id: fbUser.uid,
         name: fbUser.displayName || fbUser.email || "",
         email: fbUser.email || "",
-        role: "fan" as const, // Default to fan for site login
+        role: "user" as const, // Default to user for site login
         // In real implementation, check if they are the influencer owner
-        ...(influencer?.email === fbUser.email ? { role: 'influencer' as const, subdomain: site } : {})
+        ...(influencer?.email === fbUser.email ? { role: 'owner' as const, subdomain: site } : {})
       };
       
       // If user is the influencer logging into their own page
       if (influencer?.email === fbUser.email) {
-          user.role = 'influencer';
+          user.role = 'owner';
       }
 
       login(user, token);
 
       // Redirect based on role or back to home
-      if (user.role === "influencer") {
-         router.push("/admin/influencer");
+      if (user.role === "owner") {
+         router.push("/admin");
       } else {
          // Redirect to the site home or fan dashboard
          router.push(`/`); 
@@ -110,7 +110,7 @@ export default function SiteLoginPage() {
         id: cred.user.uid,
         name: cred.user.displayName || name || email,
         email: cred.user.email || "",
-        role: "fan" as const,
+        role: "user" as const,
         joinedSite: site, // Mark them as joined from this site
       };
 

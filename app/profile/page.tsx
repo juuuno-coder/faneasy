@@ -96,7 +96,7 @@ export default function ProfilePage() {
           />
         </div>
 
-        {user.role === "influencer" && (
+        {user.role === "owner" && (
           <div>
             <label
               htmlFor="subdomain"

@@ -20,7 +20,7 @@ export interface Influencer {
   name: string;
   email: string;
   passwordHash: string;
-  role: "influencer";
+  role: "owner";
   createdAt: Date;
   updatedAt: Date;
 
