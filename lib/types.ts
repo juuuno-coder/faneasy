@@ -1,5 +1,17 @@
-// 사용자 역할 정의
-export type UserRole = "influencer" | "fan" | "admin";
+// 사용자 역할 정의 (4단계 권한 체계)
+export type UserRole = 
+  | "super_admin"  // 최고관리자 (플랫폼 전체 관리)
+  | "owner"        // 소유자 (사이트 실제 주인)
+  | "admin"        // 관리자 (소유자가 지정한 운영진)
+  | "user";        // 일반 회원
+
+// 사이트별 권한 매핑
+export interface SitePermission {
+  siteId: string;      // subdomain (e.g., 'kkang')
+  role: UserRole;
+  grantedBy?: string;  // 권한 부여자 ID
+  grantedAt?: string;  // 권한 부여 시각
+}
 
 // 인플루언서 (1차 페이지 소유자)
 export interface Influencer {

@@ -133,9 +133,19 @@ export default function AdminDashboard() {
     fetchAndCalculate();
   }, [user, inquiries]);
 
+
   useEffect(() => {
     setMounted(true);
-    // Allow all roles to access admin dashboard
+    
+    // 권한 체크: super_admin, owner, admin만 접근 가능
+    if (mounted && user) {
+      const allowedRoles = ['super_admin', 'owner', 'admin'];
+      if (!allowedRoles.includes(user.role)) {
+        alert('관리자 권한이 필요합니다.');
+        router.push('/');
+        return;
+      }
+    }
   }, [user, mounted, router]);
 
   // Real-time Firestore listener with role-based filtering
@@ -144,26 +154,22 @@ export default function AdminDashboard() {
 
     // Build query based on user role
     let q;
-    if (user.role === 'admin') {
-      // Admin sees all inquiries
+    if (user.role === 'super_admin') {
+      // 최고관리자는 모든 문의 조회
       q = query(
         collection(db, "inquiries"),
         orderBy("createdAt", "desc")
       );
-    } else if (user.role === 'influencer') {
-      // Influencer sees only their inquiries
+    } else if (user.role === 'owner' || user.role === 'admin') {
+      // 소유자/관리자는 본인 사이트의 문의만 조회
       q = query(
         collection(db, "inquiries"),
         where("ownerId", "==", user.id),
         orderBy("createdAt", "desc")
       );
     } else {
-      // Fan sees only their inquiries
-      q = query(
-        collection(db, "inquiries"),
-        where("ownerId", "==", user.id),
-        orderBy("createdAt", "desc")
-      );
+      // user 역할은 접근 불가 (위에서 이미 차단됨)
+      return;
     }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -339,9 +345,10 @@ export default function AdminDashboard() {
                 {activeTab === 'activity' && '활동 로그'}
               </h1>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                {user?.role === 'admin' && '전체 플랫폼'}
-                {user?.role === 'influencer' && `${user?.subdomain || '인플루언서'} 관리`}
-                {user?.role === 'fan' && '팬 페이지'}
+                {user?.role === 'super_admin' && '최고관리자'}
+                {user?.role === 'owner' && `${user?.subdomain || '사이트'} 소유자`}
+                {user?.role === 'admin' && '관리자'}
+                {user?.role === 'user' && '일반 회원'}
               </span>
             </div>
             <p className="text-gray-400 text-sm mt-1">

@@ -50,32 +50,41 @@ function LoginContent() {
       const influencer = mockInfluencers.find((i) => i.email === fbUser.email);
       const fan = mockFans.find((f) => f.email === fbUser.email);
 
-      const user = influencer
-        ? {
-            id: fbUser.uid,
-            name: influencer.name || fbUser.displayName || fbUser.email || "",
-            email: fbUser.email || "",
-            role: "influencer" as const,
-            subdomain: influencer.subdomain,
-          }
-        : fan
-        ? {
-            id: fbUser.uid,
-            name: fan.name || fbUser.displayName || fbUser.email || "",
-            email: fbUser.email || "",
-            role: "fan" as const,
-            slug: fan.slug,
-          }
-        : {
-            id: fbUser.uid,
-            name: fbUser.displayName || fbUser.email || "",
-            email: fbUser.email || "",
-            role: "fan" as const,
-          };
+      // 최고관리자 이메일 (하드코딩)
+      const SUPER_ADMIN_EMAIL = 'duscontactus@gmail.com';
+      
+      // 역할 결정 로직
+      let role: "super_admin" | "owner" | "admin" | "user" = "user";
+      let subdomain: string | undefined;
+      let slug: string | undefined;
+
+      if (fbUser.email === SUPER_ADMIN_EMAIL) {
+        // 최고관리자
+        role = "super_admin";
+      } else if (influencer) {
+        // 기존 influencer는 owner로 매핑
+        role = "owner";
+        subdomain = influencer.subdomain;
+      } else if (fan) {
+        // 기존 fan은 user로 매핑
+        role = "user";
+        slug = fan.slug;
+      }
+
+      const user = {
+        id: fbUser.uid,
+        name: influencer?.name || fan?.name || fbUser.displayName || fbUser.email || "",
+        email: fbUser.email || "",
+        role,
+        subdomain,
+        slug
+      };
 
       login(user, token);
       
-      const redirectUrl = searchParams.get("redirect") || (user.role === "influencer" ? "/admin/influencer" : "/admin/fan");
+      // 리다이렉트 로직
+      const redirectUrl = searchParams.get("redirect") || 
+        (role === "super_admin" || role === "owner" || role === "admin" ? "/admin" : "/");
       router.push(redirectUrl);
     } catch (err: any) {
       setError(err?.message || "로그인 중 오류가 발생했습니다.");
@@ -102,17 +111,18 @@ function LoginContent() {
 
       const token = await cred.user.getIdToken();
 
-      // default new users to 'fan' role until server-side profile exists
+      // 신규 가입자는 기본적으로 user 역할
       const user = {
         id: cred.user.uid,
         name: cred.user.displayName || name || email,
         email: cred.user.email || "",
-        role: "fan" as const,
+        role: "user" as const,
       };
 
       login(user, token);
       
-      const redirectUrl = searchParams.get("redirect") || "/admin/fan";
+      // 일반 회원은 메인 페이지로
+      const redirectUrl = searchParams.get("redirect") || "/";
       router.push(redirectUrl);
     } catch (err: any) {
       setError(err?.message || "회원가입 중 오류가 발생했습니다.");

@@ -213,33 +213,8 @@ export function getFansByInfluencer(influencerId: string): Fan[] {
   return mockFans.filter(fan => fan.influencerId === influencerId);
 }
 
-// Mock Inquiries
-export const mockInquiries: Inquiry[] = [
-  {
-    id: 'inq-1',
-    ownerId: 'inf-1',
-    name: '김철수',
-    email: 'chulsoo@example.com',
-    phone: '010-1234-5678',
-    company: '철수마케팅',
-    message: '1인 마케팅 대행사 홈페이지 신청합니다. MZ마케팅 레퍼런스처럼 깔끔하게 부탁드려요.',
-    plan: 'pro',
-    status: 'pending',
-    createdAt: new Date('2024-12-20T14:30:00')
-  },
-  {
-    id: 'inq-2',
-    ownerId: 'inf-1',
-    name: '이영희',
-    email: 'younghee@example.com',
-    phone: '010-9876-5432',
-    company: '영희네디자인',
-    message: '베이직 플랜으로 시작해보고 싶습니다.',
-    plan: 'basic',
-    status: 'contacted',
-    createdAt: new Date('2024-12-21T10:15:00')
-  }
-];
+// Mock Inquiries (실제 데이터는 Firestore에서 가져옴)
+export const mockInquiries: Inquiry[] = [];
 
 export function getInquiriesByInfluencer(influencerId: string): Inquiry[] {
   return mockInquiries.filter(inq => inq.ownerId === influencerId);
