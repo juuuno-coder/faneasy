@@ -156,27 +156,39 @@ export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean })
     }
   };
 
-  if (initializing) return <div className="p-8 text-center text-gray-500">정보를 불러오는 중...</div>;
+  const t = {
+    cardMain: isDarkMode ? 'bg-gradient-to-br from-white/5 to-white/2 border-white/5' : 'bg-white border-slate-200 shadow-sm',
+    cardPlan: isDarkMode ? 'bg-white/2 border-white/5 hover:border-white/10 hover:bg-white/5' : 'bg-white border-slate-200 shadow-sm hover:shadow-md hover:border-purple-200',
+    cardActive: isDarkMode ? 'bg-purple-600/10 border-purple-50' : 'bg-purple-50 border-purple-200',
+    text: isDarkMode ? 'text-white' : 'text-slate-900',
+    textMuted: isDarkMode ? 'text-gray-400' : 'text-slate-500',
+    textDim: isDarkMode ? 'text-gray-300' : 'text-slate-600',
+    buttonOutline: isDarkMode ? 'bg-white/5 hover:bg-white/10 text-white border-white/10' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200 shadow-sm',
+    buttonSolid: isDarkMode ? 'bg-white text-black hover:bg-gray-200' : 'bg-slate-900 text-white hover:bg-black',
+    historyItem: isDarkMode ? 'bg-white/5 border-white/5' : 'bg-slate-50 border-slate-100',
+    infoBox: isDarkMode ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100',
+  };
+
+  if (initializing) return <div className={`p-8 text-center ${t.textMuted}`}>정보를 불러오는 중...</div>;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Current Subscription Status */}
-      <div className="rounded-3xl border border-white/5 bg-gradient-to-br from-white/5 to-white/2 p-8 overflow-hidden relative">
+      <div className={`rounded-3xl border p-8 overflow-hidden relative ${t.cardMain}`}>
         <div className="absolute top-0 right-0 p-32 bg-purple-500/10 blur-[100px] rounded-full pointer-events-none" />
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold border border-green-500/30 flex items-center gap-1">
+              <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-500 text-xs font-bold border border-green-500/30 flex items-center gap-1">
                 <Check className="h-3 w-3" />
                 구독 중 (Active)
               </span>
-              <span className="text-gray-400 text-sm">다음 결제일: {nextPaymentDate || '-'}</span>
+              <span className={`${t.textMuted} text-sm`}>다음 결제일: {nextPaymentDate || '-'}</span>
             </div>
-            <h2 className="text-3xl font-bold mb-2">
+            <h2 className={`text-3xl font-bold mb-2 ${t.text}`}>
               {PLANS.find(p => p.id === currentPlan)?.name} Plan
             </h2>
-            <p className="text-gray-400">
+            <p className={t.textMuted}>
               현재 {currentPlan === 'free' ? '기본 기능을' : '프리미엄 기능을'} 이용하고 계십니다.
             </p>
           </div>
@@ -184,11 +196,11 @@ export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean })
           <div className="flex gap-3">
             <button 
               onClick={() => setShowHistory(!showHistory)}
-              className="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-colors border border-white/10"
+              className={`px-5 py-3 rounded-xl font-medium transition-colors border ${t.buttonOutline}`}
             >
               결제 내역
             </button>
-            <button className="px-5 py-3 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-colors">
+            <button className={`px-5 py-3 rounded-xl font-bold transition-colors ${t.buttonSolid}`}>
               카드 관리
             </button>
           </div>
@@ -197,26 +209,26 @@ export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean })
 
       {/* Payment History (Collapsible) */}
       {showHistory && (
-        <div className="rounded-3xl border border-white/5 bg-black/20 p-6">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+        <div className={`rounded-3xl border p-6 ${t.historyItem}`}>
+          <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${t.text}`}>
             <Clock className="h-5 w-5 text-gray-400" />
             최근 결제 내역
           </h3>
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
+              <div key={i} className={`flex items-center justify-between p-4 rounded-xl border ${t.historyItem}`}>
                 <div className="flex items-center gap-4">
                   <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
                     <Check className="h-5 w-5 text-green-500" />
                   </div>
                   <div>
-                    <div className="font-bold">Pro Plan 월간 구독</div>
-                    <div className="text-xs text-gray-500">2023. 12. 23 • 카카오페이</div>
+                    <div className={`font-bold ${t.text}`}>Pro Plan 월간 구독</div>
+                    <div className={`text-xs ${t.textMuted}`}>2023. 12. 23 • 카카오페이</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-bold text-white">₩9,900</span>
-                  <button className="p-2 hover:bg-white/10 rounded-lg text-gray-400 transition-colors">
+                  <span className={`font-bold ${t.text}`}>₩33,000</span>
+                  <button className={`p-2 hover:bg-white/10 rounded-lg transition-colors ${t.textMuted}`}>
                     <Download className="h-4 w-4" />
                   </button>
                 </div>
@@ -234,10 +246,8 @@ export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean })
             className={`
               relative rounded-3xl p-8 border transition-all duration-300
               ${currentPlan === plan.id 
-                ? 'bg-purple-600/10 border-purple-500 ring-1 ring-purple-500/50' 
-                : isDarkMode 
-                  ? 'bg-white/2 border-white/5 hover:border-white/10 hover:bg-white/5'
-                  : 'bg-white border-gray-200 hover:shadow-md'}
+                ? t.cardActive 
+                : t.cardPlan}
             `}
           >
             {plan.recommended && (
@@ -247,19 +257,19 @@ export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean })
             )}
 
             <div className="mb-6">
-              <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+              <h3 className={`text-xl font-bold mb-2 ${t.text}`}>{plan.name}</h3>
               <div className="flex items-baseline gap-1">
-                <span className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <span className={`text-4xl font-bold ${t.text}`}>
                   {plan.price === 0 ? '무료' : `₩${plan.price.toLocaleString()}`}
                 </span>
-                <span className="text-gray-400 text-sm">/{plan.period}</span>
+                <span className={`${t.textMuted} text-sm`}>/{plan.period}</span>
               </div>
             </div>
 
             <ul className="space-y-4 mb-8">
               {plan.features.map((feature, idx) => (
-                <li key={idx} className={`flex items-start gap-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <div className={`mt-0.5 h-4 w-4 rounded-full flex items-center justify-center ${currentPlan === plan.id ? 'bg-purple-500' : 'bg-gray-700'}`}>
+                <li key={idx} className={`flex items-start gap-3 text-sm ${t.textDim}`}>
+                  <div className={`mt-0.5 h-4 w-4 rounded-full flex items-center justify-center ${currentPlan === plan.id ? 'bg-purple-500' : 'bg-gray-400'}`}>
                     <Check className="h-2 w-2 text-white" />
                   </div>
                   {feature}
@@ -273,8 +283,8 @@ export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean })
               className={`
                 w-full py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2
                 ${currentPlan === plan.id 
-                  ? 'bg-white/10 text-gray-400 cursor-default' 
-                  : 'bg-white text-black hover:bg-gray-200 hover:scale-[1.02]'}
+                  ? 'bg-purple-100 text-purple-400 cursor-default' 
+                  : t.buttonSolid}
               `}
             >
               {loading && currentPlan !== plan.id ? (
@@ -290,11 +300,11 @@ export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean })
         ))}
       </div>
 
-      <div className="rounded-2xl bg-blue-500/10 border border-blue-500/20 p-6 flex items-start gap-4">
+      <div className={`rounded-2xl p-6 flex items-start gap-4 border ${t.infoBox}`}>
         <AlertCircle className="h-6 w-6 text-blue-400 flex-shrink-0" />
         <div>
-          <h4 className="font-bold text-blue-400 mb-1">포트원(PortOne) 결제 연동 안내</h4>
-          <p className="text-sm text-gray-400 leading-relaxed">
+          <h4 className="font-bold text-blue-500 mb-1">포트원(PortOne) 결제 연동 안내</h4>
+          <p className={`text-sm leading-relaxed ${t.textMuted}`}>
             현재는 시뮬레이션 모드입니다. 실제 결제 연동을 위해서는 포트원 관리자 콘솔에서 
             API 키를 발급받아 환경 변수에 설정해야 합니다. 
             PG사는 토스페이먼츠, 카카오페이 등을 선택할 수 있습니다.

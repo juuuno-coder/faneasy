@@ -243,3 +243,24 @@ export interface SiteSettings {
   seoDescription: string;
   updatedAt: string;
 }
+
+export interface ActivityLog {
+  id: string;
+  type: 'reply' | 'settings' | 'login' | 'inquiry' | 'update' | 'security' | 'order';
+  userName: string;
+  userEmail: string;
+  action: string;
+  target: string;
+  timestamp: string;
+  subdomain?: string; // Optional: to filter by site
+}
+export interface SiteNode {
+  id: string;          // subdomain (e.g., 'fan1')
+  parentSiteId: string; // parent subdomain (e.g., 'kkang')
+  name: string;
+  ownerId?: string;
+  ownerName?: string;
+  adminIds?: string[];
+  createdAt: string;
+  updatedAt: string;
+}

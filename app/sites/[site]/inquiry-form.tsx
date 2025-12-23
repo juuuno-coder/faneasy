@@ -7,6 +7,7 @@ import { useDataStore } from "@/lib/data-store";
 import { db } from "@/lib/firebaseClient";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useParams } from "next/navigation";
+import { logActivity } from "@/lib/logger";
 
 export default function InquiryForm({
   influencerId,
@@ -63,10 +64,19 @@ export default function InquiryForm({
         createdAt: new Date().toISOString(),
       };
 
-      // 1. Save to Firebase Firestore
       await addDoc(collection(db, "inquiries"), {
         ...newInquiry,
         serverCreatedAt: serverTimestamp(),
+      });
+
+      // 1-2. Log Activity
+      await logActivity({
+        type: 'inquiry',
+        userName: formData.name,
+        userEmail: formData.email,
+        action: '새로운 문의 접수',
+        target: `${formData.plan.toUpperCase()} 플랜 신청`,
+        subdomain: currentSite || 'unknown'
       });
 
       // 2. Send email notification (Optional)

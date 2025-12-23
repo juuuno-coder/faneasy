@@ -12,6 +12,7 @@ interface ImageUploadProps {
   onChange: (url: string) => void;
   disabled?: boolean;
   aspectRatio?: 'square' | 'video' | 'wide';
+  isDarkMode?: boolean;
 }
 
 export default function ImageUpload({ 
@@ -19,7 +20,8 @@ export default function ImageUpload({
   value, 
   onChange, 
   disabled,
-  aspectRatio = 'square' 
+  aspectRatio = 'square',
+  isDarkMode = true
 }: ImageUploadProps) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -81,16 +83,17 @@ export default function ImageUpload({
 
   return (
     <div className="space-y-4 w-full">
-      <label className="block text-sm font-bold text-gray-300 mb-2">{label}</label>
+      <label className={`block text-sm font-bold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>{label}</label>
       
       <div 
         onClick={() => !disabled && !loading && fileInputRef.current?.click()}
         className={`
-          relative border-2 border-dashed border-white/10 rounded-xl overflow-hidden group transition-all
-          ${value ? 'border-transparent' : 'hover:border-purple-500/50 hover:bg-white/5 cursor-pointer'}
+          relative border-2 border-dashed rounded-xl overflow-hidden group transition-all
+          ${isDarkMode ? 'border-white/10 bg-black/20' : 'border-slate-200 bg-slate-50'}
+          ${value ? 'border-transparent' : 'hover:border-purple-500/50 hover:bg-opacity-80 cursor-pointer'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${getAspectRatioClass()}
-          flex flex-col items-center justify-center bg-black/20
+          flex flex-col items-center justify-center
         `}
       >
         <input 
@@ -133,11 +136,11 @@ export default function ImageUpload({
               </>
             ) : (
               <>
-                <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center mb-1 group-hover:scale-110 transition-transform ${isDarkMode ? 'bg-white/5 text-gray-400' : 'bg-white text-slate-400 shadow-sm border border-slate-100'}`}>
                   <Upload className="h-5 w-5" />
                 </div>
-                <div className="text-sm font-medium">이미지 업로드</div>
-                <div className="text-xs text-gray-500">클릭하거나 파일을 드래그하세요</div>
+                <div className={`text-sm font-bold ${isDarkMode ? 'text-gray-400' : 'text-slate-500'}`}>이미지 업로드</div>
+                <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-slate-400'}`}>클릭하거나 파일을 드래그하세요</div>
               </>
             )}
           </div>

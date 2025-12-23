@@ -8,20 +8,20 @@ import { useAuthStore } from '@/lib/store';
 interface InquiriesTabProps {
   inquiries: Inquiry[];
   onSelectInquiry: (inquiry: Inquiry) => void;
+  isDarkMode: boolean;
 }
 
-export default function InquiriesTab({ inquiries, onSelectInquiry }: InquiriesTabProps) {
+export default function InquiriesTab({ inquiries, onSelectInquiry, isDarkMode }: InquiriesTabProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'contacted' | 'completed'>('all');
   
-  const { user } = useAuthStore();
-  const isDark = user?.role === 'owner';
+  const isDark = isDarkMode;
 
   const theme = {
     input: isDark ? 'bg-white/5 border-white/10 text-white placeholder-gray-500' : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 shadow-sm',
     select: isDark ? 'text-white' : 'text-gray-900',
-    card: isDark ? 'bg-white/2 border-white/5' : 'bg-white/60 backdrop-blur-xl border-white/40 shadow-xl',
-    item: isDark ? 'bg-black/20 border-white/5 hover:bg-white/5' : 'bg-white border-gray-200 hover:bg-purple-50/50 hover:border-purple-200 shadow-sm',
+    card: isDark ? 'bg-white/2 border-white/5' : 'bg-white border-gray-200 shadow-sm',
+    item: isDark ? 'bg-black/20 border-white/5 hover:bg-white/5' : 'bg-white border-gray-100 hover:bg-purple-50/50 hover:border-purple-200',
     text: isDark ? 'text-white' : 'text-gray-900',
     textSub: isDark ? 'text-gray-500' : 'text-gray-500',
     textDim: isDark ? 'text-gray-300' : 'text-gray-600',

@@ -81,7 +81,7 @@ export default function TemplateShowcase() {
 
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm">
                    <Link 
-                     href={`/sites/${template.slug || 'fan1'}`}
+                     href={`/sites/${template.slug}`}
                      target="_blank"
                      rel="noopener noreferrer"
                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-colors"
@@ -124,7 +124,7 @@ export default function TemplateShowcase() {
                     </span>
                   </div>
                   <Link
-                    href={`/sites/${template.slug || 'fan1'}`}
+                    href={`/sites/${template.slug}`}
                     className="flex items-center gap-1 text-sm font-bold text-white hover:text-purple-400 transition-colors"
                   >
                     자세히 보기 <ArrowRight className="h-4 w-4" />

@@ -81,7 +81,8 @@ export default function AdminDashboard() {
     if (!user) return;
 
     const fetchAndCalculate = async () => {
-      const docId = user.subdomain || user.id;
+      // Emergency Fix: If admin/owner, use 'kkang' or their subdomain as the primary stat source
+      const docId = user.subdomain || (user.email === 'kgw2642@gmail.com' ? 'kkang' : user.id);
       const today = new Date().toISOString().split('T')[0];
       
       let totalV = 0;
@@ -92,8 +93,13 @@ export default function AdminDashboard() {
         // 1. Fetch Total Visits
         const statsRef = doc(db, 'site_stats', docId);
         const statsSnap = await getDoc(statsRef);
+        
+        // If 'kkang' stats don't exist yet, try a fallback (for development/legacy)
         if (statsSnap.exists()) {
           totalV = statsSnap.data().totalVisits || 0;
+        } else if (docId !== 'kkang' && user.email === 'kgw2642@gmail.com') {
+           const kkangSnap = await getDoc(doc(db, 'site_stats', 'kkang'));
+           if (kkangSnap.exists()) totalV = kkangSnap.data().totalVisits || 0;
         }
 
         // 2. Fetch Today's Visits
@@ -150,7 +156,30 @@ export default function AdminDashboard() {
   useEffect(() => {
     setMounted(true);
     
-    // 권한 체크: 모든 로그인된 사용자 접근 가능 (Fan Page 관리)
+    // 1. One-time DB fix for specific user (Rename 깡대표 -> 디어스)
+    const fixProfile = async () => {
+        if (user?.email === 'kgw2642@gmail.com') {
+            try {
+                const userRef = doc(db, 'users', user.id);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists() && userSnap.data().name !== '디어스') {
+                    await setDoc(userRef, { 
+                        name: '디어스',
+                        role: 'super_admin',
+                        updatedAt: new Date() 
+                    }, { merge: true });
+                    // Also update local store immediately
+                    updateUser({ name: '디어스', role: 'super_admin' });
+                    console.log('Profile fixed: Renamed to 디어스');
+                }
+            } catch (err) {
+                console.error("Profile fix error:", err);
+            }
+        }
+    };
+    if (mounted && user) fixProfile();
+
+    // 2. 권한 체크
     if (mounted && user) {
       const allowedRoles = ['super_admin', 'owner', 'admin', 'user'];
       if (!allowedRoles.includes(user.role)) {
@@ -467,15 +496,17 @@ export default function AdminDashboard() {
           ].map((stat, i) => (
             <div
               key={i}
-              className={`${theme.card} p-6 text-left transition-all`}
+              className={`${theme.card} p-6 text-left transition-all border shadow-sm`}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className={`rounded-xl bg-${stat.color}-500/10 p-2 text-${stat.color}-500`}>
                   <stat.icon className="h-5 w-5" />
                 </div>
               </div>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="text-sm text-gray-500">{stat.label}</div>
+              <div className={`text-3xl font-bold mb-1 ${theme.text}`}>{stat.value}</div>
+              <div className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>
@@ -589,22 +620,23 @@ export default function AdminDashboard() {
         )}
 
         {/* Customers Tab Content */}
-        {activeTab === 'customers' && <CustomersTab inquiries={inquiries} />}
+        {activeTab === 'customers' && <CustomersTab inquiries={inquiries} isDarkMode={isDark} />}
 
         {/* Inquiries Tab Content */}
         {activeTab === 'inquiries' && (
           <InquiriesTab 
             inquiries={inquiries} 
             onSelectInquiry={setSelectedInquiry}
+            isDarkMode={isDark}
           />
         )}
 
         {/* Settings Tab Content */}
-        {activeTab === 'settings' && <SettingsTab />}
+        {activeTab === 'settings' && <SettingsTab isDarkMode={isDark} />}
         {/* Subscription Tab Content */}
         {activeTab === 'subscription' && <SubscriptionTab isDarkMode={isDark} />}
-        {activeTab === 'activity' && <ActivityTab />}
-        {activeTab === 'users' && <UsersTab />}
+        {activeTab === 'activity' && <ActivityTab isDarkMode={isDark} />}
+        {activeTab === 'users' && <UsersTab isDarkMode={isDark} />}
 
 
         {/* Inquiry Management Modal */}

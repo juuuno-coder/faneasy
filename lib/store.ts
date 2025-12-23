@@ -56,56 +56,70 @@ export const useAuthStore = create<AuthStore>()(
 
       initAuthListener: () => {
         if (typeof window === "undefined") return;
-        // avoid multiple listeners
-        try {
-          onAuthStateChanged(firebaseAuth, async (fbUser) => {
-            if (!fbUser) {
-              get().logout();
-              return;
-            }
+        
+        const { doc, getDoc, setDoc } = require("firebase/firestore");
+        const { db } = require("./firebaseClient");
 
+        onAuthStateChanged(firebaseAuth, async (fbUser) => {
+          if (!fbUser) {
+            get().logout();
+            return;
+          }
+
+          try {
             const token = await fbUser.getIdToken();
-            const email = fbUser.email || "";
-            const name = fbUser.displayName || email;
-
-            // Try to map role using mock data until server-side profiles exist
-            const influencer = mockInfluencers.find((i) => i.email === email);
-            const fan = mockFans.find((f) => f.email === email);
+            const userRef = doc(db, "users", fbUser.uid);
+            const userSnap = await getDoc(userRef);
 
             let user: AuthUser;
 
-            if (email === "juuuno@naver.com") {
+            if (userSnap.exists()) {
+              const userData = userSnap.data();
               user = {
                 id: fbUser.uid,
-                name: "최고 관리자",
-                email,
-                role: "admin",
+                name: userData.name || fbUser.displayName || fbUser.email?.split("@")[0] || "User",
+                email: fbUser.email || "",
+                role: userData.role || "user",
+                subdomain: userData.subdomain,
+                slug: userData.slug,
               };
-            } else if (influencer) {
-              user = {
-                id: fbUser.uid,
-                name: influencer.name || name,
-                email,
-                role: "owner",
-                subdomain: influencer.subdomain,
-              };
-            } else if (fan) {
-              user = {
-                id: fbUser.uid,
-                name: fan.name || name,
-                email,
-                role: "user",
-                slug: fan.slug,
-              };
+
+              // Emergency Fix: If specific email, ensure they have Super Admin (if DB is somehow wrong)
+              if (fbUser.email === "kgw2642@gmail.com" && user.role !== "super_admin") {
+                 user.role = "super_admin";
+              }
+
             } else {
-              user = { id: fbUser.uid, name, email, role: "user" };
+              // Create default profile if not exists
+              const defaultName = fbUser.displayName || fbUser.email?.split("@")[0] || "User";
+              const defaultRole = (fbUser.email === "kgw2642@gmail.com" || fbUser.email === "juuuno@naver.com") ? "super_admin" : "user";
+              
+              user = {
+                id: fbUser.uid,
+                name: defaultName,
+                email: fbUser.email || "",
+                role: defaultRole as UserRole,
+              };
+
+              await setDoc(userRef, {
+                ...user,
+                createdAt: new Date(),
+                uid: fbUser.uid
+              });
             }
 
             get().login(user, token);
-          });
-        } catch (e) {
-          // ignore
-        }
+          } catch (e) {
+            console.error("Auth listener error", e);
+            // Fallback for network issues (use simple info)
+            get().login({
+                id: fbUser.uid,
+                name: fbUser.displayName || fbUser.email || "User",
+                email: fbUser.email || "",
+                role: "user"
+            }, "");
+          }
+        });
       },
 
       signOutClient: async () => {

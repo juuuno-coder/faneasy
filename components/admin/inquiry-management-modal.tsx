@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { db } from '@/lib/firebaseClient';
 import { doc, updateDoc } from 'firebase/firestore';
+import { logActivity } from '@/lib/logger';
+import { useAuthStore } from '@/lib/store';
 
 interface Props {
   inquiry: Inquiry;
@@ -37,6 +39,7 @@ const WORKFLOW_STEPS: { status: InquiryWorkflowStatus; label: string; color: str
 ];
 
 export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: Props) {
+  const { user: currentUser } = useAuthStore();
   const [currentStatus, setCurrentStatus] = useState<InquiryWorkflowStatus>(
     inquiry.workflowStatus || 'received'
   );
@@ -80,7 +83,6 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
 
     // Immediate Save for Status Change
     try {
-        // Create a shallow copy to prevent mutation of read-only props
         const timeline = [...(inquiry.timeline || [])];
         timeline.push({
             status: newStatus,
@@ -88,30 +90,50 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
             note: '상태 변경됨'
         });
 
-        // Calculate subscription start date
-        let subscriptionStartDate = inquiry.subscriptionStartDate;
-        if (newStatus === 'completed' && newCompletedAt) {
-            const nextDay = new Date(newCompletedAt);
-            nextDay.setDate(nextDay.getDate() + 1);
-            subscriptionStartDate = nextDay.toISOString().split('T')[0];
-        }
-
         const docRef = doc(db, 'inquiries', inquiry.id);
-        await updateDoc(docRef, {
+        
+        // Build update data object without 'undefined'
+        const updateData: any = {
             workflowStatus: newStatus,
             timeline,
-            completedAt: newStatus === 'completed' ? newCompletedAt : inquiry.completedAt,
-            subscriptionStartDate,
             updatedAt: new Date().toISOString()
-        });
+        };
+
+        // Date Logic
+        if (newStatus === 'completed') {
+            const dateStr = newCompletedAt || new Date().toISOString().split('T')[0];
+            updateData.completedAt = dateStr;
+            updateData.status = 'completed'; // legacy sync
+            
+            const nextDay = new Date(dateStr);
+            nextDay.setDate(nextDay.getDate() + 1);
+            updateData.subscriptionStartDate = nextDay.toISOString().split('T')[0];
+        } else {
+            // Provide null if undefined to satisfy Firestore
+            updateData.completedAt = inquiry.completedAt || null;
+            updateData.subscriptionStartDate = inquiry.subscriptionStartDate || null;
+        }
+
+        await updateDoc(docRef, updateData);
+
+        // 1-2. Log Activity
+        if (currentUser) {
+            const stepLabel = WORKFLOW_STEPS.find(s => s.status === newStatus)?.label || newStatus;
+            await logActivity({
+                type: 'reply',
+                userName: currentUser.name,
+                userEmail: currentUser.email,
+                action: '문의 상태 변경',
+                target: `${inquiry.name}님: ${stepLabel}`,
+                subdomain: currentUser.subdomain || (inquiry as any).siteDomain
+            });
+        }
         
         // Notify parent
         onUpdate({ 
             ...inquiry, 
-            workflowStatus: newStatus, 
-            timeline, 
-            completedAt: newStatus === 'completed' ? newCompletedAt : inquiry.completedAt,
-            subscriptionStartDate 
+            ...updateData,
+            status: updateData.status || inquiry.status
         });
 
     } catch(e: any) {

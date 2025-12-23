@@ -17,31 +17,33 @@ interface UserData {
   joinedSite?: string;
 }
 
-export default function UsersTab() {
+interface UsersTabProps {
+  isDarkMode: boolean;
+}
+
+export default function UsersTab({ isDarkMode }: UsersTabProps) {
   const { user: currentUser } = useAuthStore();
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   
-  // 편집 모드 상태
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ role: UserRole; subdomain: string }>({ role: 'user', subdomain: '' });
   const [saving, setSaving] = useState(false);
 
-  // Permissions & Theme
   const isSuperAdmin = currentUser?.role === 'super_admin';
   const isOwner = currentUser?.role === 'owner';
-  const isDark = isOwner; 
+  const isDark = isDarkMode; 
 
   const theme = {
-    card: isDark ? 'bg-white/5 border-white/5' : 'bg-white/60 backdrop-blur-xl border-white/40 shadow-xl',
-    headerBg: isDark ? 'bg-black/20 text-gray-400' : 'bg-purple-50/50 text-gray-600 border-b border-purple-100',
-    rowHover: isDark ? 'hover:bg-white/5' : 'hover:bg-purple-50/30',
-    text: isDark ? 'text-white' : 'text-gray-900',
-    textSub: isDark ? 'text-gray-500' : 'text-gray-500',
-    inputBg: isDark ? 'bg-[#1A1A1C] border-white/10 text-white' : 'bg-white border-gray-200 text-gray-700',
-    selectBg: isDark ? 'bg-[#0A0A0B] border-white/20 text-white' : 'bg-white border-gray-200 text-gray-700',
-    divider: isDark ? 'divide-white/5' : 'divide-purple-100',
+    card: isDark ? 'bg-white/5 border-white/5' : 'bg-white border-gray-200 shadow-sm',
+    headerBg: isDark ? 'bg-black/20 text-gray-400' : 'bg-slate-50 text-slate-600 border-b border-gray-100',
+    rowHover: isDark ? 'hover:bg-white/5' : 'hover:bg-purple-50/50',
+    text: isDark ? 'text-white' : 'text-slate-900',
+    textSub: isDark ? 'text-gray-500' : 'text-slate-500',
+    inputBg: isDark ? 'bg-[#1A1A1C] border-white/10 text-white' : 'bg-white border-gray-200 text-slate-700',
+    selectBg: isDark ? 'bg-[#0A0A0B] border-white/20 text-white' : 'bg-white border-gray-200 text-slate-700',
+    divider: isDark ? 'divide-white/5' : 'divide-gray-100',
     badge: {
        super_admin: isDark ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-red-50 text-red-600 border-red-100',
        owner: isDark ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-purple-50 text-purple-600 border-purple-100',
