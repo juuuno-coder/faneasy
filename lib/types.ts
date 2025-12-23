@@ -215,7 +215,7 @@ export interface Inquiry {
   desiredDomain?: string; // 희망 도메인
   
   // Legacy status (kept for backward compatibility)
-  status: "pending" | "contacted" | "completed";
+  status: "pending" | "contacted" | "completed" | "in_progress" | "archived";
   
   // New workflow management
   workflowStatus: InquiryWorkflowStatus;
