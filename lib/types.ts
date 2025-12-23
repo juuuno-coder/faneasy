@@ -49,7 +49,7 @@ export interface Fan {
   name: string;
   email: string;
   passwordHash: string;
-  role: "fan";
+  role: "user";
   createdAt: Date;
   updatedAt: Date;
 

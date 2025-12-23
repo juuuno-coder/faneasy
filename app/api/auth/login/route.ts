@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         const payload: JWTPayload = {
           userId: influencer.id,
           email: influencer.email,
-          role: "influencer",
+          role: "owner",
           subdomain: influencer.subdomain,
         };
 
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
             id: influencer.id,
             name: influencer.name,
             email: influencer.email,
-            role: "influencer",
+            role: "owner",
             subdomain: influencer.subdomain,
           },
         });
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
         const payload: JWTPayload = {
           userId: fan.id,
           email: fan.email,
-          role: "fan",
+          role: "user",
           slug: fan.slug,
         };
 
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
             id: fan.id,
             name: fan.name,
             email: fan.email,
-            role: "fan",
+            role: "user",
             slug: fan.slug,
           },
         });

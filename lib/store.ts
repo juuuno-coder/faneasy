@@ -86,7 +86,7 @@ export const useAuthStore = create<AuthStore>()(
                 id: fbUser.uid,
                 name: influencer.name || name,
                 email,
-                role: "influencer",
+                role: "owner",
                 subdomain: influencer.subdomain,
               };
             } else if (fan) {
@@ -94,11 +94,11 @@ export const useAuthStore = create<AuthStore>()(
                 id: fbUser.uid,
                 name: fan.name || name,
                 email,
-                role: "fan",
+                role: "user",
                 slug: fan.slug,
               };
             } else {
-              user = { id: fbUser.uid, name, email, role: "fan" };
+              user = { id: fbUser.uid, name, email, role: "user" };
             }
 
             get().login(user, token);

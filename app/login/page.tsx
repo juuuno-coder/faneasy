@@ -50,15 +50,19 @@ function LoginContent() {
       const influencer = mockInfluencers.find((i) => i.email === fbUser.email);
       const fan = mockFans.find((f) => f.email === fbUser.email);
 
-      // 최고관리자 이메일 (하드코딩)
-      const SUPER_ADMIN_EMAIL = 'duscontactus@gmail.com';
+      // 최고관리자 이메일 목록
+      const SUPER_ADMIN_EMAILS = [
+        'duscontactus@gmail.com',
+        'juuuno@naver.com',
+        'designd@designd.co.kr'
+      ];
       
       // 역할 결정 로직
       let role: "super_admin" | "owner" | "admin" | "user" = "user";
       let subdomain: string | undefined;
       let slug: string | undefined;
 
-      if (fbUser.email === SUPER_ADMIN_EMAIL) {
+      if (fbUser.email && SUPER_ADMIN_EMAILS.includes(fbUser.email)) {
         // 최고관리자
         role = "super_admin";
       } else if (influencer) {

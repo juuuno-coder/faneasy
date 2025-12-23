@@ -22,7 +22,7 @@ export async function loginWithIdToken(idToken: string) {
           id: profile.uid || decoded.uid,
           name: profile.name || decoded.name || decoded.email || "User",
           email: profile.email || decoded.email || "",
-          role: (profile.role as any) || "fan",
+          role: (profile.role as any) || "user",
           subdomain: profile.subdomain,
           slug: profile.slug,
         }
@@ -30,7 +30,7 @@ export async function loginWithIdToken(idToken: string) {
           id: decoded.uid, 
           name: decoded.name || decoded.email || "User",
           email: decoded.email || "",
-          role: "fan" as const
+          role: "user" as const
         },
   };
 }
@@ -42,7 +42,7 @@ export function loginWithMock(email: string, password: string) {
     const payload: JWTPayload = {
       userId: influencer.id,
       email: influencer.email,
-      role: "influencer",
+      role: "owner",
       subdomain: influencer.subdomain,
     };
 
@@ -54,7 +54,7 @@ export function loginWithMock(email: string, password: string) {
         id: influencer.id,
         name: influencer.name,
         email: influencer.email,
-        role: "influencer",
+        role: "owner",
         subdomain: influencer.subdomain,
       },
     };
@@ -65,7 +65,7 @@ export function loginWithMock(email: string, password: string) {
     const payload: JWTPayload = {
       userId: fan.id,
       email: fan.email,
-      role: "fan",
+      role: "user",
       slug: fan.slug,
     };
 
@@ -77,7 +77,7 @@ export function loginWithMock(email: string, password: string) {
         id: fan.id,
         name: fan.name,
         email: fan.email,
-        role: "fan",
+        role: "user",
         slug: fan.slug,
       },
     };
@@ -97,7 +97,7 @@ export async function signupWithAdmin(opts: {
     throw new Error("Firebase service account not configured");
   }
 
-  const { email, password, name, role = "fan", subdomain } = opts;
+  const { email, password, name, role = "user", subdomain } = opts;
 
   const userRecord = await adminAuth.createUser({
     email,
@@ -113,7 +113,7 @@ export async function signupWithAdmin(opts: {
     createdAt: new Date().toISOString(),
   };
 
-  if (role === "influencer" && subdomain) profile.subdomain = subdomain;
+  if (role === "owner" && subdomain) profile.subdomain = subdomain;
 
   await adminFirestore.collection("users").doc(userRecord.uid).set(profile);
 
