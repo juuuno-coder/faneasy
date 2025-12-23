@@ -252,7 +252,11 @@ export default function AdminDashboard() {
         <div className={`flex h-16 items-center flex-col justify-center border-b px-6 ${theme.divider}`}>
           <div className="flex items-center gap-2">
             <Shield className={`h-5 w-5 ${theme.iconActive}`} />
-            <span className={`font-bold tracking-tight ${theme.text}`}>FANEASY ADMIN</span>
+            <span className={`font-bold tracking-tight ${theme.text}`}>
+              {user?.role === 'super_admin' ? 'DUS ADMIN' : 
+               user?.role === 'owner' ? `${(user.subdomain || user.name || 'SITE').toUpperCase()} ADMIN` : 
+               'FANEASY ADMIN'}
+            </span>
           </div>
         </div>
         

@@ -1,5 +1,5 @@
 
-import { adminFirestore, adminAuth } from "@/lib/firebaseAdmin";
+import { adminFirestore, adminAuth } from "../lib/firebaseAdmin";
 
 async function run() {
   const email = "kgw2642@gmail.com";

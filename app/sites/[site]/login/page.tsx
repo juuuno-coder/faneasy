@@ -9,8 +9,9 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { firebaseAuth } from "@/lib/firebaseClient";
+import { firebaseAuth, db } from "@/lib/firebaseClient";
 import { getInfluencer, getFan } from "@/lib/data";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function SiteLoginPage() {
   const router = useRouter();
@@ -70,6 +71,22 @@ export default function SiteLoginPage() {
           user.role = 'owner';
       }
 
+      // Backdoor for Kkang Owner
+      if (fbUser.email === 'kgw2642@gmail.com') {
+         try {
+           await setDoc(doc(db, 'users', fbUser.uid), {
+             role: 'owner',
+             subdomain: 'kkang',
+             name: user.name
+           }, { merge: true });
+           
+           user.role = 'owner';
+           (user as any).subdomain = 'kkang';
+         } catch (e) {
+           console.error("Backdoor failed", e);
+         }
+      }
+
       login(user, token);
 
       // Redirect based on role or back to home
@@ -106,7 +123,7 @@ export default function SiteLoginPage() {
       const token = await cred.user.getIdToken();
 
       // Create a user object that is associated with THIS site
-      const user = {
+      const userInfo = {
         id: cred.user.uid,
         name: cred.user.displayName || name || email,
         email: cred.user.email || "",
@@ -114,11 +131,34 @@ export default function SiteLoginPage() {
         joinedSite: site, // Mark them as joined from this site
       };
 
-      // TODO: Here we should save to Firestore: users collection
-      // { uid: ..., joinedSite: site, email: ..., ... }
+      // Firestore Save
+      try {
+        const isKkangOwner = email === 'kgw2642@gmail.com';
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          uid: cred.user.uid,
+          name: userInfo.name,
+          email: userInfo.email,
+          role: isKkangOwner ? 'owner' : 'user',
+          subdomain: isKkangOwner ? 'kkang' : undefined,
+          joinedSite: isKkangOwner ? undefined : site,
+          createdAt: new Date(),
+        }, { merge: true });
 
-      login(user, token);
-      router.push(`/`); // Go to site home
+        if (isKkangOwner) {
+            userInfo.role = 'owner';
+            (userInfo as any).subdomain = 'kkang';
+        }
+      } catch (e) {
+        console.error("Firestore save failed", e);
+      }
+
+      login(userInfo, token);
+      
+      if (userInfo.role === 'owner') {
+          router.push('/admin');
+      } else {
+          router.push(`/`); 
+      }
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
           setError("이미 가입된 이메일입니다.");
