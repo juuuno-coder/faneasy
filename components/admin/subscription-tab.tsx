@@ -22,49 +22,54 @@ interface Plan {
 
 const PLANS: Plan[] = [
   {
-    id: 'free',
-    name: 'Free',
-    price: 0,
-    period: '평생 무료',
+    id: 'basic',
+    name: 'BASIC',
+    price: 20000,
+    period: '월',
     features: [
-      '기본 팬페이지 제공',
-      '월 방문자 1,000명 제한',
-      '기본 통계 제공',
-      '커뮤니티 기능 제한적 사용'
+      '타사 랜딩 페이지 수준 베이직 디자인',
+      '기본형 DB 수집 폼',
+      '반응형 웹 지원 (PC/모바일)',
+      '도메인 연결 대행',
+      '보안 서버(SSL) 적용',
+      '직접 이미지/문구 수정 가능'
     ]
   },
   {
     id: 'pro',
-    name: 'Pro',
-    price: 9900,
+    name: 'PRO',
+    price: 30000,
     period: '월',
     recommended: true,
     features: [
-      '모든 Free 기능 포함',
-      '월 방문자 무제한',
-      '상세 데이터 분석 (차트)',
-      '커스텀 도메인 연결 가능',
-      '우선 기술 지원'
+      '모든 BASIC 기능 포함',
+      '프리미엄 랜딩페이지 디자인',
+      '고급형 DB 모집 섹션',
+      '마케팅 효율 최적화 레이아웃',
+      '카카오톡 알림톡 연동',
+      '검색 엔진 최적화(SEO) 기본 세팅',
+      '월 2회 콘텐츠 수정/업데이트 지원'
     ]
   },
   {
-    id: 'business',
-    name: 'Business',
-    price: 49000,
+    id: 'master',
+    name: 'MASTER',
+    price: 50000,
     period: '월',
     features: [
-      '모든 Pro 기능 포함',
-      '전담 매니저 배정',
-      'API 액세스 제공',
-      '화이트라벨링 (FanEasy 로고 제거)',
-      '초고속 CDN 적용'
+      '모든 PRO 기능 포함',
+      '마케팅 자동화 도구 연동',
+      'AI 채팅봇 기본 세팅',
+      '고객 관리 마스터 대시보드',
+      '정기 데이터 분석 리포트',
+      '우선 순위 기술 지원'
     ]
   }
 ];
 
 export default function SubscriptionTab() {
   const { user } = useAuthStore();
-  const [currentPlan, setCurrentPlan] = useState('free');
+  const [currentPlan, setCurrentPlan] = useState('basic');
   const [nextPaymentDate, setNextPaymentDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
@@ -81,7 +86,7 @@ export default function SubscriptionTab() {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setCurrentPlan(data.subscriptionPlan || 'free');
+          setCurrentPlan(data.subscriptionPlan || 'basic');
           setNextPaymentDate(data.nextPaymentDate || '');
         }
       } catch (error) {
