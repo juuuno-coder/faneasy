@@ -1,0 +1,230 @@
+'use client';
+
+import { useState } from 'react';
+import { 
+  CreditCard, 
+  Check, 
+  Zap, 
+  Shield, 
+  Clock,
+  ChevronRight,
+  Download,
+  AlertCircle
+} from 'lucide-react';
+
+interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  period: string;
+  features: string[];
+  recommended?: boolean;
+}
+
+const PLANS: Plan[] = [
+  {
+    id: 'free',
+    name: 'Free',
+    price: 0,
+    period: '평생 무료',
+    features: [
+      '기본 팬페이지 제공',
+      '월 방문자 1,000명 제한',
+      '기본 통계 제공',
+      '커뮤니티 기능 제한적 사용'
+    ]
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: 9900,
+    period: '월',
+    recommended: true,
+    features: [
+      '모든 Free 기능 포함',
+      '월 방문자 무제한',
+      '상세 데이터 분석 (차트)',
+      '커스텀 도메인 연결 가능',
+      '우선 기술 지원'
+    ]
+  },
+  {
+    id: 'business',
+    name: 'Business',
+    price: 49000,
+    period: '월',
+    features: [
+      '모든 Pro 기능 포함',
+      '전담 매니저 배정',
+      'API 액세스 제공',
+      '화이트라벨링 (FanEasy 로고 제거)',
+      '초고속 CDN 적용'
+    ]
+  }
+];
+
+export default function SubscriptionTab() {
+  const [currentPlan, setCurrentPlan] = useState('free');
+  const [loading, setLoading] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Mock Payment Function (Simulating PortOne)
+  const handleSubscribe = (plan: Plan) => {
+    if (plan.id === currentPlan) return;
+    
+    if (confirm(`'${plan.name}' 요금제로 변경하시겠습니까?\n월 ${plan.price.toLocaleString()}원이 결제됩니다.`)) {
+      setLoading(true);
+      
+      // Simulate API call / PortOne Window open
+      setTimeout(() => {
+        setLoading(false);
+        setCurrentPlan(plan.id);
+        alert(`결제가 성공적으로 완료되었습니다!\n이제 '${plan.name}' 멤버십이 적용됩니다.`);
+      }, 1500);
+    }
+  };
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Current Subscription Status */}
+      <div className="rounded-3xl border border-white/5 bg-gradient-to-br from-white/5 to-white/2 p-8 overflow-hidden relative">
+        <div className="absolute top-0 right-0 p-32 bg-purple-500/10 blur-[100px] rounded-full pointer-events-none" />
+        
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold border border-green-500/30 flex items-center gap-1">
+                <Check className="h-3 w-3" />
+                구독 중 (Active)
+              </span>
+              <span className="text-gray-400 text-sm">다음 결제일: 2026. 01. 23</span>
+            </div>
+            <h2 className="text-3xl font-bold mb-2">
+              {PLANS.find(p => p.id === currentPlan)?.name} Plan
+            </h2>
+            <p className="text-gray-400">
+              현재 {currentPlan === 'free' ? '기본 기능을' : '프리미엄 기능을'} 이용하고 계십니다.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <button 
+              onClick={() => setShowHistory(!showHistory)}
+              className="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-colors border border-white/10"
+            >
+              결제 내역
+            </button>
+            <button className="px-5 py-3 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-colors">
+              카드 관리
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment History (Collapsible) */}
+      {showHistory && (
+        <div className="rounded-3xl border border-white/5 bg-black/20 p-6">
+          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <Clock className="h-5 w-5 text-gray-400" />
+            최근 결제 내역
+          </h3>
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                    <Check className="h-5 w-5 text-green-500" />
+                  </div>
+                  <div>
+                    <div className="font-bold">Pro Plan 월간 구독</div>
+                    <div className="text-xs text-gray-500">2023. 12. 23 • 카카오페이</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="font-bold text-white">₩9,900</span>
+                  <button className="p-2 hover:bg-white/10 rounded-lg text-gray-400 transition-colors">
+                    <Download className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Plan Selection */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {PLANS.map((plan) => (
+          <div 
+            key={plan.id}
+            className={`
+              relative rounded-3xl p-8 border transition-all duration-300
+              ${currentPlan === plan.id 
+                ? 'bg-purple-600/10 border-purple-500 ring-1 ring-purple-500/50' 
+                : 'bg-white/2 border-white/5 hover:border-white/10 hover:bg-white/5'}
+            `}
+          >
+            {plan.recommended && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-xs font-bold text-white shadow-lg">
+                BEST CHOICE
+              </div>
+            )}
+
+            <div className="mb-6">
+              <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-white">
+                  {plan.price === 0 ? '무료' : `₩${plan.price.toLocaleString()}`}
+                </span>
+                <span className="text-gray-400 text-sm">/{plan.period}</span>
+              </div>
+            </div>
+
+            <ul className="space-y-4 mb-8">
+              {plan.features.map((feature, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-sm text-gray-300">
+                  <div className={`mt-0.5 h-4 w-4 rounded-full flex items-center justify-center ${currentPlan === plan.id ? 'bg-purple-500' : 'bg-gray-700'}`}>
+                    <Check className="h-2 w-2 text-white" />
+                  </div>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => handleSubscribe(plan)}
+              disabled={currentPlan === plan.id || loading}
+              className={`
+                w-full py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2
+                ${currentPlan === plan.id 
+                  ? 'bg-white/10 text-gray-400 cursor-default' 
+                  : 'bg-white text-black hover:bg-gray-200 hover:scale-[1.02]'}
+              `}
+            >
+              {loading && currentPlan !== plan.id ? (
+                <span className="animate-pulse">처리 중...</span>
+              ) : (
+                <>
+                  {currentPlan === plan.id ? '이용 중' : '시작하기'}
+                  {currentPlan !== plan.id && <ChevronRight className="h-4 w-4" />}
+                </>
+              )}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-2xl bg-blue-500/10 border border-blue-500/20 p-6 flex items-start gap-4">
+        <AlertCircle className="h-6 w-6 text-blue-400 flex-shrink-0" />
+        <div>
+          <h4 className="font-bold text-blue-400 mb-1">포트원(PortOne) 결제 연동 안내</h4>
+          <p className="text-sm text-gray-400 leading-relaxed">
+            현재는 시뮬레이션 모드입니다. 실제 결제 연동을 위해서는 포트원 관리자 콘솔에서 
+            API 키를 발급받아 환경 변수에 설정해야 합니다. 
+            PG사는 토스페이먼츠, 카카오페이 등을 선택할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

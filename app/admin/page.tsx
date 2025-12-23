@@ -21,7 +21,8 @@ import {
   Bell,
   Bot,
   Menu,
-  X
+  X,
+  CreditCard
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
@@ -29,6 +30,7 @@ import CustomersTab from '@/components/admin/customers-tab';
 import InquiriesTab from '@/components/admin/inquiries-tab';
 import SettingsTab from '@/components/admin/settings-tab';
 import ActivityTab from '@/components/admin/activity-tab';
+import SubscriptionTab from '@/components/admin/subscription-tab';
 import SiteTreeView from '@/components/admin/site-tree-view';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -45,7 +47,7 @@ export default function AdminDashboard() {
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'customers' | 'inquiries' | 'settings' | 'activity'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'customers' | 'inquiries' | 'settings' | 'activity' | 'subscription'>('dashboard');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -194,6 +196,17 @@ export default function AdminDashboard() {
             문의 내역
           </button>
           <button 
+            onClick={() => { setActiveTab('subscription'); setShowMobileMenu(false); }}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              activeTab === 'subscription' 
+                ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' 
+                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <CreditCard className="h-5 w-5" />
+            구독 관리
+          </button>
+          <button 
             onClick={() => { setActiveTab('activity'); setShowMobileMenu(false); }}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
               activeTab === 'activity' 
@@ -244,6 +257,7 @@ export default function AdminDashboard() {
                 {activeTab === 'customers' && '고객 관리'}
                 {activeTab === 'inquiries' && '문의 내역'}
                 {activeTab === 'settings' && '사이트 설정'}
+                {activeTab === 'subscription' && '구독 관리'}
                 {activeTab === 'activity' && '활동 로그'}
               </h1>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
@@ -258,6 +272,7 @@ export default function AdminDashboard() {
               {activeTab === 'customers' && '고객 정보를 관리하고 분석하세요.'}
               {activeTab === 'inquiries' && '모든 문의 내역을 확인하고 관리하세요.'}
               {activeTab === 'settings' && '사이트 설정을 변경하고 최적화하세요.'}
+              {activeTab === 'subscription' && '요금제를 관리하고 결제 내역을 확인하세요.'}
               {activeTab === 'activity' && '관리자 활동 및 보안 로그를 확인하세요.'}
             </p>
             </div>
@@ -449,6 +464,8 @@ export default function AdminDashboard() {
 
         {/* Settings Tab Content */}
         {activeTab === 'settings' && <SettingsTab />}
+        {/* Subscription Tab Content */}
+        {activeTab === 'subscription' && <SubscriptionTab />}
         {activeTab === 'activity' && <ActivityTab />}
 
         {/* Inquiry Detail Modal */}
