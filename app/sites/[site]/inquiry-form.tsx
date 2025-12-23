@@ -83,6 +83,13 @@ export default function InquiryForm({
         id: `inq-${Date.now()}`,
         createdAt: new Date(),
         status: 'pending' as any,
+        workflowStatus: 'received',
+        notes: [],
+        timeline: [{
+          status: 'received',
+          timestamp: new Date().toISOString(),
+          note: '문의 폼 자동 접수'
+        }]
       });
 
       setStatus("success");

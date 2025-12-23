@@ -32,6 +32,7 @@ import SettingsTab from '@/components/admin/settings-tab';
 import ActivityTab from '@/components/admin/activity-tab';
 import SubscriptionTab from '@/components/admin/subscription-tab';
 import SiteTreeView from '@/components/admin/site-tree-view';
+import InquiryManagementModal from '@/components/admin/inquiry-management-modal';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -530,79 +531,20 @@ export default function AdminDashboard() {
         {activeTab === 'subscription' && <SubscriptionTab />}
         {activeTab === 'activity' && <ActivityTab />}
 
-        {/* Inquiry Detail Modal */}
+
+        {/* Inquiry Management Modal */}
         {selectedInquiry && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedInquiry(null)}>
-            <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
-              <div className="p-8 border-b border-gray-100 flex justify-between items-start bg-linear-to-r from-purple-50 to-indigo-50">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-1">문의 상세 내용</h3>
-                  <p className="text-sm text-gray-500">{new Date(selectedInquiry.createdAt).toLocaleString()}</p>
-                </div>
-                <button 
-                  onClick={() => setSelectedInquiry(null)}
-                  className="p-2 hover:bg-white rounded-full transition-colors"
-                >
-                  <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="p-8 space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">신청인</p>
-                    <p className="text-gray-900 font-medium">{selectedInquiry.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">연락처</p>
-                    <p className="text-gray-900 font-medium">{selectedInquiry.phone}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">이메일</p>
-                    <p className="text-gray-900 font-medium">{selectedInquiry.email}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">회사/단체</p>
-                    <p className="text-gray-900 font-medium">{selectedInquiry.company || '정보 없음'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">선택 플랜</p>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700 uppercase">
-                      {(selectedInquiry as any).plan || 'N/A'}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">희망 도메인</p>
-                    <p className="text-gray-900 font-medium">{(selectedInquiry as any).desiredDomain || '정보 없음'}</p>
-                  </div>
-                </div>
-                <div className="pt-6 border-t border-gray-100">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">문의 내용</p>
-                  <div className="bg-gray-50 rounded-2xl p-4 text-gray-700 leading-relaxed whitespace-pre-wrap min-h-[100px]">
-                    {selectedInquiry.message}
-                  </div>
-                </div>
-              </div>
-              <div className="p-6 bg-gray-50 flex gap-3">
-                <button 
-                  onClick={() => setSelectedInquiry(null)}
-                  className="flex-1 py-3 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-bold transition-colors"
-                >
-                  닫기
-                </button>
-                <button 
-                  onClick={() => {
-                    setShowReplyModal(true);
-                    setReplyMessage(`안녕하세요 ${selectedInquiry.name}님,\n\n문의 주셔서 감사합니다.\n\n`);
-                  }}
-                  className="flex-1 py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-center transition-colors"
-                >
-                  답장하기
-                </button>
-              </div>
-            </div>
-          </div>
+          <InquiryManagementModal
+            inquiry={selectedInquiry}
+            onClose={() => setSelectedInquiry(null)}
+            onUpdate={(updated) => {
+              // Update local state
+              setInquiries(prev => prev.map(inq => 
+                inq.id === updated.id ? updated : inq
+              ));
+              setSelectedInquiry(null);
+            }}
+          />
         )}
 
         {/* Reply Modal */}

@@ -167,6 +167,30 @@ export interface JWTPayload {
 }
 
 // 문의/상담 신청
+export type InquiryWorkflowStatus = 
+  | 'received'           // 문의폼 접수 확인
+  | 'first_call'         // 1차 유선 상담
+  | 'kakao_progress'     // 카톡 채널로 진행사항 안내
+  | 'signup_order'       // 홈페이지 회원가입 + 주문서 작성
+  | 'payment_received'   // 초기세팅비 입금
+  | 'in_progress'        // 작업진행
+  | 'review'             // 중간중간 검수
+  | 'completed'          // 완료
+  | 'subscription_active'; // 구독료 발생 중
+
+export interface InquiryNote {
+  id: string;
+  content: string;
+  createdAt: string;
+  createdBy: string; // Admin user ID
+}
+
+export interface InquiryTimeline {
+  status: InquiryWorkflowStatus;
+  timestamp: string;
+  note?: string;
+}
+
 export interface Inquiry {
   id: string;
   ownerId: string; // Influencer ID (깡대표)
@@ -177,8 +201,21 @@ export interface Inquiry {
   message: string;
   plan: "basic" | "pro" | "master";
   desiredDomain?: string; // 희망 도메인
+  
+  // Legacy status (kept for backward compatibility)
   status: "pending" | "contacted" | "completed";
+  
+  // New workflow management
+  workflowStatus: InquiryWorkflowStatus;
+  notes: InquiryNote[];
+  timeline: InquiryTimeline[];
+  
+  // Important dates
+  completedAt?: string;        // 완료일
+  subscriptionStartDate?: string; // 구독 시작일 (완료일 다음날)
+  
   createdAt: Date;
+  updatedAt?: Date;
 }
 
 export interface SiteSettings {
