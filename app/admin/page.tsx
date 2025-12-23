@@ -137,11 +137,11 @@ export default function AdminDashboard() {
   useEffect(() => {
     setMounted(true);
     
-    // 권한 체크: super_admin, owner, admin만 접근 가능
+    // 권한 체크: 모든 로그인된 사용자 접근 가능 (Fan Page 관리)
     if (mounted && user) {
-      const allowedRoles = ['super_admin', 'owner', 'admin'];
+      const allowedRoles = ['super_admin', 'owner', 'admin', 'user'];
       if (!allowedRoles.includes(user.role)) {
-        alert('관리자 권한이 필요합니다.');
+        alert('접근 권한이 없습니다.');
         router.push('/');
         return;
       }
@@ -160,16 +160,14 @@ export default function AdminDashboard() {
         collection(db, "inquiries"),
         orderBy("createdAt", "desc")
       );
-    } else if (user.role === 'owner' || user.role === 'admin') {
-      // 소유자/관리자는 본인 사이트의 문의만 조회
+    } else {
+      // owner, admin, user는 본인(또는 소속) 데이터만 조회
+      // user(팬페이지 주인)도 본인의 문의/데이터만 봄
       q = query(
         collection(db, "inquiries"),
         where("ownerId", "==", user.id),
         orderBy("createdAt", "desc")
       );
-    } else {
-      // user 역할은 접근 불가 (위에서 이미 차단됨)
-      return;
     }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
