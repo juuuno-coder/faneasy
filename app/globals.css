@@ -8,24 +8,44 @@
 /* ============================================= */
 /* 기본 폰트 설정 */
 /* ============================================= */
-* {
-  /* Poppins (영문) 우선 → Pretendard (한글) 폴백 */
-  font-family: 'Poppins', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+
+/* 프로젝트 폰트 정의 */
+:root {
+  --font-pretendard: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-main: 'Poppins', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
+
+/* 전역 폰트 적용 */
+*, *::before, *::after {
+  font-family: var(--font-main) !important;
+}
+
+/* Tailwind font-sans 클래스 오버라이드 */
+.font-sans {
+  font-family: var(--font-main) !important;
+}
+
+/* HTML/Body 기본 설정 */
+html, body {
+  font-family: var(--font-main);
   word-break: keep-all;
-  letter-spacing: -0.02em;  /* 영문 혼합 고려하여 살짝 완화 */
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ============================================= */
 /* 영문/숫자 전용 폰트 클래스 */
 /* ============================================= */
 .font-poppins {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: var(--font-poppins) !important;
   letter-spacing: 0;
 }
 
 /* 숫자에 Poppins 적용 (선택적) */
 .font-number {
-  font-family: 'Poppins', 'Pretendard Variable', sans-serif;
+  font-family: var(--font-poppins);
   font-feature-settings: 'tnum' on, 'lnum' on;
   letter-spacing: 0;
 }
