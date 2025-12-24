@@ -66,15 +66,13 @@ export default function SiteMyPageContent() {
             // 1. Fetch Orders (Firestore)
             const ordersQuery = query(
                 collection(db, 'orders'),
-                where('buyerEmail', '==', user.email),
-                orderBy('createdAt', 'desc')
+                where('buyerEmail', '==', user.email)
             );
             
             // 2. Fetch Inquiries (Firestore)
             const inquiriesQuery = query(
                 collection(db, 'inquiries'),
-                where('email', '==', user.email),
-                orderBy('createdAt', 'desc')
+                where('email', '==', user.email)
             );
 
             const [ordersSnapshot, inquiriesSnapshot] = await Promise.all([
@@ -472,7 +470,7 @@ export default function SiteMyPageContent() {
                                     <ShoppingBag size={32} />
                                 </div>
                                 <p className="text-gray-500 font-bold">아직 신청하신 내역이 없습니다.</p>
-                                <Link href="/" className="mt-6 inline-block text-purple-500 hover:text-purple-400 font-bold underline">첫 서비스 신청하기</Link>
+                                <a href="https://kkang.designd.co.kr/#pricing" target="_blank" rel="noopener noreferrer" className="mt-6 inline-block text-purple-500 hover:text-purple-400 font-bold underline">첫 서비스 신청하기</a>
                             </div>
                         ) : (
                             myOrders.map((order) => (

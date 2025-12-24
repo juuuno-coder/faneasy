@@ -203,7 +203,7 @@ export default function AgencyLandingPage({ site }: { site: string }) {
               </ul>
               <Link
                 href={`/sites/${site}/checkout?plan=basic`}
-                className="mt-8 block w-full rounded-2xl border border-white/10 bg-white/5 py-4 text-center text-sm font-bold transition-all hover:bg-white/10"
+                className="mt-8 block w-full rounded-2xl bg-gray-800 py-4 text-center text-sm font-bold transition-all hover:bg-gray-700 hover:shadow-lg active:scale-95"
               >
                 지금 시작하기
               </Link>
@@ -296,7 +296,7 @@ export default function AgencyLandingPage({ site }: { site: string }) {
               </ul>
               <Link
                 href={`/sites/${site}/checkout?plan=master`}
-                className="mt-8 block w-full rounded-2xl border border-white/10 bg-white/5 py-4 text-center text-sm font-bold transition-all hover:bg-white/10"
+                className="mt-8 block w-full rounded-2xl bg-gray-800 py-4 text-center text-sm font-bold transition-all hover:bg-gray-700 hover:shadow-lg active:scale-95"
               >
                 지금 시작하기
               </Link>
