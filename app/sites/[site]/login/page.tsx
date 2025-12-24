@@ -27,7 +27,7 @@ export default function SiteLoginPage() {
   const [loading, setLoading] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  // const [name, setName] = useState(""); // Removed name input
+  const [name, setName] = useState("");
 
   // Fetch influencer data for branding
   const influencer = getInfluencer(site);
@@ -160,16 +160,15 @@ export default function SiteLoginPage() {
         password
       );
       
-      // Default name from email
-      const defaultName = email.split('@')[0];
-      await updateProfile(cred.user, { displayName: defaultName });
+      await updateProfile(cred.user, { displayName: name });
+
 
       const token = await cred.user.getIdToken();
 
       // Create a user object that is associated with THIS site
       const userInfo: any = {
         id: cred.user.uid,
-        name: defaultName,
+        name: name || cred.user.displayName || email.split('@')[0],
         email: cred.user.email || "",
         role: "user",
         joinedSite: site, 
@@ -253,6 +252,33 @@ export default function SiteLoginPage() {
             className="space-y-6"
           >
 
+
+
+            {/* Name Input (signup only) */}
+            {showSignup && (
+              <div>
+                <label
+                  htmlFor="name"
+                  className={`block text-sm font-medium mb-2 ${influencer.pageSettings?.theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}
+                >
+                  이름
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={`w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                      influencer.pageSettings?.theme === 'light' 
+                      ? 'bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500' 
+                      : 'bg-white/5 border border-white/10 text-white placeholder-gray-500'
+                  }`}
+                  style={{ '--tw-ring-color': themeColor } as any}
+                  placeholder="홍길동"
+                  required={showSignup}
+                />
+              </div>
+            )}
 
             {/* Email Input */}
             <div>

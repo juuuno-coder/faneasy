@@ -29,6 +29,7 @@ interface DataStore {
   
   addInquiry: (inquiry: Inquiry) => void;
   addOrder: (order: Order) => void;
+  updateOrder: (id: string, updates: Partial<Order>) => void;
   updatePageContent: (subdomain: string, content: PageContent) => void;
   
   // Template CRUD
@@ -85,6 +86,10 @@ export const useDataStore = create<DataStore>()(
 
       addOrder: (order) => set((state) => ({ 
         orders: [order, ...state.orders] 
+      })),
+
+      updateOrder: (id, updates) => set((state) => ({
+        orders: state.orders.map(o => o.id === id ? { ...o, ...updates } : o)
       })),
 
       updatePageContent: (subdomain, content) => set((state) => ({

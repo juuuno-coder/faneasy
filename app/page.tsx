@@ -23,6 +23,12 @@ export default function Home() {
               Pricing
             </Link>
             <Link
+              href="/mypage"
+              className="text-sm font-medium text-gray-400 hover:text-white"
+            >
+              마이페이지
+            </Link>
+            <Link
               href="/login"
               className="px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg text-sm font-medium transition-colors"
             >

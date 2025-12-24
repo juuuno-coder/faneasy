@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 import GoogleAnalytics from "@/components/google-analytics";
+import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: "FanEasy | No.1 Creator Platform",
@@ -32,6 +33,8 @@ export default function RootLayout({
       >
         <AuthInitializer />
         <GoogleAnalytics GA_MEASUREMENT_ID="G-XXXXXXXXXX" />
+        <Toaster position="top-right" />
+        <script src="https://cdn.iamport.kr/v1/iamport.js" async />
         {children}
       </body>
     </html>

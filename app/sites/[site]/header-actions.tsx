@@ -53,8 +53,8 @@ export default function HeaderActions({ site }: { site: string }) {
 
       {user ? (
         <>
-          {/* Admin Dashboard Link for authorized users (including Fan Page owners) */}
-          {(user.role === 'super_admin' || user.role === 'owner' || user.role === 'admin' || user.role === 'user') && (
+          {/* Admin Dashboard Link - Only for Super Admins or the Site Owner */}
+          {((user.role === 'super_admin' || user.role === 'admin') || (user.role === 'owner' && (user as any).subdomain === site)) && (
             <Link 
               href="/admin" 
               className="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1"

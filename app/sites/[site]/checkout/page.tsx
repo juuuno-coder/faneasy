@@ -7,6 +7,14 @@ import { useDataStore } from '@/lib/data-store';
 import { useCartStore } from '@/lib/cart-store';
 import { Loader2, ArrowLeft, CheckCircle2, CreditCard } from 'lucide-react';
 import { getCreator } from '@/lib/data';
+import { toast } from 'react-hot-toast';
+
+// Define IMP on window for TypeScript
+declare global {
+  interface Window {
+    IMP: any;
+  }
+}
 
 import { 
   calculatePriceWithVAT, 
@@ -85,6 +93,9 @@ function CheckoutForm() {
     domainRequest: '',
   });
 
+  const [paymentMethod, setPaymentMethod] = useState<'bank_transfer' | 'card'>('card');
+  const [paymentResult, setPaymentResult] = useState<{ imp_uid?: string; merchant_uid?: string } | null>(null);
+
   // Pre-fill if logged in
   useEffect(() => {
     if (user) {
@@ -102,35 +113,91 @@ function CheckoutForm() {
     e.preventDefault();
     setStatus('loading');
 
-    // Simulate Network Delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    const merchant_uid = `ord-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Create Order Object(s)
-    // If multiple items, we create multiple orders for now to keep schema simple
-    checkoutItems.forEach(item => {
-        const newOrder = {
-            id: `ord-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            productId: item.id as any, // Cast to avoid strict type issues for now
-            ownerId: 'inf-1', // Hardcoded to 'kkang' for demo
-            buyerName: formData.buyerName,
-            buyerEmail: formData.buyerEmail,
-            buyerPhone: formData.buyerPhone,
-            businessName: formData.businessName,
-            amount: item.price,
-            paymentMethod: 'bank_transfer' as const, 
-            status: 'pending_payment' as const,
-            domainRequest: formData.domainRequest,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+    if (paymentMethod === 'card') {
+        const { IMP } = window;
+        if (!IMP) {
+            toast.error('결제 모듈을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+            setStatus('idle');
+            return;
+        }
+
+        // Initialize with test code or env variable
+        IMP.init('imp76413247'); // Replace with your PortOne User Code
+
+        const data = {
+            pg: 'html5_inicis', 
+            pay_method: 'card',
+            merchant_uid,
+            name: isCartMode ? `FanEasy 결제 (${checkoutItems.length}건)` : `${singlePlan.name} Package`,
+            amount: totalPrice,
+            buyer_email: formData.buyerEmail,
+            buyer_name: formData.buyerName,
+            buyer_tel: formData.buyerPhone,
         };
-        addOrder(newOrder);
-    });
 
-    if (isCartMode) {
-        clearCart();
+        IMP.request_pay(data, async (rsp: any) => {
+            if (rsp.success) {
+                // Payment Success
+                setPaymentResult({ imp_uid: rsp.imp_uid, merchant_uid: rsp.merchant_uid });
+                
+                // Create Order Object(s)
+                checkoutItems.forEach(item => {
+                    const newOrder = {
+                        id: merchant_uid, // Use same UID for grouped orders or unique if preferred
+                        productId: item.id as any,
+                        ownerId: 'inf-1', 
+                        buyerName: formData.buyerName,
+                        buyerEmail: formData.buyerEmail,
+                        buyerPhone: formData.buyerPhone,
+                        businessName: formData.businessName,
+                        amount: item.price,
+                        paymentMethod: 'card' as const, 
+                        status: 'paid' as const,
+                        imp_uid: rsp.imp_uid,
+                        merchant_uid: rsp.merchant_uid,
+                        domainRequest: formData.domainRequest,
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                    };
+                    addOrder(newOrder);
+                });
+
+                if (isCartMode) clearCart();
+                setStatus('success');
+            } else {
+                // Payment Failed
+                toast.error(`결제에 실패했습니다: ${rsp.error_msg}`);
+                setStatus('idle');
+            }
+        });
+    } else {
+        // Bank Transfer (Existing flow)
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        checkoutItems.forEach(item => {
+            const newOrder = {
+                id: merchant_uid,
+                productId: item.id as any,
+                ownerId: 'inf-1',
+                buyerName: formData.buyerName,
+                buyerEmail: formData.buyerEmail,
+                buyerPhone: formData.buyerPhone,
+                businessName: formData.businessName,
+                amount: item.price,
+                paymentMethod: 'bank_transfer' as const, 
+                status: 'pending_payment' as const,
+                domainRequest: formData.domainRequest,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+            addOrder(newOrder);
+        });
+
+        if (isCartMode) clearCart();
+        setStatus('success');
     }
-
-    setStatus('success');
   };
 
   if (status === 'success') {
@@ -165,8 +232,14 @@ function CheckoutForm() {
             </div>
              <div className="flex justify-between">
               <span className="text-gray-500">결제 방식</span>
-              <span>무통장 입금</span>
+              <span>{paymentMethod === 'card' ? '신용카드' : '무통장 입금'}</span>
             </div>
+            {paymentResult?.imp_uid && (
+                <div className="mt-2 flex justify-between text-[10px] text-gray-600">
+                    <span>거래 번호</span>
+                    <span>{paymentResult.imp_uid}</span>
+                </div>
+            )}
           </div>
           <div className="flex flex-col gap-3">
              <button 
@@ -320,30 +393,71 @@ function CheckoutForm() {
                   <p className="text-xs text-gray-500">* 아직 정하지 않으셨다면 비워두셔도 됩니다.</p>
                 </div>
 
-                <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-6">
-                   <h3 className="mb-4 font-bold text-lg flex items-center gap-2">
-                     <CreditCard className="h-5 w-5" />
-                     결제 정보 확인
-                   </h3>
-                   <div className="space-y-2 text-sm text-gray-300">
-                     <div className="flex justify-between">
-                       <span>은행명</span>
-                       <span className="font-bold text-white">카카오뱅크</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span>계좌번호</span>
-                       <span className="font-bold text-white">3333-XX-XXXXXX</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span>예금주</span>
-                       <span className="font-bold text-white">주노 (팬이지)</span>
-                     </div>
-                   </div>
-                   <div className="mt-4 pt-4 border-t border-purple-500/20 text-xs text-purple-300 leading-relaxed">
-                     * '결제하기' 버튼을 누르시면 주문이 접수되며, 위 계좌로 입금해 주시면 담당자가 확인 후 제작이 시작됩니다. <br/>
-                     * 세금계산서 발행이 필요하신 경우 입금 후 고객센터로 연락주세요.
-                   </div>
+                <div className="space-y-4">
+                  <label className="text-sm font-medium text-gray-400">결제 방법 선택</label>
+                  <div className="grid grid-cols-2 gap-4">
+                     <button
+                        type="button"
+                        onClick={() => setPaymentMethod('card')}
+                        className={`flex items-center justify-center gap-2 rounded-xl border p-4 transition-all ${
+                          paymentMethod === 'card' 
+                            ? 'border-purple-500 bg-purple-500/10 text-white' 
+                            : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                        }`}
+                     >
+                        <CreditCard className="h-5 w-5" />
+                        <span className="font-bold">신용카드</span>
+                     </button>
+                     <button
+                        type="button"
+                        onClick={() => setPaymentMethod('bank_transfer')}
+                        className={`flex items-center justify-center gap-2 rounded-xl border p-4 transition-all ${
+                          paymentMethod === 'bank_transfer' 
+                            ? 'border-purple-500 bg-purple-500/10 text-white' 
+                            : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                        }`}
+                     >
+                        <div className="flex h-5 w-5 items-center justify-center rounded-md border border-current text-[10px] font-bold">₩</div>
+                        <span className="font-bold">무통장입금</span>
+                     </button>
+                  </div>
                 </div>
+
+                {paymentMethod === 'bank_transfer' && (
+                  <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-6 animate-in fade-in slide-in-from-top-2">
+                    <h3 className="mb-4 font-bold text-lg flex items-center gap-2">
+                      <CreditCard className="h-5 w-5" />
+                      무통장 입금 정보
+                    </h3>
+                    <div className="space-y-2 text-sm text-gray-300">
+                      <div className="flex justify-between">
+                        <span>은행명</span>
+                        <span className="font-bold text-white">카카오뱅크</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>계좌번호</span>
+                        <span className="font-bold text-white">3333-XX-XXXXXX</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>예금주</span>
+                        <span className="font-bold text-white">주노 (팬이지)</span>
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-purple-500/20 text-xs text-purple-300 leading-relaxed">
+                      * '결제하기' 버튼을 누르시면 주문이 접수되며, 위 계좌로 입금해 주시면 담당자가 확인 후 제작이 시작됩니다. <br/>
+                      * 세금계산서 발행이 필요하신 경우 입금 후 고객센터로 연락주세요.
+                    </div>
+                  </div>
+                )}
+
+                {paymentMethod === 'card' && (
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-6 animate-in fade-in slide-in-from-top-2">
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                      * 신용카드 결제는 실시간으로 승인되며 승인 즉시 제작 대기 상태로 전환됩니다. <br/>
+                      * 법인카드로 결제 시 매출전표를 이메일로 받아보실 수 있습니다.
+                    </p>
+                  </div>
+                )}
 
                 <button
                   disabled={status === 'loading'}

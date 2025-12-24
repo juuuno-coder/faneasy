@@ -21,10 +21,11 @@ import {
 } from 'lucide-react';
 
 export default function BizonMarketing({ site }: { site: string }) {
+  /* State Updates */
   const [formData, setFormData] = useState({
     brandName: '',
     address: '',
-    goal: '',
+    goal: [] as string[],
     currentMarketing: [] as string[],
     concern: '',
     contact: ''
@@ -50,6 +51,15 @@ export default function BizonMarketing({ site }: { site: string }) {
         ? prev.currentMarketing.filter(i => i !== item)
         : [...prev.currentMarketing, item]
     }));
+  };
+
+  const toggleGoal = (item: string) => {
+      setFormData(prev => ({
+        ...prev,
+        goal: prev.goal.includes(item)
+          ? prev.goal.filter(i => i !== item)
+          : [...prev.goal, item]
+      }));
   };
 
   return (
@@ -237,7 +247,7 @@ export default function BizonMarketing({ site }: { site: string }) {
 
           <div className="mt-8 p-6 bg-gray-900 rounded-2xl text-center">
             <p className="text-white text-lg font-medium">
-              "<span className="text-orange-400">말</span>"이 아니라 <span className="text-orange-400">근거와 결과</span>로 증명합니다.
+              "<span className="text-orange-400">말</span>"이 아니라 "<span className="text-orange-400">근거와 결과</span>"로 증명합니다.
             </p>
           </div>
         </div>
@@ -289,35 +299,71 @@ export default function BizonMarketing({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* Section 6: 진행 방식 */}
-      <section className="py-20 px-6 bg-white">
+      {/* Section 6: 진행 방식 (Spinning Process) */}
+      <section className="py-24 px-6 bg-white overflow-hidden">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black mb-4">
+            <h2 className="text-3xl md:text-5xl font-black mb-6">
               진행 방식
             </h2>
-            <p className="text-gray-600">4단계 시스템으로 체계적으로 진행합니다.</p>
+            <p className="text-xl text-gray-600">멈추지 않고 계속 돌아가는 <span className="text-orange-500 font-bold">성공의 수레바퀴</span></p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { step: '01', title: '진단', desc: '현재 상태 점검' },
-              { step: '02', title: '설계', desc: '맞춤 전략 수립' },
-              { step: '03', title: '실행', desc: '즉시 적용 가능' },
-              { step: '04', title: '주간 개선', desc: '데이터 기반 최적화' },
-            ].map((item, i) => (
-              <div key={i} className="text-center p-6 rounded-2xl bg-gray-50 hover:bg-orange-50 transition-colors">
-                <div className="text-4xl font-black text-orange-500 mb-2">{item.step}</div>
-                <h3 className="text-lg font-bold mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-500">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+          <div className="relative max-w-3xl mx-auto h-[400px] md:h-[500px] flex items-center justify-center">
+             {/* Spinning Core */}
+             <div className="absolute inset-0 flex items-center justify-center">
+                 {/* Rotating Border Ring */}
+                <div className="w-[280px] h-[280px] md:w-[350px] md:h-[350px] border-2 border-dashed border-orange-200 rounded-full animate-[spin_20s_linear_infinite]" />
+                
+                {/* Center Logo with Arrow */}
+                <div className="absolute bg-white p-4 rounded-full shadow-2xl z-20">
+                    <div className="w-24 h-24 md:w-32 md:h-32 bg-linear-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center relative shadow-inner">
+                        <div className="absolute inset-0 border-4 border-white/20 rounded-full animate-[spin_3s_linear_infinite]" style={{ borderTopColor: 'white' }}></div>
+                        <Image 
+                          src="/bizon-icon-white.png" 
+                          alt="BIZON" 
+                          width={60} 
+                          height={60} 
+                          className="object-contain"
+                        />
+                    </div>
+                </div>
+             </div>
 
-          <div className="mt-10 p-6 rounded-2xl bg-gray-100 text-center">
-            <p className="text-gray-700">
-              📊 전후 비교와 변경 내역은 <strong>기록으로 공유</strong>합니다.
-            </p>
+             {/* 4 Steps - Positioned Absolute */}
+             {/* Step 01 - Top Left */}
+             <div className="absolute top-0 left-0 md:top-4 md:left-4 max-w-[160px] text-center md:text-right">
+                 <div className="text-5xl md:text-6xl font-black text-gray-100 mb-2 absolute -z-10 -top-4 -right-4 md:relative md:text-gray-100/50">01</div>
+                 <h3 className="text-xl font-bold mb-1 text-gray-900">진단</h3>
+                 <p className="text-sm text-gray-500">현재 상태를<br/>객관적으로 분석</p>
+             </div>
+
+             {/* Step 02 - Top Right */}
+             <div className="absolute top-0 right-0 md:top-4 md:right-4 max-w-[160px] text-center md:text-left">
+                 <div className="text-5xl md:text-6xl font-black text-gray-100 mb-2 absolute -z-10 -top-4 -left-4 md:relative md:text-gray-100/50">02</div>
+                 <h3 className="text-xl font-bold mb-1 text-gray-900">설계</h3>
+                 <p className="text-sm text-gray-500">지점 맞춤형<br/>전략 수립</p>
+             </div>
+
+             {/* Step 03 - Bottom Left */}
+             <div className="absolute bottom-0 left-0 md:bottom-4 md:left-4 max-w-[160px] text-center md:text-right">
+                 <div className="text-5xl md:text-6xl font-black text-gray-100 mb-2 absolute -z-10 -top-4 -right-4 md:relative md:text-gray-100/50">03</div>
+                 <h3 className="text-xl font-bold mb-1 text-gray-900">실행</h3>
+                 <p className="text-sm text-gray-500">고민 없이<br/>즉시 적용</p>
+             </div>
+
+             {/* Step 04 - Bottom Right */}
+             <div className="absolute bottom-0 right-0 md:bottom-4 md:right-4 max-w-[160px] text-center md:text-left">
+                 <div className="text-5xl md:text-6xl font-black text-gray-100 mb-2 absolute -z-10 -top-4 -left-4 md:relative md:text-gray-100/50">04</div>
+                 <h3 className="text-xl font-bold mb-1 text-orange-500">주간 개선</h3>
+                 <p className="text-sm text-gray-500">데이터 기반<br/>지속적 성장</p>
+             </div>
+          </div>
+          
+          <div className="mt-12 text-center">
+            <span className="inline-block px-6 py-3 bg-gray-900 text-white rounded-full text-sm font-bold shadow-lg animate-bounce">
+                🚀 한 번으로 끝나는 게 아닙니다. 매주 성장합니다.
+            </span>
           </div>
         </div>
       </section>
@@ -370,20 +416,22 @@ export default function BizonMarketing({ site }: { site: string }) {
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">목표 (중복 선택 가능)</label>
                 <div className="flex flex-wrap gap-2">
-                  {['전화', '길찾기', '예약', '방문', '리뷰'].map(goal => (
+                <div className="flex flex-wrap gap-2">
+                  {['전화', '길찾기', '예약', '방문', '리뷰'].map(item => (
                     <button
                       type="button"
-                      key={goal}
-                      onClick={() => setFormData({...formData, goal: formData.goal === goal ? '' : goal})}
+                      key={item}
+                      onClick={() => toggleGoal(item)}
                       className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
-                        formData.goal === goal 
+                        formData.goal.includes(item) 
                           ? 'bg-orange-500 border-orange-500 text-white' 
                           : 'bg-transparent border-white/20 text-gray-300 hover:border-orange-500'
                       }`}
                     >
-                      {goal}
+                      {item}
                     </button>
                   ))}
+                </div>
                 </div>
               </div>
 

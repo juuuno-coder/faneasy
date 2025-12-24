@@ -24,10 +24,12 @@ import {
   Bell,
   Bot,
   Menu,
-  X
+  X,
+  Palette
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
+import PageBuilder from '@/components/admin/page-builder';
 import CustomersTab from '@/components/admin/customers-tab';
 import InquiriesTab from '@/components/admin/inquiries-tab';
 import SettingsTab from '@/components/admin/settings-tab';
@@ -52,7 +54,7 @@ export default function AdminDashboard() {
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'customers' | 'inquiries' | 'settings' | 'activity' | 'subscription' | 'users'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'structure' | 'builder' | 'customers' | 'inquiries' | 'settings' | 'activity' | 'subscription' | 'users'>('dashboard');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -331,6 +333,15 @@ export default function AdminDashboard() {
             사이트 개설 현황
           </button>
           <button 
+            onClick={() => setActiveTab('builder')}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              activeTab === 'builder' ? theme.navActive : theme.navInactive
+            }`}
+          >
+            <Palette className={`h-5 w-5 ${activeTab === 'builder' ? theme.iconActive : theme.iconInactive}`} />
+            페이지 디자인
+          </button>
+          <button 
             onClick={() => setActiveTab('customers')}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
               activeTab === 'customers' ? theme.navActive : theme.navInactive
@@ -420,6 +431,7 @@ export default function AdminDashboard() {
               <h1 className={`text-3xl font-bold ${theme.text}`}>
                 {activeTab === 'dashboard' && '대시보드'}
                 {activeTab === 'structure' && '사이트 개설 현황'}
+                {activeTab === 'builder' && '페이지 디자인'}
                 {activeTab === 'customers' && '고객 관리'}
                 {activeTab === 'inquiries' && '문의 내역'}
                 {activeTab === 'settings' && '사이트 설정'}
@@ -441,6 +453,7 @@ export default function AdminDashboard() {
             <p className="text-gray-400 text-sm mt-1">
               {activeTab === 'dashboard' && '실시간 문의 현황 및 통계를 확인하세요.'}
               {activeTab === 'structure' && '계열사 및 하위 사이트의 개설 상태와 관리 구조를 확인하세요.'}
+              {activeTab === 'builder' && '블록을 배치하여 나만의 사이트를 디자인하세요.'}
               {activeTab === 'customers' && '고객 정보를 관리하고 분석하세요.'}
               {activeTab === 'inquiries' && '모든 문의 내역을 확인하고 관리하세요.'}
               {activeTab === 'settings' && '사이트 설정을 변경하고 최적화하세요.'}
@@ -627,6 +640,11 @@ export default function AdminDashboard() {
             userRole={user?.role || 'user'} 
             isDarkMode={isDarkMode}
           />
+        )}
+
+        {/* Page Builder Tab Content */}
+        {activeTab === 'builder' && (
+          <PageBuilder subdomain={user?.subdomain || 'kkang'} />
         )}
 
         {/* Customers Tab Content */}

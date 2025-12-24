@@ -15,6 +15,10 @@ import AgencyLandingPage from "./agency-landing-page";
 import TechMarketing from "./tech-marketing";
 import GrowthMarketing from "./growth-marketing";
 import MZMarketing from "./mz-marketing";
+import { getPageBlocks } from "@/lib/page-service";
+import BlockRenderer from "@/components/block-renderer";
+import { db } from "@/lib/firebaseClient";
+import { doc, getDoc } from "firebase/firestore";
 import type { Metadata, ResolvingMetadata } from 'next';
 
 export async function generateMetadata(
@@ -25,13 +29,26 @@ export async function generateMetadata(
   const siteSlug = site.toLowerCase().trim();
   const creator = getCreator(siteSlug);
 
-  if (!creator) return {};
+  // Default Fallbacks
+  let title = site === 'kkang' ? '깡대표 x 디어스 | 프리미엄 랜딩페이지' : (creator?.name ? `${creator.name} 공식 팬페이지` : 'FanEasy Page');
+  let description = site === 'kkang' ? '빠르게 사업을 시작하는 프리미엄 랜딩페이지' : (creator?.bio || 'FanEasy 공식 사이트');
+  let ogImage = site === 'kkang' ? '/og-kkang.png' : (creator?.image || '');
 
-  const title = site === 'kkang' ? '깡대표 x 디어스 | 프리미엄 랜딩페이지' : `${creator.name} 공식 팬페이지`;
-  const description = site === 'kkang' 
-    ? '빠르게 사업을 시작하는 프리미엄 랜딩페이지' 
-    : creator.bio;
-  const ogImage = site === 'kkang' ? '/og-kkang.png' : creator.image;
+  try {
+    const settingsSnap = await getDoc(doc(db, 'site_settings', siteSlug));
+    if (settingsSnap.exists()) {
+        const data = settingsSnap.data();
+        if (data.seoTitle) title = data.seoTitle;
+        else if (data.siteName) title = data.siteName;
+        
+        if (data.seoDescription) description = data.seoDescription;
+        else if (data.siteDescription) description = data.siteDescription;
+        
+        if (data.bannerUrl) ogImage = data.bannerUrl;
+    }
+  } catch (err) {
+    console.error("Metadata fetch error", err);
+  }
 
   return {
     title,
@@ -62,10 +79,24 @@ export default async function SitePage({
   const siteSlug = site.toLowerCase().trim();
   const creator = getCreator(siteSlug);
   
-  // Custom Live News: Fetch specific news for the site if available, otherwise generic
+  // 1. Try to fetch Custom Page Blocks first
+  const blocks = await getPageBlocks(siteSlug);
+  
+  if (blocks && blocks.length > 0) {
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
+        <BlockRenderer blocks={blocks} site={siteSlug} />
+        <HeaderActions site={siteSlug} />
+      </div>
+    );
+  }
+
+  // 2. Custom Live News (Legacy Fallback)
   const news = await getLiveNews(siteSlug);
 
-  if (!creator) {
+  if (!creator && !blocks) {
     notFound();
   }
 
@@ -132,8 +163,8 @@ export default async function SitePage({
       <div className="relative h-[60vh] w-full overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/50 to-black z-10" />
         <Image
-          src={creator.image}
-          alt={creator.name}
+          src={creator?.image || ''}
+          alt={creator?.name || siteSlug}
           width={1920}
           height={1080}
           priority
@@ -148,14 +179,14 @@ export default async function SitePage({
             <div className="flex items-end justify-between">
               <div>
                 <h1 className="text-6xl font-black uppercase tracking-tighter md:text-8xl">
-                  {creator.name}
+                  {creator?.name || siteSlug}
                 </h1>
                 <p className="mt-4 max-w-xl text-lg text-gray-300 md:text-xl">
-                  {creator.bio}
+                  {creator?.bio}
                 </p>
               </div>
               <div className="hidden text-right md:block">
-                <div className="text-4xl font-bold">{creator.stats.fans}</div>
+                <div className="text-4xl font-bold">{creator?.stats?.fans || 0}</div>
                 <div className="text-sm text-gray-400">Monthly Visitors</div>
               </div>
             </div>

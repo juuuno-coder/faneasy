@@ -116,8 +116,10 @@ export interface Order {
 
   // Transaction
   amount: number;
-  paymentMethod: "bank_transfer";
+  paymentMethod: "bank_transfer" | "card";
   status: "pending_payment" | "paid" | "processing" | "active" | "cancelled";
+  imp_uid?: string; // PortOne Transaction ID
+  merchant_uid?: string; // Merchant Order ID
 
   // Product Specifics (Agency Service)
   domainRequest?: string; // Requested domain
@@ -262,5 +264,47 @@ export interface SiteNode {
   ownerName?: string;
   adminIds?: string[];
   createdAt: string;
+  updatedAt: string;
+}
+
+// --- Page Builder Types ---
+
+export type BlockType = 
+  | 'hero' 
+  | 'text' 
+  | 'image' 
+  | 'video' 
+  | 'features' 
+  | 'pricing' 
+  | 'faq'
+  | 'stats'
+  | 'testimonials'
+  | 'form' 
+  | 'custom_html'
+  | 'spacer'
+  | 'divider';
+
+export interface SiteBlock {
+  id: string;
+  type: BlockType;
+  content: any; // JSON for Tiptap or specific block config
+  order: number;
+  settings?: {
+    paddingTop?: string;
+    paddingBottom?: string;
+    mobilePaddingTop?: string;
+    mobilePaddingBottom?: string;
+    backgroundColor?: string;
+    textColor?: string;
+    isHidden?: boolean;
+    className?: string;
+    animation?: 'none' | 'fade' | 'slide-up' | 'zoom';
+    maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  };
+}
+
+export interface BlockPageData {
+  subdomain: string;
+  blocks: SiteBlock[];
   updatedAt: string;
 }
