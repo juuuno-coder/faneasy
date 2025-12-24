@@ -28,8 +28,12 @@ import {
   Calendar,
   FileText
 } from 'lucide-react';
+import { useAOS } from '@/hooks/use-aos';
 
 export default function Fan4Marketing({ site }: { site: string }) {
+  // AOS 스크롤 애니메이션 초기화
+  useAOS();
+
   const [formData, setFormData] = useState({
     brandName: '',
     address: '',
@@ -107,11 +111,11 @@ export default function Fan4Marketing({ site }: { site: string }) {
 
         {/* Hero Content */}
         <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">
-          <span className="inline-block px-4 py-2 bg-orange-500/20 backdrop-blur-sm text-orange-300 rounded-full text-sm font-bold mb-6 border border-orange-500/30 animate-pulse">
+          <span className="inline-block px-4 py-2 bg-orange-500/20 backdrop-blur-sm text-orange-300 rounded-full text-sm font-bold mb-6 border border-orange-500/30 animate-pulse" data-aos="fade-down">
             🔥 현재 300개 프랜차이즈 지점 마케팅 진행 중
           </span>
           
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-black leading-tight mb-6 text-white">
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-black leading-tight mb-6 text-white" data-aos="fade-up" data-aos-delay="100">
             <span className="text-gray-400">사장님, 장사하세요.</span><br />
             <span className="bg-linear-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
               마케팅은 저희가 매듭짓겠습니다.
@@ -165,7 +169,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
             <p className="text-gray-500 text-sm">"정부 지원사업에 선정되셔서 연락드렸어요..."</p>
           </div>
 
-          <div className="text-center mb-12">
+          <div className="text-center mb-12" data-aos="fade-up">
             <h2 className="text-3xl md:text-5xl font-black mb-4">
               어디 하나 <span className="text-blue-400">믿을 곳 없는</span> 마케팅 시장
             </h2>
@@ -204,7 +208,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
               { text: '"지금 계약하시면 50% 할인입니다"', warn: '조급함을 유도하는 전형적인 수법입니다.' },
               { text: '"월 5만원으로 1등 할 수 있습니다"', warn: '비현실적인 가격은 결과도 비현실적입니다.' },
             ].map((item, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-red-500/30 transition-colors group">
+              <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-red-500/30 transition-colors group" data-aos="fade-up" data-aos-delay={i * 100}>
                 <p className="text-lg font-bold text-white mb-2 flex items-start gap-3">
                   <ShieldAlert className="h-5 w-5 text-red-400 shrink-0 mt-1" />
                   {item.text}

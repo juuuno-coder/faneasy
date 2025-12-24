@@ -21,8 +21,12 @@ import {
   ShieldAlert,
   Play
 } from 'lucide-react';
+import { useAOS } from '@/hooks/use-aos';
 
 export default function BizonMarketing({ site }: { site: string }) {
+  // AOS 스크롤 애니메이션 초기화
+  useAOS();
+
   /* State Updates */
   const [formData, setFormData] = useState({
     brandName: '',
