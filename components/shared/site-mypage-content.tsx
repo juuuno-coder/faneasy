@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
-import { useDataStore } from "@/lib/data-store";
 import {
   Monitor,
   ExternalLink,
@@ -29,7 +28,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Order, Inquiry } from "@/lib/types";
 import ProfileModal from "@/components/profile-modal";
 import { db, firebaseAuth } from "@/lib/firebaseClient";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 
 // Helper to map plan IDs to names
@@ -42,7 +41,6 @@ const PLAN_NAMES: Record<string, string> = {
 export default function SiteMyPageContent() {
   const router = useRouter();
   const { user, logout, updateUser } = useAuthStore();
-  const { orders: allOrders, inquiries: allInquiries, updateOrder } = useDataStore(); 
   
   const [loading, setLoading] = useState(true);
   const [myOrders, setMyOrders] = useState<Order[]>([]);
@@ -56,15 +54,54 @@ export default function SiteMyPageContent() {
   const [editForm, setEditForm] = useState({ domainRequest: '', buyerPhone: '' });
 
   useEffect(() => {
-    if (user) {
-        const userOrders = allOrders.filter(o => o.buyerEmail === user.email);
-        setMyOrders(userOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    async function fetchData() {
+        if (!user || !user.email) {
+            setLoading(false);
+            return;
+        }
 
-        const userInquiries = allInquiries.filter(i => i.email === user.email);
-        setMyInquiries(userInquiries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        try {
+            // 1. Fetch Orders (Firestore)
+            const ordersQuery = query(
+                collection(db, 'orders'),
+                where('buyerEmail', '==', user.email),
+                orderBy('createdAt', 'desc')
+            );
+            
+            // 2. Fetch Inquiries (Firestore)
+            const inquiriesQuery = query(
+                collection(db, 'inquiries'),
+                where('email', '==', user.email),
+                orderBy('createdAt', 'desc')
+            );
+
+            const [ordersSnapshot, inquiriesSnapshot] = await Promise.all([
+                getDocs(ordersQuery).catch(err => {
+                    console.warn("Failed to fetch orders (might be empty or missing index):", err);
+                    return { docs: [] };
+                }),
+                getDocs(inquiriesQuery).catch(err => {
+                    console.warn("Failed to fetch inquiries:", err);
+                    return { docs: [] };
+                })
+            ]);
+
+            const fetchedOrders = (ordersSnapshot.docs?.map(doc => ({ id: doc.id, ...doc.data() })) || []) as Order[];
+            const fetchedInquiries = (inquiriesSnapshot.docs?.map(doc => ({ id: doc.id, ...doc.data() })) || []) as Inquiry[];
+
+            setMyOrders(fetchedOrders);
+            setMyInquiries(fetchedInquiries);
+
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            toast.error("데이터를 불러오는 중 문제가 발생했습니다.");
+        } finally {
+            setLoading(false);
+        }
     }
-    setLoading(false);
-  }, [user, allOrders, allInquiries]);
+
+    fetchData();
+  }, [user]);
 
   // Sync edit form when editingOrder changes
   useEffect(() => {
@@ -76,26 +113,31 @@ export default function SiteMyPageContent() {
     }
   }, [editingOrder]);
 
-  const handleUpdateOrder = () => {
+  const handleUpdateOrder = async () => {
     if (!editingOrder) return;
     
-    // Update local store
-    updateOrder(editingOrder.id, {
-        domainRequest: editForm.domainRequest,
-        buyerPhone: editForm.buyerPhone,
-        updatedAt: new Date() // Update timestamp
-    });
+    try {
+        // Update Firestore
+        await setDoc(doc(db, 'orders', editingOrder.id), {
+            domainRequest: editForm.domainRequest,
+            buyerPhone: editForm.buyerPhone,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
 
-    // Optimistic UI update for local list
-    setMyOrders(prev => prev.map(o => o.id === editingOrder.id ? { 
-        ...o, 
-        domainRequest: editForm.domainRequest,
-        buyerPhone: editForm.buyerPhone 
-    } : o));
+        // Optimistic UI update
+        setMyOrders(prev => prev.map(o => o.id === editingOrder.id ? { 
+            ...o, 
+            domainRequest: editForm.domainRequest,
+            buyerPhone: editForm.buyerPhone 
+        } : o));
 
-    toast.success('주문 정보가 수정되었습니다.');
-    setIsEditOrderModalOpen(false);
-    setEditingOrder(null);
+        toast.success('주문 정보가 수정되었습니다.');
+        setIsEditOrderModalOpen(false);
+        setEditingOrder(null);
+    } catch (error) {
+        console.error("Failed to update order:", error);
+        toast.error("주문 수정 실패");
+    }
   };
 
   const handleSaveProfile = async (data: { name: string; email: string }) => {
@@ -109,11 +151,12 @@ export default function SiteMyPageContent() {
 
     try {
         // 2. Update Firestore (Source of Truth)
+        // Use setDoc with merge: true to CREATE the doc if it doesn't exist (fixing the "No document to update" error)
         const userRef = doc(db, 'users', user.id);
-        await updateDoc(userRef, {
+        await setDoc(userRef, {
             name: data.name,
             updatedAt: new Date().toISOString()
-        });
+        }, { merge: true });
         
         // 3. Update Client Store (Optimistic UI)
         updateUser({ name: data.name });
@@ -123,7 +166,6 @@ export default function SiteMyPageContent() {
 
     } catch (error: any) {
         console.error("Profile update failed:", error);
-        // Permission denied is common if rules require Auth and it's missing/mismatched
         if (error.code === 'permission-denied') {
             throw new Error("변경 권한이 없습니다. 다시 로그인 해주세요.");
         }
