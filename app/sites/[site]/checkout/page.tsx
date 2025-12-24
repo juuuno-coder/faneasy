@@ -93,7 +93,7 @@ function CheckoutForm() {
     domainRequest: '',
   });
 
-  const [paymentMethod, setPaymentMethod] = useState<'bank_transfer' | 'card'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'bank_transfer' | 'card'>('bank_transfer');
   const [paymentResult, setPaymentResult] = useState<{ imp_uid?: string; merchant_uid?: string } | null>(null);
 
   // Pre-fill if logged in
@@ -395,11 +395,11 @@ function CheckoutForm() {
 
                 <div className="space-y-4">
                   <label className="text-sm font-medium text-gray-400">결제 방법 선택</label>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                      <button
                         type="button"
                         onClick={() => setPaymentMethod('card')}
-                        className={`flex items-center justify-center gap-2 rounded-xl border p-4 transition-all ${
+                        className={`hidden items-center justify-center gap-2 rounded-xl border p-4 transition-all ${
                           paymentMethod === 'card' 
                             ? 'border-purple-500 bg-purple-500/10 text-white' 
                             : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
@@ -436,11 +436,11 @@ function CheckoutForm() {
                       </div>
                       <div className="flex justify-between">
                         <span>계좌번호</span>
-                        <span className="font-bold text-white">3333-XX-XXXXXX</span>
+                        <span className="font-bold text-white">3333-07-9016494</span>
                       </div>
                       <div className="flex justify-between">
                         <span>예금주</span>
-                        <span className="font-bold text-white">주노 (팬이지)</span>
+                        <span className="font-bold text-white">위로(김정원)</span>
                       </div>
                     </div>
                     <div className="mt-4 pt-4 border-t border-purple-500/20 text-xs text-purple-300 leading-relaxed">
