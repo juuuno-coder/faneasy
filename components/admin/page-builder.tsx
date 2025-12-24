@@ -208,25 +208,25 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
             <div className="bg-white/5 rounded-3xl border border-white/10 p-6 sticky top-28">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">기본 요소</h3>
               <div className="space-y-2 mb-8">
-                <AddBlockButton icon={<Layout />} label="Hero Section" onClick={() => addBlock('hero')} color="purple" />
-                <AddBlockButton icon={<Type />} label="Rich Text" onClick={() => addBlock('text')} color="blue" />
-                <AddBlockButton icon={<ImageIcon />} label="Gallery/Image" onClick={() => addBlock('image')} color="green" />
+                <AddBlockButton icon={<Layout />} label="히어로 섹션" onClick={() => addBlock('hero')} color="purple" />
+                <AddBlockButton icon={<Type />} label="리치 텍스트" onClick={() => addBlock('text')} color="blue" />
+                <AddBlockButton icon={<ImageIcon />} label="이미지/갤러리" onClick={() => addBlock('image')} color="green" />
               </div>
 
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">고급 컴포넌트</h3>
               <div className="space-y-2 mb-8">
-                <AddBlockButton icon={<Zap />} label="Features" onClick={() => addBlock('features')} color="yellow" />
-                <AddBlockButton icon={<CreditCard />} label="Pricing Plan" onClick={() => addBlock('pricing')} color="pink" />
-                <AddBlockButton icon={<HelpCircle />} label="FAQ Accordion" onClick={() => addBlock('faq')} color="indigo" />
-                <AddBlockButton icon={<BarChart3 />} label="Stats Counter" onClick={() => addBlock('stats')} color="cyan" />
-                <AddBlockButton icon={<Star />} label="Testimonials" onClick={() => addBlock('testimonials')} color="orange" />
+                <AddBlockButton icon={<Zap />} label="주요 특징" onClick={() => addBlock('features')} color="yellow" />
+                <AddBlockButton icon={<CreditCard />} label="가격 정책" onClick={() => addBlock('pricing')} color="pink" />
+                <AddBlockButton icon={<HelpCircle />} label="자주 묻는 질문" onClick={() => addBlock('faq')} color="indigo" />
+                <AddBlockButton icon={<BarChart3 />} label="성과 지표" onClick={() => addBlock('stats')} color="cyan" />
+                <AddBlockButton icon={<Star />} label="고객 후기" onClick={() => addBlock('testimonials')} color="orange" />
               </div>
 
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">시스템</h3>
               <div className="space-y-2">
-                <AddBlockButton icon={<MessageSquare />} label="Inquiry Form" onClick={() => addBlock('form')} color="red" />
-                <AddBlockButton icon={<Square />} label="Spacer" onClick={() => addBlock('spacer')} color="gray" />
-                <AddBlockButton icon={<MoreVertical />} label="Divider" onClick={() => addBlock('divider')} color="gray" />
+                <AddBlockButton icon={<MessageSquare />} label="문의 양식" onClick={() => addBlock('form')} color="red" />
+                <AddBlockButton icon={<Square />} label="여백" onClick={() => addBlock('spacer')} color="gray" />
+                <AddBlockButton icon={<MoreVertical />} label="구분선" onClick={() => addBlock('divider')} color="gray" />
               </div>
             </div>
           </div>
@@ -745,7 +745,7 @@ function getInitialContent(type: BlockType) {
     case 'features': return { title: '왜 우리와 함께해야 할까요?', items: [{title: '압도적인 속도', description: '기존 대비 200% 빠른 성능'}, {title: '강력한 보안', description: '군사급 암호화 적용'}, {title: '24/7 서포트', description: '언제든 준비된 전문가들'}] };
     case 'pricing': return { title: '합리적인 요금제', plans: [{name: 'Free', price: '₩0', features: ['기본 대시보드', '1개 사이트 연결'], popular: false}, {name: 'Pro', price: '₩49,000', features: ['풀 대시보드', '무제한 사이트', '프리미엄 지원'], popular: true}, {name: 'Enterprise', price: '문의', features: ['커스텀 기능', '전담 매니저'], popular: false}] };
     case 'faq': return { title: '자주 묻는 질문', items: [{question: '사용법이 어렵나요?', answer: '아니요, 5분이면 충분합니다.'}, {question: '결제 수단은 무엇이 있나요?', answer: '모든 신용카드와 계좌이체를 지원합니다.'}] };
-    case 'stats': return { items: [{value: '1.2k+', label: 'Happy Clients'}, {value: '25m', label: 'Incomes'}, {value: '99%', label: 'Uptime'}, {value: '24h', label: 'Support'}] };
+    case 'stats': return { items: [{value: '1.2k+', label: '만족한 고객'}, {value: '25m', label: '누적 매출'}, {value: '99%', label: '가동률'}, {value: '24h', label: '고객 지원'}] };
     case 'testimonials': return { items: [{quote: '이 플랫폼 덕분에 비즈니스가 완전히 바뀌었습니다!', author: '김철수', role: '도도마케팅 대표'}, {quote: '최고의 선택이었습니다. 강력 추천합니다.', author: '이영희', role: '그로스랩 팀장'}] };
     case 'form': return { title: '무료 컨설팅 신청', description: '지금 바로 전문가와 상담하세요.', variant: 'tech' };
     case 'spacer': return { height: '80px' };
