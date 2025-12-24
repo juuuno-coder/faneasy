@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
+import { useDataStore } from "@/lib/data-store";
 import {
   Monitor,
   ExternalLink,
@@ -41,6 +42,7 @@ const PLAN_NAMES: Record<string, string> = {
 export default function SiteMyPageContent() {
   const router = useRouter();
   const { user, logout, updateUser } = useAuthStore();
+  const { orders: allLocalOrders, inquiries: allLocalInquiries, updateOrder } = useDataStore(); 
   
   const [loading, setLoading] = useState(true);
   const [myOrders, setMyOrders] = useState<Order[]>([]);
@@ -77,31 +79,62 @@ export default function SiteMyPageContent() {
 
             const [ordersSnapshot, inquiriesSnapshot] = await Promise.all([
                 getDocs(ordersQuery).catch(err => {
-                    console.warn("Failed to fetch orders (might be empty or missing index):", err);
+                    console.warn("Failed to fetch orders from DB:", err);
                     return { docs: [] };
                 }),
                 getDocs(inquiriesQuery).catch(err => {
-                    console.warn("Failed to fetch inquiries:", err);
+                    console.warn("Failed to fetch inquiries from DB:", err);
                     return { docs: [] };
                 })
             ]);
 
-            const fetchedOrders = (ordersSnapshot.docs?.map(doc => ({ id: doc.id, ...doc.data() })) || []) as Order[];
-            const fetchedInquiries = (inquiriesSnapshot.docs?.map(doc => ({ id: doc.id, ...doc.data() })) || []) as Inquiry[];
+            const dbOrders = (ordersSnapshot.docs?.map(doc => ({ id: doc.id, ...doc.data() })) || []) as Order[];
+            const dbInquiries = (inquiriesSnapshot.docs?.map(doc => ({ id: doc.id, ...doc.data() })) || []) as Inquiry[];
 
-            setMyOrders(fetchedOrders);
-            setMyInquiries(fetchedInquiries);
+            // 3. Merge with Local Store (Deduplicate by createdAt)
+            // Filter local items for current user
+            const localOrders = allLocalOrders.filter(o => o.buyerEmail === user.email);
+            const localInquiries = allLocalInquiries.filter(i => i.email === user.email);
+
+            // Merge Orders
+            const mergedOrders = [...dbOrders];
+            localOrders.forEach(local => {
+                // If no DB record exists with the same createdAt, add the local one
+                if (!mergedOrders.some(dbOrder => dbOrder.createdAt === local.createdAt)) {
+                    mergedOrders.push(local);
+                }
+            });
+            // Re-sort
+            mergedOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+            // Merge Inquiries
+            const mergedInquiries = [...dbInquiries];
+            localInquiries.forEach(local => {
+                if (!mergedInquiries.some(dbInq => dbInq.createdAt === local.createdAt)) {
+                    mergedInquiries.push(local);
+                }
+            });
+            mergedInquiries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+            setMyOrders(mergedOrders);
+            setMyInquiries(mergedInquiries);
 
         } catch (error) {
             console.error("Error fetching user data:", error);
-            toast.error("데이터를 불러오는 중 문제가 발생했습니다.");
+            // Fallback to local data only if DB fails completely
+            const localOrders = allLocalOrders.filter(o => o.buyerEmail === user.email);
+            const localInquiries = allLocalInquiries.filter(i => i.email === user.email);
+            setMyOrders(localOrders);
+            setMyInquiries(localInquiries);
+            
+            toast.error("일부 데이터를 불러오는 중 문제가 발생했습니다.");
         } finally {
             setLoading(false);
         }
     }
 
     fetchData();
-  }, [user]);
+  }, [user, allLocalOrders, allLocalInquiries]);
 
   // Sync edit form when editingOrder changes
   useEffect(() => {
