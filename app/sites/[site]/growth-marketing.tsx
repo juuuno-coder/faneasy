@@ -5,8 +5,12 @@ import { EditableText, EditableContent } from "@/components/editable";
 import HeaderActions from "./header-actions";
 import InquiryForm from "./inquiry-form";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
+import { useAOS } from '@/hooks/use-aos';
 
 export default function GrowthMarketing({ site }: { site: string }) {
+  // AOS 스크롤 애니메이션 초기화
+  useAOS();
+
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-green-100 selection:text-green-900">
       {/* Clean Professional Header */}
@@ -45,7 +49,7 @@ export default function GrowthMarketing({ site }: { site: string }) {
 
         <div className="mx-auto max-w-7xl relative z-10">
           <div className="max-w-3xl">
-            <span className="inline-block px-3 py-1 bg-green-100/80 backdrop-blur text-green-700 rounded-full text-xs font-bold mb-6 tracking-wide border border-green-200">
+            <span className="inline-block px-3 py-1 bg-green-100/80 backdrop-blur text-green-700 rounded-full text-xs font-bold mb-6 tracking-wide border border-green-200" data-aos="fade-down">
               DATA-DRIVEN MARKETING AGENCY
             </span>
             <EditableText
@@ -53,6 +57,8 @@ export default function GrowthMarketing({ site }: { site: string }) {
               field="heroTitle"
               as="h2"
               className="text-5xl md:text-7xl font-bold leading-tight text-gray-900 mb-8"
+              data-aos="fade-up"
+              data-aos-delay="100"
               defaultValue={
                 <>
                   데이터로 증명하는 <br />
@@ -126,7 +132,7 @@ export default function GrowthMarketing({ site }: { site: string }) {
       {/* Services Section */}
       <section id="services" className="py-24 px-6 bg-white">
         <div className="mx-auto max-w-7xl">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
+          <div className="text-center mb-16 max-w-2xl mx-auto" data-aos="fade-up">
              <h3 className="text-green-600 font-bold tracking-widest text-sm mb-3">OUR SERVICES</h3>
              <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">성공을 위한 프로세스</h2>
              <p className="mt-4 text-gray-500">

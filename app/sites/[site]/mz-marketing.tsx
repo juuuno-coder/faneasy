@@ -4,8 +4,12 @@ import { Monitor, Smartphone, ArrowRight, CheckCircle2 } from "lucide-react";
 import { EditableText, EditableContent } from "@/components/editable";
 import HeaderActions from "./header-actions";
 import InquiryForm from "./inquiry-form";
+import { useAOS } from '@/hooks/use-aos';
 
 export default function MZMarketing({ site }: { site: string }) {
+  // AOS 스크롤 애니메이션 초기화
+  useAOS();
+
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-[#FFE400] selection:text-black">
       {/* Simple Header */}
@@ -31,6 +35,7 @@ export default function MZMarketing({ site }: { site: string }) {
             field="heroTitle"
             as="h2"
             className="text-[10vw] leading-[0.9] font-black text-white mix-blend-difference mb-12 uppercase"
+            data-aos="fade-up"
             defaultValue={
               <>
                 LIMITED MARKETING <br />
@@ -71,7 +76,7 @@ export default function MZMarketing({ site }: { site: string }) {
                 "인플루언서 공동구매", "인플루언서 마케팅", "라이브커머스",
                 "CRM마케팅", "영상광고", "오픈마켓광고"
               ].map((item, i) => (
-                <div key={i} className="group flex items-center justify-between p-6 border border-white/10 bg-white/5 hover:bg-[#FFE400] hover:text-black transition-all duration-300 cursor-default">
+                <div key={i} className="group flex items-center justify-between p-6 border border-white/10 bg-white/5 hover:bg-[#FFE400] hover:text-black transition-all duration-300 cursor-default" data-aos="fade-up" data-aos-delay={i * 50}>
                   <span className="font-bold text-lg">{item}</span>
                   <ArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-2" />
                 </div>
@@ -131,11 +136,11 @@ export default function MZMarketing({ site }: { site: string }) {
       {/* Contact Section */}
       <section id="contact" className="py-24 px-6 relative">
            <div className="mx-auto max-w-3xl">
-              <div className="text-center mb-16">
+              <div className="text-center mb-16" data-aos="fade-up">
                   <h2 className="text-4xl font-bold mb-4">프로젝트 문의하기</h2>
                   <p className="text-gray-400">성공적인 마케팅, 지금 바로 시작하세요.</p>
               </div>
-              <div className="bg-white/5 border border-white/10 p-8 md:p-12 rounded-3xl backdrop-blur-sm">
+              <div className="bg-white/5 border border-white/10 p-8 md:p-12 rounded-3xl backdrop-blur-sm" data-aos="fade-up" data-aos-delay="100">
                   <InquiryForm influencerId="inf-1" variant="bold" />
               </div>
            </div>

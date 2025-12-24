@@ -5,8 +5,12 @@ import { EditableText, EditableContent } from "@/components/editable";
 import HeaderActions from "./header-actions";
 import InquiryForm from "./inquiry-form";
 import { Spotlight } from "@/components/ui/spotlight";
+import { useAOS } from '@/hooks/use-aos';
 
 export default function TechMarketing({ site }: { site: string }) {
+  // AOS 스크롤 애니메이션 초기화
+  useAOS();
+
   return (
     <div className="min-h-screen bg-[#050614] text-white font-sans selection:bg-indigo-500 selection:text-white">
       {/* Modern Tech Header */}
@@ -39,7 +43,7 @@ export default function TechMarketing({ site }: { site: string }) {
          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-600/20 blur-[150px] rounded-full z-0" />
          
          <div className="mx-auto max-w-7xl relative z-10 flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl text-indigo-400 text-xs font-bold tracking-wide mb-10 uppercase transition-all hover:bg-white/10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl text-indigo-400 text-xs font-bold tracking-wide mb-10 uppercase transition-all hover:bg-white/10" data-aos="fade-down">
                <Zap className="h-3.5 w-3.5 fill-indigo-400" />
                데이터로 증명하는 퍼포먼스 마케팅
             </div>
@@ -49,6 +53,8 @@ export default function TechMarketing({ site }: { site: string }) {
               field="heroTitle"
               as="h2"
               className="text-6xl md:text-[7rem] font-black leading-[1.05] tracking-tighter mb-12"
+              data-aos="fade-up"
+              data-aos-delay="100"
               defaultValue={
                 <>
                   <span className="block opacity-50 text-[0.35em] tracking-tight mb-4">비즈니스 성공을 위한</span>
