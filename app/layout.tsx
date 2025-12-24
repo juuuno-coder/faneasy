@@ -1,18 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthInitializer from "@/components/auth-initializer";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 import GoogleAnalytics from "@/components/google-analytics";
 import { Toaster } from 'react-hot-toast';
 
@@ -27,10 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="ko">
+      <body className="antialiased">
         <AuthInitializer />
         <GoogleAnalytics GA_MEASUREMENT_ID="G-XXXXXXXXXX" />
         <Toaster position="top-right" />
@@ -40,3 +26,4 @@ export default function RootLayout({
     </html>
   );
 }
+
