@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebaseClient';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, collection, addDoc, getDocs, orderBy, query, limit } from 'firebase/firestore';
 import { SiteBlock, BlockType } from '@/lib/types';
+import { getLegacyTemplate } from '@/lib/page-templates';
+import { logActivity } from '@/lib/activity-logger';
+import { useAuthStore } from '@/lib/store';
 import { 
   Plus, 
   Trash2, 
@@ -29,7 +32,9 @@ import {
   X,
   Palette,
   Maximize2,
-  Smartphone
+  Smartphone,
+  History,
+  RotateCcw
 } from 'lucide-react';
 import {
   DndContext,
@@ -57,10 +62,12 @@ interface PageBuilderProps {
 }
 
 export default function PageBuilder({ subdomain }: PageBuilderProps) {
+  const { user } = useAuthStore();
   const [blocks, setBlocks] = useState<SiteBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [activeSettingsBlock, setActiveSettingsBlock] = useState<string | null>(null);
 
   useEffect(() => {
@@ -72,15 +79,20 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
         if (snap.exists()) {
           setBlocks(snap.data().blocks || []);
         } else {
-          setBlocks([
-            {
-              id: 'hero-1',
-              type: 'hero',
-              content: { title: '환영합니다', description: '나만의 사이트를 만들어보세요', buttonText: '시작하기' },
-              order: 0,
-              settings: { paddingTop: '80px', paddingBottom: '80px', animation: 'slide-up', maxWidth: 'lg' }
-            }
-          ]);
+          const legacyBlocks = getLegacyTemplate(subdomain);
+          if (legacyBlocks) {
+            setBlocks(legacyBlocks);
+          } else {
+            setBlocks([
+                {
+                id: 'hero-1',
+                type: 'hero',
+                content: { title: '환영합니다', description: '나만의 사이트를 만들어보세요', buttonText: '시작하기' },
+                order: 0,
+                settings: { paddingTop: '80px', paddingBottom: '80px', animation: 'slide-up', maxWidth: 'lg' }
+                }
+            ]);
+          }
         }
       } catch (err) {
         console.error('Failed to load blocks:', err);
@@ -94,18 +106,47 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
   const handleSave = async () => {
     setSaving(true);
     try {
+      // 1. Create a snapshot version
+      await addDoc(collection(db, 'page_blocks', subdomain, 'versions'), {
+        blocks,
+        createdAt: serverTimestamp(),
+        description: 'Manual Save'
+      });
+
+      // 2. Update live version
       await setDoc(doc(db, 'page_blocks', subdomain), {
         subdomain,
         blocks,
         updatedAt: serverTimestamp()
       });
-      alert('저장되었습니다.');
+      alert('저장되었습니다. (히스토리에 백업됨)');
+
+      // Log Activity
+      logActivity({
+          userId: user?.id || 'unknown',
+          userName: user?.name,
+          userEmail: user?.email,
+          userRole: user?.role,
+          subdomain: subdomain,
+          action: '페이지 디자인 저장 (PRO)',
+          target: '메인 페이지',
+          type: 'update',
+          details: { blockCount: blocks.length, version: 'new' }
+      });
+
     } catch (err) {
       console.error('Save failed:', err);
       alert('저장에 실패했습니다.');
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleRestore = (legacyBlocks: SiteBlock[]) => {
+      if(confirm('이 버전으로 되돌리시겠습니까? 현재 작업 내용은 사라집니다.')) {
+          setBlocks(legacyBlocks);
+          setShowHistory(false);
+      }
   };
 
   const addBlock = (type: BlockType) => {
@@ -173,6 +214,16 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {showHistory && (
+            <HistoryModal 
+                subdomain={subdomain}
+                onClose={() => setShowHistory(false)}
+                onRestore={handleRestore}
+            />
+        )}
+      </AnimatePresence>
+
       {/* Page Builder Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/5 p-6 rounded-3xl border border-white/10 sticky top-0 z-40 backdrop-blur-xl transition-all">
         <div>
@@ -189,6 +240,13 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
            >
              {previewMode ? <Monitor className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
              {previewMode ? '편집 모드' : '실시간 미리보기'}
+           </button>
+           <button 
+             onClick={() => setShowHistory(true)}
+             className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center gap-2 font-bold"
+           >
+             <History className="h-4 w-4" />
+             기록
            </button>
            <button 
              onClick={handleSave}
@@ -752,3 +810,77 @@ function getInitialContent(type: BlockType) {
     default: return {};
   }
 }
+function HistoryModal({ subdomain, onClose, onRestore }: { subdomain: string; onClose: () => void; onRestore: (blocks: SiteBlock[]) => void }) {
+    const [versions, setVersions] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      const loadHistory = async () => {
+        try {
+          const q = query(
+              collection(db, 'page_blocks', subdomain, 'versions'), 
+              orderBy('createdAt', 'desc'), 
+              limit(20)
+          );
+          const snap = await getDocs(q);
+          setVersions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadHistory();
+    }, [subdomain]);
+  
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      >
+        <div className="bg-[#111] border border-white/10 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
+          <div className="p-6 border-b border-white/10 flex items-center justify-between">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <History className="text-purple-500" />
+              버전 히스토리
+            </h2>
+            <button onClick={onClose}><X className="text-gray-500 hover:text-white" /></button>
+          </div>
+          
+          <div className="p-6 max-h-[60vh] overflow-y-auto space-y-4">
+             {loading ? (
+                 <div className="text-center text-gray-500 py-12">기록을 불러오는 중...</div>
+             ) : versions.length === 0 ? (
+                 <div className="text-center text-gray-500 py-12">저장된 기록이 없습니다.</div>
+             ) : (
+                 versions.map((v) => (
+                    <div key={v.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/20 transition-all group">
+                        <div>
+                            <div className="font-bold text-sm mb-1">
+                                {v.createdAt?.toDate().toLocaleString()}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                {v.description || 'Manual Save'} • {v.blocks?.length || 0} Blocks
+                            </div>
+                        </div>
+                        <button 
+                          onClick={() => onRestore(v.blocks)}
+                          className="px-4 py-2 bg-white/10 hover:bg-purple-600 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+                        >
+                            <RotateCcw className="h-3 w-3" />
+                            복구하기
+                        </button>
+                    </div>
+                 ))
+             )}
+          </div>
+  
+          <div className="p-6 bg-white/5 border-t border-white/10 text-xs text-gray-500 text-center">
+              최근 20개의 저장 기록만 표시됩니다.
+          </div>
+        </div>
+      </motion.div>
+    );
+  }

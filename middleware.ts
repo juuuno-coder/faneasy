@@ -15,7 +15,21 @@ export function middleware(req: NextRequest) {
     // e.g., "localhost:3600" -> "localhost"
     currentHost = hostname.split(".")[0].split(":")[0];
     if (currentHost === "localhost") {
-       // Root localhost access - show landing page
+       // Root localhost access
+       // Check if path looks like a site slug (e.g., /bizon, /kkang)
+       // If so, rewrite to /sites/[slug]
+       const siteRoutes = ['bizon', 'kkang', 'fan1', 'fan2', 'fan3', 'fan4']; // Known site slugs
+       const pathParts = url.pathname.split('/').filter(Boolean);
+       
+       if (pathParts.length > 0 && siteRoutes.includes(pathParts[0])) {
+         // Rewrite /bizon -> /sites/bizon
+         const siteName = pathParts[0];
+         const restPath = pathParts.slice(1).join('/');
+         url.pathname = `/sites/${siteName}${restPath ? '/' + restPath : ''}`;
+         console.log(`Path-based rewrite: /${siteName} -> ${url.pathname}`);
+         return NextResponse.rewrite(url);
+       }
+       
        return NextResponse.next();
     }
   } else if (hostname.includes("faneasy.kr")) {

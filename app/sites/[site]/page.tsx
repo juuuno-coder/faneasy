@@ -93,13 +93,7 @@ export default async function SitePage({
     );
   }
 
-  // 2. Custom Live News (Legacy Fallback)
-  const news = await getLiveNews(siteSlug);
-
-  if (!creator && !blocks) {
-    notFound();
-  }
-
+  // 2. Special Hardcoded Landing Pages (Check BEFORE notFound)
   // If it's bizon, show the BizonMarketing Landing Page
   if (siteSlug === "bizon") {
     const BizonMarketing = (await import("./bizon-marketing")).default;
@@ -111,6 +105,9 @@ export default async function SitePage({
       </>
     );
   }
+
+  // 3. Custom Live News (Legacy Fallback)
+  const news = await getLiveNews(siteSlug);
 
   // If it's kkang, show the Agency Landing Page
   if (siteSlug === "kkang") {
@@ -152,6 +149,18 @@ export default async function SitePage({
         <ThemeWrapper site={siteSlug} />
         <ViewTracker siteId={siteSlug} />
         <TechMarketing site={siteSlug} />
+      </>
+    );
+  }
+
+  // Custom Design for 'fan4' (매듭컴퍼니 스타일 - Video Hero)
+  if (siteSlug === "fan4") {
+    const Fan4Marketing = (await import("./fan4-marketing")).default;
+    return (
+      <>
+        <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
+        <Fan4Marketing site={siteSlug} />
       </>
     );
   }

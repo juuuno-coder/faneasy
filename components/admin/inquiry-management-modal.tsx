@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { db } from '@/lib/firebaseClient';
 import { doc, updateDoc } from 'firebase/firestore';
-import { logActivity } from '@/lib/logger';
+import { logActivity } from '@/lib/activity-logger';
 import { useAuthStore } from '@/lib/store';
 
 interface Props {

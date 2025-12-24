@@ -42,6 +42,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from 'recharts';
+import { logActivity } from '@/lib/activity-logger';
 
 export default function AdminDashboard() {
   const { user, logout, updateUser } = useAuthStore();
@@ -67,6 +68,46 @@ export default function AdminDashboard() {
     todayVisits: 0,
     chartData: [] as any[]
   });
+  
+  const [siteTitle, setSiteTitle] = useState('');
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchSiteTitle = async () => {
+        if (user.role === 'super_admin') {
+            setSiteTitle('DUS ADMIN');
+            return;
+        }
+
+        try {
+            const docId = user.subdomain || (user.email === 'kgw2642@gmail.com' ? 'kkang' : user.id);
+            const settingRef = doc(db, 'site_settings', docId);
+            const settingSnap = await getDoc(settingRef);
+            
+            if (settingSnap.exists()) {
+                const data = settingSnap.data();
+                // If siteName is "Kkang" -> "KKANG ADMIN"
+                // If siteName is "나만의 팬페이지" -> "나만의 팬페이지 ADMIN" (maybe english is better, but user asked for DB site name)
+                if (data.siteName) {
+                    // Check if siteName is English-like to uppercase, or just use as is? 
+                    // User example: "KKANG ADMIN". Likely they want the site name.
+                    // If the site Name is just "Kkang", we can uppercase it.
+                    // Let's try to just use the siteName + " ADMIN" and uppercase if it looks like a simple id/name.
+                    // For now, let's Uppercase it to match style.
+                    setSiteTitle(`${data.siteName.toUpperCase()} ADMIN`);
+                } else {
+                    setSiteTitle(`${(user.subdomain || 'FANEASY').toUpperCase()} ADMIN`);
+                }
+            } else {
+                 setSiteTitle(`${(user.subdomain || 'FANEASY').toUpperCase()} ADMIN`);
+            }
+        } catch (e) {
+            console.error(e);
+            setSiteTitle('FANEASY ADMIN');
+        }
+    };
+    fetchSiteTitle();
+  }, [user]);
   
   // Theme State
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -298,17 +339,7 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-2">
             <Shield className={`h-5 w-5 ${theme.iconActive}`} />
             <span className={`font-bold tracking-tight ${theme.text}`}>
-              {(() => {
-                  if (user?.role === 'super_admin') return 'DUS ADMIN';
-                  // Sub-site Owner logic (e.g. bought a site from kkang)
-                  if (user?.role === 'owner' && (user as any).joinedSite) {
-                      return 'FANEASY ADMIN';
-                  }
-                  if (user?.role === 'owner') {
-                      return `${(user.subdomain || user.name || 'SITE').toUpperCase()} ADMIN`;
-                  }
-                  return 'FANEASY ADMIN';
-              })()}
+              {siteTitle || 'LOADING...'}
             </span>
           </div>
         </div>
@@ -644,7 +675,7 @@ export default function AdminDashboard() {
 
         {/* Page Builder Tab Content */}
         {activeTab === 'builder' && (
-          <PageBuilder subdomain={user?.subdomain || 'kkang'} />
+          <PageBuilder subdomain={user?.subdomain || (user?.role === 'super_admin' ? 'kkang' : user?.id || 'temp')} />
         )}
 
         {/* Customers Tab Content */}
@@ -782,6 +813,20 @@ export default function AdminDashboard() {
 
                       if (response.ok) {
                         alert('답장이 성공적으로 발송되었습니다!');
+                        
+                        // Log Activity
+                        logActivity({
+                            userId: user?.id || 'unknown',
+                            userName: user?.name,
+                            userEmail: user?.email,
+                            userRole: user?.role,
+                            subdomain: user?.subdomain || 'kkang',
+                            action: '문의 답장 발송',
+                            target: selectedInquiry.email,
+                            type: 'reply',
+                            details: { inquiryId: selectedInquiry.id, subject: `[FanEasy] ${selectedInquiry.name}님의 문의에 대한 답변입니다.` }
+                        });
+
                         setShowReplyModal(false);
                         setReplyMessage('');
                         setSelectedInquiry(null);
@@ -811,11 +856,37 @@ export default function AdminDashboard() {
           onClose={() => setShowProfileModal(false)}
           user={user}
           onSave={async (data) => {
-            // 1. Update User Profile (users collection & store)
+            // 1. Update Firestore User Doc (Permanently save name)
+            if (user?.id) {
+                try {
+                    await setDoc(doc(db, 'users', user.id), {
+                        name: data.name,
+                        email: data.email
+                    }, { merge: true });
+                } catch (e) {
+                    console.error("DB Save Fail:", e);
+                    throw e; // Let ProfileModal handle the error toast
+                }
+            }
+
+            // 2. Update Local Store (Immediate UI update)
             await updateUser(data);
             setProfileData(data);
 
-            // 2. Batch update Inquiries to sync name/email
+            // Log Activity
+            logActivity({
+                userId: user?.id || 'unknown',
+                userName: data.name,
+                userEmail: data.email,
+                userRole: user?.role,
+                subdomain: user?.subdomain || 'kkang',
+                action: '프로필 정보 변경',
+                target: '본인 계정',
+                type: 'update', // or security
+                details: { oldName: user?.name, newName: data.name }
+            });
+
+            // 3. Batch update Inquiries to sync name/email
             try {
                 if (!user?.id) return;
                 
