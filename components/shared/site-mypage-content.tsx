@@ -20,7 +20,8 @@ import {
   Files,
   Zap,
   Edit,
-  X
+  X,
+  CheckCircle2
 } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
