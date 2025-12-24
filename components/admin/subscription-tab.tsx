@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   CreditCard, 
   Check, 
@@ -111,71 +112,17 @@ export default function SubscriptionTab({ isDarkMode }: { isDarkMode: boolean })
     fetchSubscription();
   }, [user]);
 
-  // PortOne Payment Function
-  const handleSubscribe = async (plan: Plan) => {
+  const router = useRouter();
+
+  // Redirect to Checkout
+  const handleSubscribe = (plan: Plan) => {
     if (plan.id === currentPlan || !user) return;
     
-    const { IMP } = window as any;
-    if (!IMP) {
-        alert('결제 모듈을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
-        return;
-    }
-
-    // Initialize with test code
-    IMP.init('imp76413247'); 
-
-    const merchant_uid = `sub-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-    const data = {
-        pg: 'html5_inicis', 
-        pay_method: 'card',
-        merchant_uid,
-        name: `FanEasy ${plan.name} 구독료`,
-        amount: plan.price,
-        buyer_email: user.email,
-        buyer_name: user.name,
-    };
-
-    IMP.request_pay(data, async (rsp: any) => {
-        if (rsp.success) {
-            setLoading(true);
-            try {
-                const docId = user.subdomain || user.id;
-                const docRef = doc(db, 'site_settings', docId);
-                
-                // Calculate next month date
-                const nextDate = new Date();
-                nextDate.setMonth(nextDate.getMonth() + 1);
-                const nextDateStr = nextDate.toISOString().split('T')[0];
-
-                await updateDoc(docRef, {
-                    subscriptionPlan: plan.id,
-                    nextPaymentDate: nextDateStr,
-                    lastImpUid: rsp.imp_uid,
-                    updatedAt: new Date().toISOString()
-                }).catch(async (e) => {
-                    await setDoc(docRef, {
-                        ownerId: user.id,
-                        subscriptionPlan: plan.id,
-                        nextPaymentDate: nextDateStr,
-                        lastImpUid: rsp.imp_uid,
-                        updatedAt: new Date().toISOString()
-                    }, { merge: true });
-                });
-
-                setCurrentPlan(plan.id);
-                setNextPaymentDate(nextDateStr);
-                alert(`결제가 성공적으로 완료되었습니다!\n이제 '${plan.name}' 멤버십이 적용됩니다.`);
-            } catch (error) {
-                console.error("Payment Update Error:", error);
-                alert("결제는 완료되었으나 정보 업데이트 중 오류가 발생했습니다. 고객센터로 문의해주세요.");
-            } finally {
-                setLoading(false);
-            }
-        } else {
-            alert(`결제에 실패했습니다: ${rsp.error_msg}`);
-        }
-    });
+    // Determine site identifier (subdomain takes precedence)
+    const siteId = user.subdomain || user.id;
+    
+    // Redirect to checkout with subscription mode
+    router.push(`/sites/${siteId}/checkout?plan=${plan.id}&mode=subscription`);
   };
 
   const t = {

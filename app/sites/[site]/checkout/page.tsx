@@ -47,6 +47,7 @@ function CheckoutForm() {
   const params = useParams();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
+  const isSubscriptionMode = mode === 'subscription';
   
   // Single Plan Mode
   const planId = searchParams.get('plan') as 'basic' | 'pro' | 'master' || 'basic';
@@ -56,6 +57,8 @@ function CheckoutForm() {
   const { items: cartItems, totalPrice: getCartTotal, totalMonthly: getCartMonthly, clearCart } = useCartStore();
   const isCartMode = mode === 'cart';
 
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+
   // Calculate Prices using Utility
   let subtotal = 0;
   let totalMonthly = 0;
@@ -63,7 +66,22 @@ function CheckoutForm() {
   if (isCartMode) {
     subtotal = getCartTotal(); 
     totalMonthly = getCartMonthly();
+  } else if (isSubscriptionMode) {
+    // Subscription Mode Logic
+    // MONTHLY_SUBSCRIPTION_PLANS values are VAT Included.
+    // We need to back-calculate subtotal (VAT Excluded).
+    const monthlyPriceWithVat = singlePlan.monthly; // e.g. 33000
+    
+    let finalPriceWithVat = monthlyPriceWithVat;
+    if (billingCycle === 'annual') {
+        finalPriceWithVat = (monthlyPriceWithVat * 12) * 0.9; // 10% Discount
+    }
+
+    // Back-calculate subtotal: Price / 1.1
+    subtotal = Math.round(finalPriceWithVat / 1.1);
+    totalMonthly = 0; // Not applicable in the same way as initial setup
   } else {
+    // Initial Setup Mode
     subtotal = singlePlan.price;
     totalMonthly = singlePlan.monthly;
   }
@@ -130,7 +148,11 @@ function CheckoutForm() {
             pg: 'html5_inicis', 
             pay_method: 'card',
             merchant_uid,
-            name: isCartMode ? `FanEasy 결제 (${checkoutItems.length}건)` : `${singlePlan.name} Package`,
+            name: isCartMode 
+                ? `FanEasy 결제 (${checkoutItems.length}건)` 
+                : isSubscriptionMode
+                    ? `FanEasy ${singlePlan.name} 구독 (${billingCycle === 'annual' ? '연간' : '월간'})`
+                    : `${singlePlan.name} Package`,
             amount: totalPrice,
             buyer_email: formData.buyerEmail,
             buyer_name: formData.buyerName,
@@ -155,6 +177,8 @@ function CheckoutForm() {
                         amount: item.price,
                         paymentMethod: 'card' as const, 
                         status: 'paid' as const,
+                        isSubscription: isSubscriptionMode,
+                        billingCycle: isSubscriptionMode ? billingCycle : undefined,
                         imp_uid: rsp.imp_uid,
                         merchant_uid: rsp.merchant_uid,
                         domainRequest: formData.domainRequest,
@@ -188,6 +212,8 @@ function CheckoutForm() {
                 amount: item.price,
                 paymentMethod: 'bank_transfer' as const, 
                 status: 'pending_payment' as const,
+                isSubscription: isSubscriptionMode,
+                billingCycle: isSubscriptionMode ? billingCycle : undefined,
                 domainRequest: formData.domainRequest,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -395,6 +421,27 @@ function CheckoutForm() {
 
                 <div className="space-y-4">
                   <label className="text-sm font-medium text-gray-400">결제 방법 선택</label>
+                  
+                  {/* Subscription Billing Cycle Toggle */}
+                  {isSubscriptionMode && (
+                    <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-4">
+                        <button
+                            type="button"
+                            onClick={() => setBillingCycle('monthly')}
+                            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${billingCycle === 'monthly' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            월간 결제
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setBillingCycle('annual')}
+                            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${billingCycle === 'annual' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            연간 결제 (10% 할인)
+                        </button>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 gap-4">
                      <button
                         type="button"
@@ -486,9 +533,14 @@ function CheckoutForm() {
                     <div key={idx} className="flex justify-between items-start mb-2">
                         <div>
                             <div className="font-bold text-lg">{item.name}</div>
-                            {!isCartMode && <div className="text-sm text-gray-400">1인 마케팅 사이트 제작</div>}
+                            {!isCartMode && !isSubscriptionMode && <div className="text-sm text-gray-400">1인 마케팅 사이트 제작</div>}
+                            {isSubscriptionMode && <div className="text-sm text-purple-400">{billingCycle === 'annual' ? '연간 이용권 (12개월)' : '월간 이용권'}</div>}
                         </div>
-                        <div className="font-bold">{item.price.toLocaleString()}원</div>
+                        <div className="font-bold">
+                            {isSubscriptionMode 
+                                ? `${(billingCycle === 'annual' ? Math.round(singlePlan.monthly * 12 * 0.9) : singlePlan.monthly).toLocaleString()}원` 
+                                : `${item.price.toLocaleString()}원`}
+                        </div>
                     </div>
                  ))}
                  
@@ -524,27 +576,31 @@ function CheckoutForm() {
 
                <div className="mb-6 space-y-2">
                  <div className="flex justify-between text-gray-400">
-                   <span>제작 비용 (일회성)</span>
+                   <span>{isSubscriptionMode ? '공급가액' : '제작 비용 (일회성)'}</span>
                    <span>{subtotal.toLocaleString()}원</span>
                  </div>
                  <div className="flex justify-between text-gray-400">
                    <span>부가가치세 (VAT 10%)</span>
                    <span>{vat.toLocaleString()}원</span>
                  </div>
-                 <div className="flex justify-between text-gray-400 pt-2 border-t border-white/5">
-                   <span>월 관리비 (결제)</span>
-                   <span>{totalMonthly.toLocaleString()}원/월</span>
-                 </div>
-                 <p className="text-xs text-green-400 pl-2 border-l-2 border-green-500/30 bg-green-500/5 p-2 rounded">
-                   💡 월 관리비는 사이트 배포가 시작되면 청구됩니다.
-                 </p>
+                 {!isSubscriptionMode && (
+                    <div className="flex justify-between text-gray-400 pt-2 border-t border-white/5">
+                        <span>월 관리비 (결제)</span>
+                        <span>{totalMonthly.toLocaleString()}원/월</span>
+                    </div>
+                 )}
+                 {!isSubscriptionMode && (
+                    <p className="text-xs text-green-400 pl-2 border-l-2 border-green-500/30 bg-green-500/5 p-2 rounded">
+                        💡 월 관리비는 사이트 배포가 시작되면 청구됩니다.
+                    </p>
+                 )}
                </div>
 
                <div className="flex justify-between border-t border-white/10 pt-6 text-xl font-bold">
                  <span>총 결제금액</span>
                  <span className="text-purple-400">{totalPrice.toLocaleString()}원</span>
                </div>
-               <p className="mt-2 text-right text-xs text-gray-500">초기 개발비 + VAT 포함</p>
+               <p className="mt-2 text-right text-xs text-gray-500">{isSubscriptionMode ? 'VAT 포함' : '초기 개발비 + VAT 포함'}</p>
              </div>
              
              {/* Security Badge */}
