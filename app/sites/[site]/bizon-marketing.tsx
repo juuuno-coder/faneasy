@@ -420,14 +420,14 @@ export default function BizonMarketing({ site }: { site: string }) {
       </section>
 
       {/* Section 6: 비즈온의 마케팅 성공방식 - Redesigned */}
-      <section id="process" className="py-32 px-6 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      <section id="process" className="py-32 px-6 bg-linear-to-b from-gray-50 to-white overflow-hidden">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-20" data-aos="fade-up">
             <div className="inline-block px-6 py-2 bg-orange-100 text-orange-600 rounded-full text-sm font-bold mb-4">
               SUCCESS CYCLE
             </div>
-            <h2 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-gray-900 via-orange-600 to-gray-900 bg-clip-text text-transparent">
+            <h2 className="text-5xl md:text-7xl font-black mb-6 bg-linear-to-r from-gray-900 via-orange-600 to-gray-900 bg-clip-text text-transparent">
               비즈온의 마케팅 성공방식
             </h2>
             <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
@@ -478,7 +478,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                 data-aos="fade-right"
                 data-aos-delay="100"
               >
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-linear-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
                   01
                 </div>
                 
@@ -512,7 +512,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                 data-aos="fade-left"
                 data-aos-delay="200"
               >
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-linear-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
                   02
                 </div>
                 
@@ -546,7 +546,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                 data-aos="fade-left"
                 data-aos-delay="300"
               >
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-linear-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
                   03
                 </div>
                 
@@ -576,11 +576,11 @@ export default function BizonMarketing({ site }: { site: string }) {
 
               {/* Card 4 - 주간 개선 */}
               <div 
-                className="group relative bg-gradient-to-br from-orange-50 to-red-50 p-10 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-orange-200 hover:border-orange-300 md:order-3"
+                className="group relative bg-linear-to-br from-orange-50 to-red-50 p-10 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-orange-200 hover:border-orange-300 md:order-3"
                 data-aos="fade-right"
                 data-aos-delay="400"
               >
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-linear-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
                   04
                 </div>
                 
@@ -694,8 +694,8 @@ export default function BizonMarketing({ site }: { site: string }) {
           </div>
 
           <div className="relative h-[500px] overflow-hidden rounded-2xl">
-            <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-gray-50 to-transparent z-10 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-gray-50 to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-20 bg-linear-to-b from-gray-50 to-transparent z-10 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-gray-50 to-transparent z-10 pointer-events-none" />
 
             <div className="flex gap-4 h-full">
               <div className="flex-1 flex flex-col gap-4 animate-[scrollUp_25s_linear_infinite]">

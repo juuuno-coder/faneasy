@@ -3,80 +3,46 @@ import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
   const url = req.nextUrl;
-
-  // Get hostname (e.g. 'iu.faneasy.kr' or 'iu.localhost:3000')
   const hostname = req.headers.get("host") || "";
 
-  // Robust hostname parsing
-  let currentHost = hostname;
-  if (hostname.includes("localhost")) {
-    // Handle localhost (with or without port)
-    // e.g., "faker.localhost:3600" -> "faker"
-    // e.g., "localhost:3600" -> "localhost"
-    currentHost = hostname.split(".")[0].split(":")[0];
-    if (currentHost === "localhost") {
-       // Root localhost access
-       // Check if path looks like a site slug (e.g., /bizon, /kkang)
-       // If so, rewrite to /sites/[slug]
-       const siteRoutes = ['bizon', 'kkang', 'fan1', 'fan2', 'fan3', 'fan4']; // Known site slugs
-       const pathParts = url.pathname.split('/').filter(Boolean);
-       
-       if (pathParts.length > 0 && siteRoutes.includes(pathParts[0])) {
-         // Rewrite /bizon -> /sites/bizon
-         const siteName = pathParts[0];
-         const restPath = pathParts.slice(1).join('/');
-         url.pathname = `/sites/${siteName}${restPath ? '/' + restPath : ''}`;
-         console.log(`Path-based rewrite: /${siteName} -> ${url.pathname}`);
-         return NextResponse.rewrite(url);
-       }
-       
-       return NextResponse.next();
-    }
-  } else if (hostname.includes("faneasy.kr")) {
-    // Handle Production (faneasy.kr)
-    currentHost = hostname.replace(".faneasy.kr", "");
-    if (currentHost === "www" || currentHost === "faneasy") {
-      return NextResponse.next();
-    }
-  } else if (hostname.includes("designd.co.kr")) {
-    // Handle New Domain (designd.co.kr)
-    currentHost = hostname.replace(".designd.co.kr", "");
-    // If it's just designd.co.kr or www.designd.co.kr, let it go to the original route (or show landing)
-    // But since you want kkang.designd.co.kr to work, we extract 'kkang'
-    if (currentHost === "www" || currentHost === "designd" || currentHost === hostname) {
-      return NextResponse.next();
-    }
-  } else {
-    // Direct domain access without subdomain
+  // 1. Allow root level system routes to pass through
+  const systemRoutes = ["/admin", "/login", "/api", "/sites", "/mypage", "/profile", "/checkout", "/_next", "/favicon.ico", "/images"];
+  if (systemRoutes.some(route => url.pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
-  // 1. If it's the main domain (Landing Page)
-  if (currentHost === "faneasy.kr" || currentHost === "panpage.kr") {
-      return NextResponse.next();
+  // 2. Handle Subdomain access (e.g. iu.faneasy.kr)
+  // Skip this if on main domains or localhost (unless it's a sub-localhost like test.localhost)
+  const mainDomains = ["faneasy.kr", "panpage.kr", "designd.co.kr", "www.faneasy.kr", "www.designd.co.kr", "localhost:3000", "localhost:3100", "localhost:3600"];
+  
+  if (!mainDomains.includes(hostname)) {
+    let subdomain = "";
+    if (hostname.includes("faneasy.kr")) subdomain = hostname.replace(".faneasy.kr", "");
+    else if (hostname.includes("designd.co.kr")) subdomain = hostname.replace(".designd.co.kr", "");
+    else if (hostname.includes(".localhost")) subdomain = hostname.split(".")[0];
+    else if (!hostname.includes("localhost")) subdomain = hostname.split(".")[0];
+
+    if (subdomain && subdomain !== "www" && subdomain !== "localhost") {
+      console.log(`Rewriting subdomain ${subdomain} to /sites/${subdomain}`);
+      url.pathname = `/sites/${subdomain}${url.pathname}`;
+      return NextResponse.rewrite(url);
+    }
   }
 
-  // 2. Allow /admin, /login, /api routes to pass through without rewriting
-  if (url.pathname.startsWith("/admin") || 
-      url.pathname.startsWith("/login") || 
-      url.pathname.startsWith("/api")) {
-    return NextResponse.next();
+  // 3. Handle Path-based access (e.g. faneasy.kr/bizon)
+  // Known site slugs that should be treated as sites when at the root path
+  const siteRoutes = ['bizon', 'kkang', 'fan1', 'fan2', 'fan3', 'fan4', 'tech', 'mz', 'growth', 'agency'];
+  const pathParts = url.pathname.split('/').filter(Boolean);
+  
+  if (pathParts.length > 0 && siteRoutes.includes(pathParts[0])) {
+    const siteName = pathParts[0];
+    const restPath = pathParts.slice(1).join('/');
+    url.pathname = `/sites/${siteName}${restPath ? '/' + restPath : ''}`;
+    console.log(`Path-based rewrite: /${siteName} -> ${url.pathname}`);
+    return NextResponse.rewrite(url);
   }
 
-  // 3. Otherwise, it is a SUBDOMAIN (e.g. "iu", "bts", "kkang")
-  // Rewrite the request to /sites/[subdomain]
-  console.log(`Rewriting subdomain ${currentHost} to /sites/${currentHost}`);
-
-  // IMPORTANT: If the path already starts with /sites/, it's likely a recursive request or a direct link.
-  // We should NOT double-prefix it.
-  if (url.pathname.startsWith("/sites/")) {
-    return NextResponse.next();
-  }
-
-  // Rewrite to the appropriate site folder
-  url.pathname = `/sites/${currentHost}${url.pathname}`;
-
-  return NextResponse.rewrite(url);
+  return NextResponse.next();
 }
 
 export const config = {

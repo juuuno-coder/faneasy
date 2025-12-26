@@ -52,6 +52,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
         class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[150px] max-w-full text-inherit dark:prose-invert',
       },
     },
+    immediatelyRender: false,
   });
 
   if (!editor) return null;
