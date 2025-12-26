@@ -669,6 +669,7 @@ export default function AdminDashboard() {
         {activeTab === 'structure' && (
           <SiteTreeView 
             userRole={user?.role || 'user'} 
+            currentSubdomain={user?.subdomain || (user?.role === 'super_admin' ? 'kkang' : 'faneasy')}
             isDarkMode={isDarkMode}
           />
         )}

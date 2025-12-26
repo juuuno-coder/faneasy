@@ -19,9 +19,10 @@ interface UserData {
 
 interface UsersTabProps {
   isDarkMode: boolean;
+  influencerId?: string;
 }
 
-export default function UsersTab({ isDarkMode }: UsersTabProps) {
+export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
   const { user: currentUser } = useAuthStore();
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +60,9 @@ export default function UsersTab({ isDarkMode }: UsersTabProps) {
     if (isSuperAdmin) {
        // Super Admin sees ALL users
        q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+    } else if (influencerId) {
+        // Influencer sees fans they brought (joinedInfluencerId)
+        q = query(collection(db, 'users'), where('joinedInfluencerId', '==', influencerId));
     } else if (isOwner && currentUser.subdomain) {
        // Owner sees ONLY users who joined their site
        q = query(collection(db, 'users'), where('joinedSite', '==', currentUser.subdomain));

@@ -7,6 +7,7 @@ import { mockInquiries } from './data';
 export interface PageContent {
   heroTitle?: string;
   heroDescription?: string;
+  heroVideoUrl?: string;
   bodyContent?: string; // Tiptap HTML
 }
 

@@ -14,6 +14,7 @@ export default function DesignEditor({ subdomain }: DesignEditorProps) {
   const { getPageContent, updatePageContent } = useDataStore();
   const [heroTitle, setHeroTitle] = useState("");
   const [heroDescription, setHeroDescription] = useState("");
+  const [heroVideoUrl, setHeroVideoUrl] = useState("");
   const [bodyContent, setBodyContent] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
@@ -22,6 +23,7 @@ export default function DesignEditor({ subdomain }: DesignEditorProps) {
     if (content) {
       setHeroTitle(content.heroTitle || "");
       setHeroDescription(content.heroDescription || "");
+      setHeroVideoUrl(content.heroVideoUrl || "");
       setBodyContent(content.bodyContent || "");
     }
   }, [subdomain, getPageContent]);
@@ -30,6 +32,7 @@ export default function DesignEditor({ subdomain }: DesignEditorProps) {
     updatePageContent(subdomain, {
       heroTitle,
       heroDescription,
+      heroVideoUrl,
       bodyContent
     });
     setIsSaved(true);
@@ -66,6 +69,22 @@ export default function DesignEditor({ subdomain }: DesignEditorProps) {
               rows={3}
               placeholder="예: 저의 공식 팬페이지에 오신 것을 환영합니다."
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              히어로 배경 영상 URL (YouTube)
+            </label>
+            <input
+              type="text"
+              value={heroVideoUrl}
+              onChange={(e) => setHeroVideoUrl(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              placeholder="예: https://www.youtube.com/watch?v=..."
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              YouTube 영상 주소를 입력하면 히어로 섹션 배경으로 자동 적용됩니다.
+            </p>
           </div>
 
           <div>

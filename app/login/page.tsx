@@ -117,13 +117,27 @@ function LoginContent() {
 
       const token = await cred.user.getIdToken();
 
+      // URL에서 추천인(인플루언서) ID 가져오기
+      const joinedInfluencerId = searchParams.get("id") || searchParams.get("influencer") || searchParams.get("ref");
+
       // 신규 가입자는 기본적으로 user 역할
       const user = {
         id: cred.user.uid,
         name: cred.user.displayName || name || email,
         email: cred.user.email || "",
         role: "user" as const,
+        joinedInfluencerId: joinedInfluencerId || undefined
       };
+
+      // Firestore에 유저 정보 저장 (initAuthListener에서도 하지만, 여기서 추천인 정보를 즉시 반영)
+      const { doc, setDoc, serverTimestamp } = require("firebase/firestore");
+      const { db } = require("@/lib/firebaseClient");
+      const userRef = doc(db, "users", cred.user.uid);
+      await setDoc(userRef, {
+        ...user,
+        createdAt: serverTimestamp(),
+        uid: cred.user.uid
+      }, { merge: true });
 
       login(user, token);
       
