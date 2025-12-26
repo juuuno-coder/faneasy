@@ -312,7 +312,6 @@ export default function SiteTreeView({ userRole, currentSubdomain, isDarkMode = 
     <div className={`rounded-3xl border p-8 ${theme.card}`}>
       <div className="mb-8">
         <h3 className={`text-2xl font-black ${theme.text}`}>사이트 구조도</h3>
-        <p className={theme.textMuted}>계열사 및 하위 사이트의 리더를 지정하고 구조를 관리합니다.</p>
       </div>
 
       <div className="space-y-1">

@@ -66,6 +66,8 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     totalVisits: 0,
     todayVisits: 0,
+    totalSites: 0,
+    totalFans: 0,
     chartData: [] as any[]
   });
   
@@ -185,9 +187,29 @@ export default function AdminDashboard() {
         inquiries: inquiryCounts[date] || 0
       }));
 
+      // 5. Hierarchical Site & Fan Counts (The 'Influencer' perspective)
+      let tSites = 0;
+      let tFans = 0;
+
+      if (user.role !== 'super_admin') {
+        const subdomain = user.subdomain || docId;
+        
+        // Count sub-sites
+        const qSites = query(collection(db, 'sites'), where('parentSiteId', '==', subdomain));
+        const sitesSnap = await getDocs(qSites);
+        tSites = sitesSnap.docs.length;
+
+        // Count fans brought by this person
+        const qFans = query(collection(db, 'users'), where('joinedInfluencerId', '==', subdomain));
+        const fansSnap = await getDocs(qFans);
+        tFans = fansSnap.docs.length;
+      }
+
       setStats({
         totalVisits: totalV,
         todayVisits: todayV,
+        totalSites: tSites,
+        totalFans: tFans,
         chartData: newChartData
       });
     };
@@ -542,27 +564,27 @@ export default function AdminDashboard() {
           <>
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-4 mb-12">
-          {[
-            { label: '전체 문의', value: inquiries.length, icon: MessageSquare, color: 'blue' },
-            { label: '오늘 방문자', value: stats.todayVisits.toLocaleString(), icon: Globe, color: 'green' },
-            { label: '누적 방문자', value: stats.totalVisits.toLocaleString(), icon: Users, color: 'amber' },
-            { label: '문의 전환율', value: stats.totalVisits > 0 ? ((inquiries.length / stats.totalVisits) * 100).toFixed(1) + '%' : '0%', icon: CheckCircle2, color: 'purple' },
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className={`${theme.card} p-6 text-left transition-all border shadow-sm`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className={`rounded-xl bg-${stat.color}-500/10 p-2 text-${stat.color}-500`}>
-                  <stat.icon className="h-5 w-5" />
-                </div>
-              </div>
-              <div className={`text-3xl font-bold mb-1 ${theme.text}`}>{stat.value}</div>
-              <div className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                {stat.label}
-              </div>
-            </div>
-          ))}
+          {user?.role === 'super_admin' ? (
+            // Super Admin Stats (Global)
+            [
+              { label: '전체 문의', value: inquiries.length, icon: MessageSquare, color: 'blue' },
+              { label: '오늘 방문자', value: stats.todayVisits.toLocaleString(), icon: Globe, color: 'green' },
+              { label: '누적 방문자', value: stats.totalVisits.toLocaleString(), icon: Users, color: 'amber' },
+              { label: '문의 전환율', value: stats.totalVisits > 0 ? ((inquiries.length / stats.totalVisits) * 100).toFixed(1) + '%' : '0%', icon: CheckCircle2, color: 'purple' },
+            ].map((stat, i) => (
+                <StatCard key={i} stat={stat} theme={theme} isDark={isDark} />
+            ))
+          ) : (
+            // Influencer/Owner Stats (Network)
+            [
+              { label: '할당된 사이트', value: stats.totalSites, icon: Globe, color: 'blue' },
+              { label: '가입시킨 팬', value: stats.totalFans.toLocaleString(), icon: Users, color: 'green' },
+              { label: '새 문의 내역', value: inquiries.filter(i => i.status === 'pending').length, icon: MessageSquare, color: 'amber' },
+              { label: '팬 전환율', value: stats.totalFans > 0 ? ((inquiries.length / stats.totalFans) * 100).toFixed(1) + '%' : '0%', icon: CheckCircle2, color: 'purple' },
+            ].map((stat, i) => (
+                <StatCard key={i} stat={stat} theme={theme} isDark={isDark} />
+            ))
+          )}
         </div>
 
         {/* Charts Section */}
@@ -916,4 +938,21 @@ export default function AdminDashboard() {
       </main>
     </div>
   );
+}
+
+// Helper components for streamlined UI
+function StatCard({ stat, theme, isDark }: { stat: any, theme: any, isDark: boolean }) {
+    return (
+        <div className={`${theme.card} p-6 text-left transition-all border shadow-sm`}>
+            <div className="flex items-center justify-between mb-4">
+                <div className={`rounded-xl bg-${stat.color}-500/10 p-2 text-${stat.color}-500`}>
+                    <stat.icon className="h-5 w-5" />
+                </div>
+            </div>
+            <div className={`text-3xl font-bold mb-1 ${theme.text}`}>{stat.value}</div>
+            <div className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+                {stat.label}
+            </div>
+        </div>
+    );
 }

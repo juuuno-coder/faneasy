@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, where } from 'firebase/firestore';
 import { db } from '@/lib/firebaseClient';
 import { UserRole } from '@/lib/types';
-import { Search, Loader2, Edit2, Check, X, ShieldAlert } from 'lucide-react';
+import { Search, Loader2, Edit2, Check, X, ShieldAlert, Users } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 
 interface UserData {
@@ -78,7 +78,7 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
         ...doc.data()
       })) as UserData[];
       
-      // Client-side sort if needed (since where queries might mess up order without composite index)
+      // Client-side sort
       fetchedUsers.sort((a, b) => {
           const timeA = a.createdAt?.seconds || 0;
           const timeB = b.createdAt?.seconds || 0;
@@ -87,10 +87,13 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
 
       setUsers(fetchedUsers);
       setLoading(false);
+    }, (error) => {
+      console.error("Firestore Listen Error:", error);
+      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [currentUser, isSuperAdmin, isOwner]);
+  }, [currentUser, isSuperAdmin, isOwner, influencerId]);
 
   const canEdit = (targetUser: UserData) => {
     if (isSuperAdmin) return true;
@@ -196,8 +199,16 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
             <tbody className={`divide-y ${theme.divider}`}>
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={isSuperAdmin ? 5 : 4} className="px-6 py-12 text-center text-gray-500">
-                    검색 결과가 없습니다.
+                  <td colSpan={isSuperAdmin ? 5 : 4} className="px-6 py-24 text-center">
+                    <div className="flex flex-col items-center justify-center gap-4">
+                      <div className={`p-4 rounded-full ${isDark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                        <Users className={`w-8 h-8 ${isDark ? 'text-gray-600' : 'text-gray-300'}`} />
+                      </div>
+                      <div>
+                        <p className={`font-bold ${theme.text}`}>아직 가입한 회원이 없습니다.</p>
+                        <p className={`text-xs mt-1 ${theme.textSub}`}>홍보를 통해 첫 번째 팬을 맞이해보세요!</p>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ) : (
