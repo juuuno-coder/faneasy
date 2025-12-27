@@ -112,23 +112,27 @@ export default function BizonMarketing({ site }: { site: string }) {
       }`}>
         <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
           {/* Logo - Left */}
-          <div 
-            className="relative cursor-pointer"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            <Image 
-              src="/bizon-logo.png" 
-              alt="비즈온" 
-              width={160} 
-              height={45}
-              className={`object-contain transition-all duration-300 ${
-                isScrolled ? '' : 'brightness-0 invert'
-              }`}
-              style={{
-                clipPath: 'inset(0 0 35% 0)' // 하단 35% 잘라내기 (마케팅 텍스트 제거)
-              }}
-            />
-          </div>
+            <div 
+              className="relative cursor-pointer transition-transform hover:scale-105 active:scale-95"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
+              <Image 
+                src="/bizon-logo.png" 
+                alt="비즈온" 
+                width={160} 
+                height={55}
+                priority
+                className={`object-contain transition-all duration-500 ${
+                  isScrolled 
+                    ? 'drop-shadow-[0_0_10px_rgba(249,115,22,0.2)]' // Slightly glow on scroll
+                    : 'brightness-0 invert' // White initially
+                }`}
+                style={{
+                  clipPath: 'inset(0 0 35% 0)', // 하단 마케팅 텍스트 제거
+                  marginTop: '-5px'
+                }}
+              />
+            </div>
 
           {/* Navigation & CTA - Right */}
           <div className="flex items-center gap-8">
@@ -154,17 +158,20 @@ export default function BizonMarketing({ site }: { site: string }) {
       </header>
 
       {/* VIDEO HERO Section - Full Screen */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
         {/* Video Background */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/85 z-10" /> {/* Dark Overlay for Readability */}
-          <iframe
-            ref={videoRef}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full min-h-[56.25vw] h-[100.1%] pointer-events-none scale-110"
-            src={`https://www.youtube.com/embed/${heroVideoId}?autoplay=1&mute=1&loop=1&playlist=${heroVideoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
-            title="Background Video"
-            allow="autoplay; encrypted-media"
-          />
+          <div className="absolute inset-0 bg-black/80 z-10" /> {/* Dark Overlay for Readability */}
+          {heroVideoId && (
+            <iframe
+              ref={videoRef}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full min-h-[56.25vw] h-[100.1%] pointer-events-none scale-110"
+              src={`https://www.youtube.com/embed/${heroVideoId}?autoplay=1&mute=1&loop=1&playlist=${heroVideoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
+              title="Background Video"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              style={{ opacity: 0.7 }}
+            />
+          )}
         </div>
 
         {/* Hero Content - Animated Text Sequence */}
@@ -698,7 +705,7 @@ export default function BizonMarketing({ site }: { site: string }) {
             <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-gray-50 to-transparent z-10 pointer-events-none" />
 
             <div className="flex gap-4 h-full">
-              <div className="flex-1 flex flex-col gap-4 animate-[scrollUp_25s_linear_infinite]">
+              <div className="flex-1 flex flex-col gap-4 animate-scroll-up">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[
@@ -717,7 +724,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                   </div>
                 ))}
               </div>
-              <div className="flex-1 flex flex-col gap-4 animate-[scrollUp_20s_linear_infinite]">
+              <div className="flex-1 flex flex-col gap-4 animate-scroll-up">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[
@@ -736,7 +743,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                   </div>
                 ))}
               </div>
-              <div className="flex-1 flex flex-col gap-4 animate-[scrollUp_22s_linear_infinite]">
+              <div className="flex-1 flex flex-col gap-4 animate-scroll-up">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[
@@ -755,7 +762,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                   </div>
                 ))}
               </div>
-              <div className="hidden md:flex flex-1 flex-col gap-4 animate-[scrollUp_28s_linear_infinite]">
+              <div className="hidden md:flex flex-1 flex-col gap-4 animate-scroll-up">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[
