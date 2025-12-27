@@ -6,8 +6,8 @@ export function middleware(req: NextRequest) {
   const hostname = req.headers.get("host") || "";
 
   // 1. Allow root level system routes and static files to pass through
-  const isStaticFile = /\.(.*)$/.test(url.pathname);
-  const systemRoutes = ["/admin", "/login", "/api", "/sites", "/mypage", "/profile", "/checkout", "/_next", "/favicon.ico", "/images", "/favicon", "/public"];
+  const isStaticFile = url.pathname.includes(".") || url.pathname.startsWith("/_next") || url.pathname.startsWith("/images");
+  const systemRoutes = ["/admin", "/login", "/api", "/sites", "/mypage", "/profile", "/checkout", "/favicon", "/public"];
   
   if (isStaticFile || systemRoutes.some(route => url.pathname.startsWith(route))) {
     return NextResponse.next();

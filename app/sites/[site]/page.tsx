@@ -78,9 +78,8 @@ export default async function SitePage({
 }) {
   const { site } = await params;
   const siteSlug = site.toLowerCase().trim();
-  const creator = getCreator(siteSlug);
   
-  // 1. Special Hardcoded Landing Pages (Check BEFORE dynamic blocks)
+  // 1. Special Hardcoded Landing Pages (Check FIRST)
   if (siteSlug === "bizon") {
     const BizonMarketing = (await import("./bizon-marketing")).default;
     return (
@@ -91,6 +90,9 @@ export default async function SitePage({
       </>
     );
   }
+
+  const creator = getCreator(siteSlug);
+  const news = await getLiveNews(siteSlug);
 
   if (siteSlug === "kkang") {
     return (
