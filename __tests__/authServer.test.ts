@@ -5,10 +5,16 @@ jest.mock('@/lib/firebaseAdmin', () => {
     verifyIdToken: jest.fn(async (token: string) => ({ uid: 'uid-123', email: 'mock@faneasy.kr' })),
     adminFirestore: {
       collection: jest.fn(() => ({
-        doc: jest.fn(() => ({ get: jest.fn(async () => ({ exists: true, data: () => ({ uid: 'uid-123', email: 'mock@faneasy.kr', name: 'Mock User', role: 'fan' }) }) ) ) }) )
-      }),
+        doc: jest.fn(() => ({ 
+          get: jest.fn(async () => ({ 
+            exists: true, 
+            data: () => ({ uid: 'uid-123', email: 'mock@faneasy.kr', name: 'Mock User', role: 'fan' }) 
+          })) 
+        }))
+      }))
+    },
     adminAuth: {
-      createUser: jest.fn(async ({ email }) => ({ uid: 'uid-abc', email })),
+      createUser: jest.fn(async ({ email }: { email: string }) => ({ uid: 'uid-abc', email })),
       createCustomToken: jest.fn(async (uid: string) => 'custom-token-' + uid),
       getUserByEmail: jest.fn(async () => { throw new Error('not found'); }),
     }

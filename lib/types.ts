@@ -241,6 +241,7 @@ export interface SiteSettings {
   primaryColor: string;
   logoUrl?: string;     // Added
   bannerUrl?: string;   // Added
+  ogImageUrl?: string;   // Added
   seoTitle: string;
   seoDescription: string;
   updatedAt: string;

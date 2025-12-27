@@ -115,14 +115,14 @@ export default function Fan4Marketing({ site }: { site: string }) {
             🔥 현재 300개 프랜차이즈 지점 마케팅 진행 중
           </span>
           
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-black leading-tight mb-6 text-white" data-aos="fade-up" data-aos-delay="100">
+          <h1 className="text-3xl md:text-5xl lg:text-7xl font-black leading-tight mb-6 text-white" data-aos="fade-up" data-aos-delay="100">
             <span className="text-gray-400">사장님, 장사하세요.</span><br />
             <span className="bg-linear-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
               마케팅은 저희가 매듭짓겠습니다.
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-4">
+          <p className="text-lg md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-4">
             프랜차이즈도 <span className="font-bold text-white">지점별 성과가 다릅니다.</span><br />
             우리는 <span className="text-orange-400 font-bold">지역 1등 전환 구조</span>를 만듭니다.
           </p>
@@ -134,7 +134,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="#contact-form"
-              className="group px-10 py-5 bg-linear-to-r from-orange-500 to-red-500 text-white rounded-2xl text-xl font-bold hover:shadow-2xl hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-3"
+              className="group px-10 py-5 bg-linear-to-r from-orange-500 to-red-500 text-white rounded-2xl text-lg md:text-xl font-bold hover:shadow-2xl hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-3"
             >
               <Play className="h-6 w-6" />
               지금 바로 진단받기
@@ -170,7 +170,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
           </div>
 
           <div className="text-center mb-12" data-aos="fade-up">
-            <h2 className="text-3xl md:text-5xl font-black mb-4">
+            <h2 className="text-2xl md:text-5xl font-black mb-4">
               어디 하나 <span className="text-blue-400">믿을 곳 없는</span> 마케팅 시장
             </h2>
             <p className="text-gray-400 text-lg">매듭컴퍼니는 소통을 가장 중요하게 생각합니다</p>
@@ -238,7 +238,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <span className="text-orange-500 font-bold text-sm tracking-wider mb-2 block">TRANSPARENCY</span>
-            <h2 className="text-3xl md:text-4xl font-black mb-4">
+            <h2 className="text-2xl md:text-4xl font-black mb-4">
               모든 진행 과정을 <span className="text-orange-500">투명하게</span> 공개합니다
             </h2>
             <p className="text-gray-600">우리는 "일하고 있습니다"가 아니라, "이렇게 진행 중입니다"를 보여드립니다.</p>
@@ -296,11 +296,11 @@ export default function Fan4Marketing({ site }: { site: string }) {
               <div className="space-y-4">
                 <div className="p-4 rounded-xl bg-orange-500 text-white">
                   <p className="text-xs font-bold uppercase opacity-70">이번 주 완료</p>
-                  <p className="text-4xl font-black">12건</p>
+                  <p className="text-3xl md:text-4xl font-black">12건</p>
                 </div>
                 <div className="p-4 rounded-xl bg-gray-900 text-white">
                   <p className="text-xs font-bold uppercase opacity-70">전환율 개선</p>
-                  <p className="text-4xl font-black text-green-400">+32%</p>
+                  <p className="text-3xl md:text-4xl font-black text-green-400">+32%</p>
                 </div>
                 <div className="p-4 rounded-xl border border-gray-200">
                   <p className="text-xs font-bold uppercase text-gray-500">다음 리포트</p>
@@ -320,7 +320,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
       <section className="py-20 px-6 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black mb-4">
+            <h2 className="text-2xl md:text-4xl font-black mb-4">
               프랜차이즈도 <span className="text-orange-500">꼭 해야 하는 이유</span>
             </h2>
           </div>
@@ -344,7 +344,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
           <div className="text-center p-8 rounded-3xl bg-linear-to-r from-orange-500 to-red-500 text-white shadow-xl">
             <p className="text-xl md:text-2xl font-bold">
               그래서 지점 성과는 결국<br />
-              <span className="text-3xl md:text-4xl">노출 → 확신 → 전화/길찾기/예약</span>에서 갈립니다.
+              <span className="text-2xl md:text-4xl">노출 → 확신 → 전화/길찾기/예약</span>에서 갈립니다.
             </p>
           </div>
         </div>
@@ -355,7 +355,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <span className="text-orange-500 font-bold text-sm tracking-wider mb-2 block">WHY FAN4</span>
-            <h2 className="text-3xl md:text-4xl font-black">
+            <h2 className="text-2xl md:text-4xl font-black">
               진짜 전문가에게 맡기세요.
             </h2>
           </div>
@@ -369,7 +369,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
               { num: '30억', label: '연매출 매장 운영' },
             ].map((stat, i) => (
               <div key={i} className="text-center p-6 rounded-2xl bg-gray-50 border border-gray-100">
-                <p className="text-4xl md:text-5xl font-black text-orange-500 mb-2">{stat.num}</p>
+                <p className="text-3xl md:text-5xl font-black text-orange-500 mb-2">{stat.num}</p>
                 <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
               </div>
             ))}
@@ -378,7 +378,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="p-8 rounded-3xl bg-linear-to-br from-orange-50 to-red-50 border border-orange-100">
               <Building2 className="h-10 w-10 text-orange-500 mb-4" />
-              <h3 className="text-2xl font-bold mb-3">직접 운영 경험</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-3">직접 운영 경험</h3>
               <p className="text-gray-600 leading-relaxed">
                 연매출 30억 규모의 요식업 매장 <strong className="text-gray-900">3곳 직접 운영</strong><br />
                 (현재도 성업 중)
@@ -387,7 +387,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
             
             <div className="p-8 rounded-3xl bg-linear-to-br from-blue-50 to-indigo-50 border border-blue-100">
               <Award className="h-10 w-10 text-blue-500 mb-4" />
-              <h3 className="text-2xl font-bold mb-3">검증된 자격</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-3">검증된 자격</h3>
               <ul className="text-gray-600 space-y-2">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-green-500" />
@@ -417,7 +417,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
       <section className="py-20 px-6 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black mb-4">
+            <h2 className="text-2xl md:text-4xl font-black mb-4">
               핵심 서비스
             </h2>
             <p className="text-gray-600">프랜차이즈 지점에 딱 맞는 실행형 서비스</p>
@@ -451,7 +451,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
                 <div className={`h-14 w-14 rounded-2xl bg-${service.color}-100 flex items-center justify-center mb-6`}>
                   <service.icon className={`h-7 w-7 text-${service.color}-500`} />
                 </div>
-                <h3 className="text-xl font-bold mb-3">{service.title}</h3>
+                <h3 className="text-lg md:text-xl font-bold mb-3">{service.title}</h3>
                 <p className="text-gray-600">{service.desc}</p>
               </div>
             ))}
@@ -463,10 +463,10 @@ export default function Fan4Marketing({ site }: { site: string }) {
       <section className="py-24 px-6 bg-white overflow-hidden">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black mb-6">
+            <h2 className="text-2xl md:text-5xl font-black mb-6">
               진행 방식
             </h2>
-            <p className="text-xl text-gray-600">멈추지 않고 계속 돌아가는 <span className="text-orange-500 font-bold">성공의 수레바퀴</span></p>
+            <p className="text-lg md:text-xl text-gray-600">멈추지 않고 계속 돌아가는 <span className="text-orange-500 font-bold">성공의 수레바퀴</span></p>
           </div>
 
           <div className="relative max-w-3xl mx-auto h-[400px] md:h-[500px] flex items-center justify-center">
@@ -504,8 +504,8 @@ export default function Fan4Marketing({ site }: { site: string }) {
              </div>
 
              <div className="absolute bottom-0 right-0 md:bottom-4 md:right-4 max-w-[160px] text-center md:text-left">
-                 <div className="text-5xl md:text-6xl font-black text-gray-100 mb-2 absolute -z-10 -top-4 -left-4 md:relative md:text-gray-100/50">04</div>
-                 <h3 className="text-xl font-bold mb-1 text-orange-500">주간 개선</h3>
+                 <div className="text-4xl md:text-6xl font-black text-gray-100 mb-2 absolute -z-10 -top-4 -left-4 md:relative md:text-gray-100/50">04</div>
+                 <h3 className="text-lg md:text-xl font-bold mb-1 text-orange-500">주간 개선</h3>
                  <p className="text-sm text-gray-500">데이터 기반<br/>지속적 성장</p>
              </div>
           </div>
@@ -522,7 +522,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
       <section id="contact-form" className="py-20 px-6 bg-linear-to-b from-gray-900 to-black text-white">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black mb-4">
+            <h2 className="text-2xl md:text-4xl font-black mb-4">
               상담이 아니라 <span className="text-orange-400">진단</span>부터 받으세요.
             </h2>
             <p className="text-gray-400 text-lg">
@@ -533,7 +533,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
           {submitted ? (
             <div className="text-center p-12 rounded-3xl bg-white/5 border border-white/10">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold mb-2">진단 요청이 접수되었습니다!</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-2">진단 요청이 접수되었습니다!</h3>
               <p className="text-gray-400">영업일 기준 1일 내로 담당자가 연락드립니다.</p>
             </div>
           ) : (
@@ -659,7 +659,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
             <span className="inline-block px-4 py-2 bg-teal-500/20 text-teal-400 rounded-full text-sm font-bold mb-6 border border-teal-500/30">
               REAL REVIEW
             </span>
-            <h2 className="text-3xl md:text-4xl font-black">
+            <h2 className="text-2xl md:text-4xl font-black">
               실제 <span className="text-teal-400">사장님들</span>의 이야기
             </h2>
           </div>
@@ -740,7 +740,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
       <section className="py-24 px-6 bg-gray-50 overflow-hidden">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black mb-4">
+            <h2 className="text-2xl md:text-4xl font-black mb-4">
               Fan4 Marketing과 함께한<br />
               수 많은 사장님들과의 <span className="text-blue-500">소통</span>
             </h2>
@@ -782,7 +782,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
               </div>
 
               {/* Column 2 - Medium */}
-              <div className="flex-1 flex flex-col gap-4 animate-[scrollUp_20s_linear_infinite]">
+              <div className="flex-1 flex flex-col gap-4 animate-scroll-up">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[

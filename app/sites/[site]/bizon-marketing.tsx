@@ -209,7 +209,7 @@ export default function BizonMarketing({ site }: { site: string }) {
       <section id="reason" className="py-24 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16" data-aos="fade-up">
-            <h2 className="text-3xl md:text-5xl font-black mb-4">
+            <h2 className="text-2xl md:text-5xl font-black mb-4">
               프랜차이즈도 <span className="text-orange-500">꼭 마케팅을 해야 하는 이유</span>
             </h2>
           </div>
@@ -229,7 +229,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                 <div className="h-20 w-20 mx-auto rounded-2xl bg-white shadow-lg flex items-center justify-center mb-8 group-hover:bg-orange-500 group-hover:text-white transition-all">
                   <item.icon className="h-10 w-10 text-orange-500 group-hover:text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
+                <h3 className="text-xl md:text-2xl font-bold mb-4">{item.title}</h3>
                 <p className="text-gray-600 text-lg">{item.desc}</p>
               </div>
             ))}
@@ -239,9 +239,9 @@ export default function BizonMarketing({ site }: { site: string }) {
             className="text-center p-12 rounded-3xl bg-linear-to-r from-orange-500 to-red-500 text-white"
             data-aos="zoom-in"
           >
-            <p className="text-2xl md:text-3xl font-bold leading-tight">
+            <p className="text-xl md:text-3xl font-bold leading-tight">
               고객은 브랜드보다 <span className="underline decoration-2 underline-offset-8">가까운 곳, 후기 좋은 곳, 지금 가능한 곳</span>을 고릅니다.<br />
-              <span className="text-4xl md:text-5xl lg:text-5xl mt-6 block">결국 성과는 <span className="text-yellow-300">노출 → 확신 → 행동</span>으로 결정됩니다.</span>
+              <span className="text-2xl md:text-5xl mt-6 block px-4">결국 성과는 <span className="text-yellow-300">노출 → 확신 → 행동</span>으로 결정됩니다.</span>
             </p>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function BizonMarketing({ site }: { site: string }) {
 
           {/* Middle: Main Message */}
           <div className="text-center mb-16" data-aos="fade-up" data-aos-delay="400">
-            <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight">
+            <h2 className="text-2xl md:text-6xl font-black mb-8 leading-tight">
               우리는 "노출"이 아니라<br />
               <span className="text-orange-400">지역 1등 전환 구조</span>를 만듭니다.
             </h2>
@@ -300,7 +300,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                 data-aos="zoom-in"
                 data-aos-delay={700 + i * 100}
               >
-                <div className="text-4xl md:text-5xl font-black text-orange-400 mb-3">
+                <div className="text-3xl md:text-5xl font-black text-orange-400 mb-3">
                   {stat.number}
                 </div>
                 <div className="text-xl font-bold mb-1">{stat.label}</div>
@@ -319,7 +319,7 @@ export default function BizonMarketing({ site }: { site: string }) {
             <div className="inline-block px-6 py-2 bg-orange-100 text-orange-600 rounded-full text-sm font-bold mb-4">
               Why BIZON
             </div>
-            <h2 className="text-4xl md:text-5xl font-black">
+            <h2 className="text-3xl md:text-5xl font-black">
               진짜 전문가에게 맡기세요.
             </h2>
           </div>
@@ -330,7 +330,7 @@ export default function BizonMarketing({ site }: { site: string }) {
               data-aos="fade-right"
             >
               <Building2 className="h-14 w-14 text-orange-500 mb-6" />
-              <h3 className="text-3xl font-bold mb-5">직접 운영 경험</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-5">직접 운영 경험</h3>
               <p className="text-gray-600 text-xl leading-relaxed">
                 연매출 30억 규모의 요식업 매장 <strong className="text-gray-900">3곳 직접 운영</strong><br />
                 (현재도 성업 중)
@@ -342,7 +342,7 @@ export default function BizonMarketing({ site }: { site: string }) {
               data-aos="fade-left"
             >
               <Award className="h-14 w-14 text-blue-500 mb-6" />
-              <h3 className="text-3xl font-bold mb-5">검증된 자격</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-5">검증된 자격</h3>
               <ul className="text-gray-600 space-y-4 text-lg">
                 <li className="flex items-center gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 shrink-0" />
@@ -377,7 +377,7 @@ export default function BizonMarketing({ site }: { site: string }) {
       <section className="py-24 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black mb-4">
+            <h2 className="text-3xl md:text-5xl font-black mb-4">
               핵심 서비스
             </h2>
             <p className="text-xl text-gray-600">프랜차이즈 지점에 딱 맞는 실행형 서비스</p>
@@ -411,7 +411,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                 <div className={`h-16 w-16 rounded-2xl bg-${service.color}-100 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
                   <service.icon className={`h-8 w-8 text-${service.color}-500`} />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
+                <h3 className="text-xl md:text-2xl font-bold mb-4">{service.title}</h3>
                 <p className="text-gray-600 text-lg leading-relaxed">{service.desc}</p>
               </div>
             ))}
@@ -427,7 +427,7 @@ export default function BizonMarketing({ site }: { site: string }) {
             <div className="inline-block px-6 py-2 bg-orange-100 text-orange-600 rounded-full text-sm font-bold mb-4">
               SUCCESS CYCLE
             </div>
-            <h2 className="text-5xl md:text-7xl font-black mb-6 bg-linear-to-r from-gray-900 via-orange-600 to-gray-900 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-7xl font-black mb-6 bg-linear-to-r from-gray-900 via-orange-600 to-gray-900 bg-clip-text text-transparent">
               비즈온의 마케팅 성공방식
             </h2>
             <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">

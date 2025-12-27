@@ -7,7 +7,10 @@ import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useAuthStore } from '@/lib/store';
 import type { SiteSettings } from '@/lib/types';
 import ImageUpload from '@/components/ui/image-upload';
-import { logActivity } from '@/lib/logger';
+import { toast } from 'react-hot-toast';
+import { logActivity } from '@/lib/activity-logger';
+import { ExternalLink, ShieldCheck, AlertTriangle, Trash2 } from 'lucide-react';
+import ConfirmationModal from '@/components/shared/confirmation-modal';
 
 interface SettingsTabProps {
   isDarkMode: boolean;
@@ -18,6 +21,7 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileSaving, setProfileSaving] = useState(false);
+  const [showDeleteSiteModal, setShowDeleteSiteModal] = useState(false);
 
   const t = {
     card: isDarkMode ? 'bg-white/2 border-white/5' : 'bg-white border-gray-200 shadow-sm',
@@ -47,6 +51,7 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
     primaryColor: '#8B5CF6',
     logoUrl: '',
     bannerUrl: '',
+    ogImageUrl: '',
     seoTitle: 'FanEasy Page',
     seoDescription: 'Welcome to my FanEasy page',
     updatedAt: new Date().toISOString(),
@@ -112,10 +117,10 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
               ...profileForm,
               updatedAt: new Date()
           });
-          alert('프로필이 업데이트되었습니다.');
+          toast.success('프로필이 업데이트되었습니다.');
       } catch (e) {
           console.error("Profile update failed", e);
-          alert("프로필 저장 실패");
+          toast.error("프로필 저장 실패");
       } finally {
           setProfileSaving(false);
       }
@@ -142,6 +147,7 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
       if (user) {
         await logActivity({
             type: 'settings',
+            userId: user.id,
             userName: user.name,
             userEmail: user.email,
             action: '사이트 설정 변경',
@@ -151,13 +157,18 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
       }
 
       setSettings(newSettings);
-      alert('사이트 설정이 저장되었습니다!');
+      toast.success('사이트 설정이 저장되었습니다!');
     } catch (error) {
       console.error('Failed to save settings:', error);
-      alert('설정 저장 중 오류가 발생했습니다.');
+      toast.error('설정 저장 중 오류가 발생했습니다.');
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleDeleteSite = async () => {
+    // Mock deletion logic for safety in this demo
+    toast.error('사이트 삭제는 관리자에게 별도 문의가 필요한 기능입니다.');
   };
 
   if (loading) {
@@ -280,7 +291,13 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
                 readOnly
                 className={`flex-1 px-4 py-3 rounded-xl focus:outline-none grayscale opacity-70 ${t.input}`}
                 />
-                <Lock className="w-4 h-4 text-gray-500" />
+                <button 
+                  onClick={() => window.open(`https://${settings.domain}`, '_blank')}
+                  className={`p-3 rounded-xl border transition-all ${isDarkMode ? 'hover:bg-white/10 border-white/10' : 'hover:bg-gray-100 border-gray-200'}`}
+                  title="사이트 방문"
+                >
+                  <ExternalLink className="w-4 h-4 text-purple-500" />
+                </button>
             </div>
           </div>
         </div>
@@ -357,19 +374,100 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
           </div>
 
           <div>
-            <label className={`block text-sm font-bold mb-2 ${t.label}`}>SEO 설명</label>
+            <label className={`block text-sm font-bold mb-2 ${t.label}`}>SEO 설명 (Meta Description)</label>
             <textarea
               value={settings.seoDescription}
               onChange={(e) => setSettings({ ...settings, seoDescription: e.target.value })}
               rows={3}
               className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none ${t.input}`}
-              placeholder="검색 결과에 표시될 설명"
+              placeholder="검색 결과 및 SNS 공유 시 표시될 설명"
             />
+          </div>
+
+          <div className="pt-4 border-t border-dashed border-white/10">
+             <ImageUpload 
+               label="오픈그래프(OG) 이미지"
+               value={settings.ogImageUrl || ''}
+               onChange={(url) => setSettings({ ...settings, ogImageUrl: url })}
+               aspectRatio="video"
+               isDarkMode={isDarkMode}
+             />
+             <p className={`text-[11px] mt-2 ${t.textMuted}`}>
+                * 카카오톡, 페이스북 등 SNS에 사이트 링크를 공유할 때 표시되는 이미지입니다. (추천: 1200x630)
+             </p>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-end sticky bottom-6">
+      {/* 5. Domain Management */}
+      <div className={`rounded-3xl border p-8 transition-colors ${t.card}`}>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+            <Globe className="h-5 w-5 text-orange-500" />
+          </div>
+          <h3 className={`text-xl font-bold ${t.text}`}>도메인 및 보안 관리</h3>
+        </div>
+
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-100'}`}>
+                <div className="flex items-center justify-between mb-2">
+                    <span className={`text-xs font-bold uppercase ${t.textMuted}`}>기본 서브도메인</span>
+                    <span className="px-2 py-0.5 bg-green-500/10 text-green-500 text-[10px] font-bold rounded-full border border-green-500/20">ACTIVE</span>
+                </div>
+                <div className={`text-lg font-mono font-bold ${t.text}`}>
+                    {settings.domain || 'loading...'}
+                </div>
+             </div>
+
+             <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-100'}`}>
+                <div className="flex items-center justify-between mb-2">
+                    <span className={`text-xs font-bold uppercase ${t.textMuted}`}>SSL 보안 연결</span>
+                    <ShieldCheck className="w-4 h-4 text-blue-500" />
+                </div>
+                <div className={`text-lg font-bold ${t.text}`}>가동 중 (Auto-Renew)</div>
+             </div>
+          </div>
+
+          <div className={`p-6 rounded-2xl border border-dashed ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
+             <h4 className={`font-bold mb-2 flex items-center gap-2 ${t.text}`}>
+                커스텀 도메인 연결 (PRO)
+             </h4>
+             <p className={`text-sm mb-4 ${t.textMuted}`}>
+                개인 도메인(예: www.influencer.com)을 팬페이지에 연결할 수 있습니다.
+             </p>
+             <button className={`w-full py-3 rounded-xl text-sm font-bold border transition-all ${isDarkMode ? 'hover:bg-white/10 border-white/10' : 'hover:bg-gray-100 border-gray-200'}`}>
+                관리자에게 커스텀 도메인 요청하기
+             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. Danger Zone */}
+      <div className={`rounded-3xl border p-8 transition-colors border-red-500/20 ${isDarkMode ? 'bg-red-500/5' : 'bg-red-50'}`}>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+            <AlertTriangle className="h-5 w-5 text-red-500" />
+          </div>
+          <h3 className={`text-xl font-bold text-red-500`}>위험 지역 (Danger Zone)</h3>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+                <h4 className={`font-bold ${t.text}`}>사이트 삭제</h4>
+                <p className={`text-sm ${t.textMuted}`}>이 사이트의 모든 설정, 페이지 디자인, 고객 데이터가 영구적으로 삭제됩니다.</p>
+            </div>
+            <button 
+                onClick={() => setShowDeleteSiteModal(true)}
+                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-all flex items-center gap-2"
+            >
+                <Trash2 size={16} />
+                사이트 영구 삭제
+            </button>
+        </div>
+      </div>
+
+      <div className="flex justify-end sticky bottom-6 z-10">
         <button
           onClick={handleSiteSave}
           disabled={saving}
@@ -380,9 +478,20 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
           ) : (
             <Save className="h-5 w-5" />
           )}
-          {saving ? '저장 중...' : '설정 저장하기'}
+          {saving ? '저장 중...' : '설정이 변경되었습니다 - 저장하기'}
         </button>
       </div>
+
+      <ConfirmationModal 
+          isOpen={showDeleteSiteModal}
+          onClose={() => setShowDeleteSiteModal(false)}
+          onConfirm={handleDeleteSite}
+          title="사이트 영구 삭제"
+          message={`정말 [${settings.siteName}] 사이트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 모든 데이터가 즉시 소멸됩니다.`}
+          confirmLabel="내용을 확인했으며 전체 삭제합니다"
+          variant="danger"
+          isDarkMode={isDarkMode}
+      />
     </div>
   );
 }

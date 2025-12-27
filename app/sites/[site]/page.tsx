@@ -44,7 +44,8 @@ export async function generateMetadata(
         if (data.seoDescription) description = data.seoDescription;
         else if (data.siteDescription) description = data.siteDescription;
         
-        if (data.bannerUrl) ogImage = data.bannerUrl;
+        if (data.ogImageUrl) ogImage = data.ogImageUrl;
+        else if (data.bannerUrl) ogImage = data.bannerUrl;
     }
   } catch (err) {
     console.error("Metadata fetch error", err);
@@ -79,22 +80,7 @@ export default async function SitePage({
   const siteSlug = site.toLowerCase().trim();
   const creator = getCreator(siteSlug);
   
-  // 1. Try to fetch Custom Page Blocks first
-  const blocks = await getPageBlocks(siteSlug);
-  
-  if (blocks && blocks.length > 0) {
-    return (
-      <div className="min-h-screen bg-black text-white">
-        <ThemeWrapper site={siteSlug} />
-        <ViewTracker siteId={siteSlug} />
-        <BlockRenderer blocks={blocks} site={siteSlug} />
-        <HeaderActions site={siteSlug} />
-      </div>
-    );
-  }
-
-  // 2. Special Hardcoded Landing Pages (Check BEFORE notFound)
-  // If it's bizon, show the BizonMarketing Landing Page
+  // 1. Special Hardcoded Landing Pages (Check BEFORE dynamic blocks)
   if (siteSlug === "bizon") {
     const BizonMarketing = (await import("./bizon-marketing")).default;
     return (
@@ -106,10 +92,6 @@ export default async function SitePage({
     );
   }
 
-  // 3. Custom Live News (Legacy Fallback)
-  const news = await getLiveNews(siteSlug);
-
-  // If it's kkang, show the Agency Landing Page
   if (siteSlug === "kkang") {
     return (
       <>
@@ -120,7 +102,6 @@ export default async function SitePage({
     );
   }
 
-  // Custom Design for 'fan1' (MZ Marketing Reference)
   if (siteSlug === "fan1") {
     return (
       <>
@@ -130,8 +111,7 @@ export default async function SitePage({
       </>
     );
   }
- 
-  // Custom Design for 'fan2' (Growth Marketing - Bburi Theme)
+
   if (siteSlug === "fan2") {
     return (
       <>
@@ -142,8 +122,8 @@ export default async function SitePage({
     );
   }
 
-  // Custom Design for 'fan3' (AD-TECH Solution - DDMKT Theme)
   if (siteSlug === "fan3") {
+    const TechMarketing = (await import("./tech-marketing")).default;
     return (
       <>
         <ThemeWrapper site={siteSlug} />
@@ -153,7 +133,6 @@ export default async function SitePage({
     );
   }
 
-  // Custom Design for 'fan4' (매듭컴퍼니 스타일 - Video Hero)
   if (siteSlug === "fan4") {
     const Fan4Marketing = (await import("./fan4-marketing")).default;
     return (
@@ -162,6 +141,20 @@ export default async function SitePage({
         <ViewTracker siteId={siteSlug} />
         <Fan4Marketing site={siteSlug} />
       </>
+    );
+  }
+
+  // 2. Try to fetch Custom Page Blocks
+  const blocks = await getPageBlocks(siteSlug);
+  
+  if (blocks && blocks.length > 0) {
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
+        <BlockRenderer blocks={blocks} site={siteSlug} />
+        <HeaderActions site={siteSlug} />
+      </div>
     );
   }
 

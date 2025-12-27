@@ -38,11 +38,11 @@ import UsersTab from '@/components/admin/users-tab';
 import SubscriptionTab from '@/components/admin/subscription-tab';
 import SiteTreeView from '@/components/admin/site-tree-view';
 import InquiryManagementModal from '@/components/admin/inquiry-management-modal';
-import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
-} from 'recharts';
+import AnalyticsCharts from '@/components/admin/analytics-charts';
+import type { SiteNode } from '@/lib/types';
 import { logActivity } from '@/lib/activity-logger';
+import { toast } from 'react-hot-toast';
+import { Copy } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { user, logout, updateUser } = useAuthStore();
@@ -63,6 +63,8 @@ export default function AdminDashboard() {
     email: user?.email || '',
   });
 
+  const [users, setUsers] = useState<any[]>([]);
+  const [sites, setSites] = useState<SiteNode[]>([]);
   const [stats, setStats] = useState({
     totalVisits: 0,
     todayVisits: 0,
@@ -248,7 +250,7 @@ export default function AdminDashboard() {
     if (mounted && user) {
       const allowedRoles = ['super_admin', 'owner', 'admin', 'user'];
       if (!allowedRoles.includes(user.role)) {
-        alert('접근 권한이 없습니다.');
+        toast.error('접근 권한이 없습니다.');
         router.push('/');
         return;
       }
@@ -296,6 +298,34 @@ export default function AdminDashboard() {
 
     return () => unsubscribe();
   }, [mounted]);
+
+  // Real-time Users & Sites listener for analytics
+  useEffect(() => {
+    if (!mounted || !user) return;
+
+    // Fetch Users
+    const qUsers = user.role === 'super_admin' 
+        ? query(collection(db, 'users'))
+        : query(collection(db, 'users'), where('joinedInfluencerId', '==', user.subdomain || user.id));
+    
+    const unsubUsers = onSnapshot(qUsers, (snap) => {
+        setUsers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+    // Fetch Sites
+    const qSites = user.role === 'super_admin'
+        ? query(collection(db, 'sites'))
+        : query(collection(db, 'sites'), where('parentSiteId', '==', user.subdomain || user.id));
+    
+    const unsubSites = onSnapshot(qSites, (snap) => {
+        setSites(snap.docs.map(d => ({ id: d.id, ...d.data() } as SiteNode)));
+    });
+
+    return () => {
+        unsubUsers();
+        unsubSites();
+    };
+  }, [mounted, user]);
 
   // Theme Configuration
   const role = user?.role || 'user';
@@ -497,11 +527,19 @@ export default function AdminDashboard() {
                   ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' 
                   : 'bg-purple-100 text-purple-700 border-purple-200'
               }`}>
-                {user?.role === 'super_admin' && '최고관리자'}
-                {user?.role === 'owner' && `${user?.subdomain || '사이트'} 소유자`}
-                {user?.role === 'admin' && '관리자'}
                 {user?.role === 'user' && '일반 회원'}
               </span>
+              <button 
+                  onClick={() => {
+                      const url = user?.role === 'super_admin' ? 'https://faneasy.kr' : `https://${user?.subdomain}.faneasy.kr`;
+                      navigator.clipboard.writeText(url);
+                      toast.success('주소가 복사되었습니다.');
+                  }}
+                  className={`p-1.5 rounded-md transition-all ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}
+                  title="사이트 주소 복사"
+              >
+                  <Copy className="h-4 w-4 text-purple-400" />
+              </button>
             </div>
             <p className="text-gray-400 text-sm mt-1">
               {activeTab === 'dashboard' && '실시간 문의 현황 및 통계를 확인하세요.'}
@@ -587,59 +625,9 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Visitor Trend Chart */}
-          <div className={`${theme.card} p-6`}>
-             <h3 className="text-lg font-bold mb-4">최근 7일 방문 및 문의</h3>
-             <div className="h-64 w-full">
-               <ResponsiveContainer width="100%" height="100%">
-                 <LineChart data={stats.chartData.length > 0 ? stats.chartData : []}>
-                   <CartesianGrid strokeDasharray="3 3" stroke={theme.chartGrid} />
-                   <XAxis dataKey="name" stroke="#6b7280" />
-                   <YAxis yAxisId="left" stroke="#8B5CF6" />
-                   <YAxis yAxisId="right" orientation="right" stroke="#10B981" />
-                   <Tooltip 
-                     contentStyle={{ backgroundColor: theme.tooltipBg, borderColor: theme.tooltipBorder }}
-                     itemStyle={{ color: theme.tooltipText }}
-                   />
-                   <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                   <Line yAxisId="left" type="monotone" dataKey="visitors" name="방문자" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
-                   <Line yAxisId="right" type="monotone" dataKey="inquiries" name="문의" stroke="#10B981" strokeWidth={2} dot={{ r: 4 }} />
-                 </LineChart>
-               </ResponsiveContainer>
-             </div>
-          </div>
-
-          {/* Inquiry Status Chart */}
-          <div className={`${theme.card} p-6`}>
-             <h3 className="text-lg font-bold mb-4">문의 현황 분석</h3>
-             <div className="h-64 w-full flex items-center justify-center">
-               <ResponsiveContainer width="100%" height="100%">
-                 <PieChart>
-                   <Pie
-                     data={[
-                       { name: '대기중', value: inquiries.filter(i => i.status === 'pending').length },
-                       { name: '상담중', value: inquiries.filter(i => i.status === 'in_progress').length },
-                       { name: '완료', value: inquiries.filter(i => i.status === 'completed' || i.status === 'archived').length },
-                     ]}
-                     cx="50%"
-                     cy="50%"
-                     innerRadius={60}
-                     outerRadius={80}
-                     paddingAngle={5}
-                     dataKey="value"
-                   >
-                     {[ '#EF4444', '#F59E0B', '#10B981' ].map((color, index) => (
-                       <Cell key={`cell-${index}`} fill={color} />
-                     ))}
-                   </Pie>
-                   <Tooltip contentStyle={{ backgroundColor: theme.tooltipBg, borderColor: theme.tooltipBorder }} itemStyle={{ color: theme.tooltipText }} />
-                   <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                 </PieChart>
-               </ResponsiveContainer>
-             </div>
-          </div>
+        {/* Analytics Charts Section */}
+        <div className="mb-12">
+           <AnalyticsCharts users={users} sites={sites} isDarkMode={isDarkMode} />
         </div>
 
         {/* Recent Inquiries Section */}
@@ -805,7 +793,7 @@ export default function AdminDashboard() {
                 <button 
                   onClick={async () => {
                     if (!replyMessage.trim()) {
-                      alert('메시지를 입력해주세요.');
+                      toast.error('메시지를 입력해주세요.');
                       return;
                     }
                     
@@ -835,7 +823,7 @@ export default function AdminDashboard() {
                       });
 
                       if (response.ok) {
-                        alert('답장이 성공적으로 발송되었습니다!');
+                        toast.success('답장이 성공적으로 발송되었습니다!');
                         
                         // Log Activity
                         logActivity({
@@ -858,7 +846,7 @@ export default function AdminDashboard() {
                       }
                     } catch (error) {
                       console.error('Reply error:', error);
-                      alert('답장 발송에 실패했습니다. 다시 시도해주세요.');
+                      toast.error('답장 발송에 실패했습니다. 다시 시도해주세요.');
                     } finally {
                       setSendingReply(false);
                     }

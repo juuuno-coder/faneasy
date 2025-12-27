@@ -15,16 +15,22 @@ import {
   Palette,
   Shield,
   Bell,
-  ArrowLeft,
   Sun,
-  Moon
+  Moon,
+  Clock,
+  Copy
 } from 'lucide-react';
 import Link from 'next/link';
-import DesignEditor from '@/app/admin/influencer/design-editor';
+import PageBuilder from '@/components/admin/page-builder';
 import SiteTreeView from '@/components/admin/site-tree-view';
 import InquiriesTab from '@/components/admin/inquiries-tab';
 import UsersTab from '@/components/admin/users-tab';
-import type { Inquiry } from '@/lib/types';
+import ActivityTab from '@/components/admin/activity-tab';
+import SettingsTab from '@/components/admin/settings-tab';
+import InquiryManagementModal from '@/components/admin/inquiry-management-modal';
+import AnalyticsCharts from '@/components/admin/analytics-charts';
+import { toast } from 'react-hot-toast';
+import type { Inquiry, SiteNode } from '@/lib/types';
 
 export default function SiteAdminPage({
   params,
@@ -36,9 +42,12 @@ export default function SiteAdminPage({
   const { user, logout } = useAuthStore();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'builder' | 'users' | 'inquiries' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'builder' | 'users' | 'inquiries' | 'activity' | 'settings'>('dashboard');
   const [mounted, setMounted] = useState(false);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+  const [users, setUsers] = useState<any[]>([]);
+  const [sites, setSites] = useState<SiteNode[]>([]);
   const [totalFans, setTotalFans] = useState(0);
   const [totalSubSites, setTotalSubSites] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -66,13 +75,25 @@ export default function SiteAdminPage({
     const unsubFans = onSnapshot(qFans, (snap) => setTotalFans(snap.docs.length));
 
     // 3. Sub-sites of this site
-    const qSites = query(collection(db, 'sites'), where('parentSiteId', '==', siteSlug));
-    const unsubSites = onSnapshot(qSites, (snap) => setTotalSubSites(snap.docs.length));
+    const qSitesList = query(collection(db, 'sites'), where('parentSiteId', '==', siteSlug));
+    const unsubSites = onSnapshot(qSitesList, (snap) => {
+        const fetchedSites = snap.docs.map(d => ({ id: d.id, ...d.data() } as SiteNode));
+        setSites(fetchedSites);
+        setTotalSubSites(fetchedSites.length);
+    });
+
+    // 4. Detailed Users list for charts
+    const qUsersList = query(collection(db, 'users'), where('joinedInfluencerId', '==', siteSlug));
+    const unsubUsers = onSnapshot(qUsersList, (snap) => {
+        setUsers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        setTotalFans(snap.docs.length);
+    });
 
     return () => {
         unsubInq();
         unsubFans();
         unsubSites();
+        unsubUsers();
     };
   }, [mounted, siteSlug]);
 
@@ -83,6 +104,7 @@ export default function SiteAdminPage({
     { id: 'builder', label: '디자인 편집', icon: Palette },
     { id: 'users', label: '팬 관리', icon: Users },
     { id: 'inquiries', label: '문의 내역', icon: MessageSquare },
+    { id: 'activity', label: '활동 로그', icon: Clock },
     { id: 'settings', label: '설정', icon: Settings },
   ];
 
@@ -174,7 +196,19 @@ export default function SiteAdminPage({
                    {siteSlug[0].toUpperCase()}
                 </div>
                 <div className="text-left hidden sm:block">
-                   <div className={`text-sm font-bold uppercase ${theme.text}`}>{siteSlug}</div>
+                   <div className={`text-sm font-bold uppercase ${theme.text} flex items-center gap-2`}>
+                       {siteSlug}
+                       <button 
+                           onClick={() => {
+                               navigator.clipboard.writeText(`https://${siteSlug}.faneasy.kr`);
+                               toast.success('주소가 복사되었습니다.');
+                           }}
+                           className={`p-1 rounded-md transition-all ${isDarkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}
+                           title="사이트 주소 복사"
+                       >
+                           <Copy className="h-3 w-3 text-purple-400" />
+                       </button>
+                   </div>
                    <div className="text-[10px] text-gray-500">Site Management</div>
                 </div>
              </div>
@@ -198,6 +232,11 @@ export default function SiteAdminPage({
                         {inquiries.filter(i => i.status === 'pending').length}건
                     </div>
                 </div>
+            </div>
+
+            {/* Analytics Charts */}
+            <div className="mt-8">
+                <AnalyticsCharts users={users} sites={sites} isDarkMode={isDarkMode} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -234,17 +273,7 @@ export default function SiteAdminPage({
         )}
 
         {activeTab === 'builder' && (
-          <div className="bg-white rounded-3xl overflow-hidden shadow-2xl">
-            <div className="border-b border-gray-100 px-8 py-4 bg-gray-50 flex items-center justify-between">
-              <h2 className="font-bold text-gray-900 flex items-center gap-2">
-                <Palette className="h-4 w-4 text-purple-500" />
-                메인 콘텐츠 편집
-              </h2>
-            </div>
-            <div className="p-8">
-              <DesignEditor subdomain={siteSlug} />
-            </div>
-          </div>
+          <PageBuilder subdomain={siteSlug} />
         )}
 
         {activeTab === 'users' && (
@@ -252,15 +281,33 @@ export default function SiteAdminPage({
         )}
 
         {activeTab === 'inquiries' && (
-          <InquiriesTab inquiries={inquiries} isDarkMode={isDarkMode} onSelectInquiry={() => {}} />
-        ) /* Tab Contents End */}
+          <InquiriesTab 
+            inquiries={inquiries} 
+            isDarkMode={isDarkMode} 
+            onSelectInquiry={setSelectedInquiry} 
+          />
+        )}
+
+        {activeTab === 'activity' && (
+          <ActivityTab isDarkMode={isDarkMode} />
+        )}
 
         {activeTab === 'settings' && (
-           <div className={`${theme.card} rounded-3xl border p-12 text-center`}>
-              <Settings className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-              <h3 className={`text-xl font-bold mb-2 ${theme.text}`}>사이트 설정</h3>
-              <p className={theme.mutedText}>기본 정보 및 도메인 설정 준비 중입니다.</p>
-           </div>
+           <SettingsTab isDarkMode={isDarkMode} />
+        )}
+
+        {/* Inquiry Management Modal */}
+        {selectedInquiry && (
+          <InquiryManagementModal
+            inquiry={selectedInquiry}
+            onClose={() => setSelectedInquiry(null)}
+            onUpdate={(updated) => {
+              setInquiries(prev => prev.map(inq => 
+                inq.id === updated.id ? updated : inq
+              ));
+              setSelectedInquiry(null);
+            }}
+          />
         )}
       </main>
     </div>

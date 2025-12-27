@@ -70,7 +70,7 @@ export default function AgencyLandingPage({ site }: { site: string }) {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="mx-auto max-w-4xl text-5xl font-black leading-[1.1] tracking-tight md:text-8xl">
+            <h1 className="mx-auto max-w-4xl text-4xl font-black leading-[1.2] tracking-tight md:text-8xl md:leading-[1.1]">
               빠르게 사업을 시작하는 <br />
               <span className="bg-linear-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                 프리미엄 랜딩페이지
@@ -83,7 +83,7 @@ export default function AgencyLandingPage({ site }: { site: string }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="mx-auto mt-8 max-w-2xl text-lg text-gray-400 md:text-xl"
+            className="mx-auto mt-8 max-w-2xl text-base text-gray-400 md:text-xl"
           >
             디자인부터 세팅까지 올인원. 전문 개발팀과 깡대표가 협업하여{" "}
             <br className="hidden md:block" />
@@ -156,7 +156,7 @@ export default function AgencyLandingPage({ site }: { site: string }) {
       <section id="pricing" className="py-24 relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black md:text-5xl">
+            <h2 className="text-3xl font-black md:text-5xl">
               합리적인 비용으로 비즈니스를 가속하세요
             </h2>
             <p className="mt-4 text-gray-400">
@@ -314,9 +314,9 @@ export default function AgencyLandingPage({ site }: { site: string }) {
       {/* Inquiry Form Section */}
       <section id="contact" className="py-24 relative">
         <div className="mx-auto max-w-3xl px-6">
-          <div className="rounded-[40px] border border-white/5 bg-linear-to-b from-white/5 to-transparent p-8 md:p-16 backdrop-blur-xl">
+          <div className="rounded-[32px] md:rounded-[40px] border border-white/5 bg-linear-to-b from-white/5 to-transparent p-6 md:p-16 backdrop-blur-xl">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold md:text-5xl">
+              <h2 className="text-2xl font-bold md:text-5xl">
                 함께 비즈니스를 <br />
                 시작해볼까요?
               </h2>

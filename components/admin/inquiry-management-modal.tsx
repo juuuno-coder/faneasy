@@ -13,12 +13,15 @@ import {
   MessageSquare,
   ChevronRight,
   Plus,
-  Save
+  Save,
+  Trash2
 } from 'lucide-react';
 import { db } from '@/lib/firebaseClient';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { logActivity } from '@/lib/activity-logger';
 import { useAuthStore } from '@/lib/store';
+import { toast } from 'react-hot-toast';
+import ConfirmationModal from '@/components/shared/confirmation-modal';
 
 interface Props {
   inquiry: Inquiry;
@@ -47,6 +50,7 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
   const [newNote, setNewNote] = useState('');
   const [completedAt, setCompletedAt] = useState(inquiry.completedAt || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const currentStepIndex = WORKFLOW_STEPS.findIndex(s => s.status === currentStatus);
 
@@ -121,6 +125,7 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
             const stepLabel = WORKFLOW_STEPS.find(s => s.status === newStatus)?.label || newStatus;
             await logActivity({
                 type: 'reply',
+                userId: currentUser.id,
                 userName: currentUser.name,
                 userEmail: currentUser.email,
                 action: '문의 상태 변경',
@@ -139,7 +144,38 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
     } catch(e: any) {
         console.error("Status update failed", e);
         setCurrentStatus(prevStatus); // Revert
-        alert("상태 저장 실패: " + (e.message || e));
+        toast.error("상태 저장 실패: " + (e.message || e));
+    }
+  };
+
+  const handleDeleteInquiry = async () => {
+    setIsSaving(true);
+    try {
+        const docRef = doc(db, 'inquiries', inquiry.id);
+        await deleteDoc(docRef);
+        
+        if (currentUser) {
+            await logActivity({
+                type: 'reply',
+                userId: currentUser.id,
+                userName: currentUser.name,
+                userEmail: currentUser.email,
+                action: '문의 삭제',
+                target: `${inquiry.name}님의 문의 삭제`,
+                subdomain: currentUser.subdomain || (inquiry as any).siteDomain
+            });
+        }
+        
+        toast.success("문의가 삭제되었습니다.");
+        onClose();
+        // Since we deleted it, the parent list might need a refresh or filter out this ID.
+        // We'll pass a special indicator if needed, but usually onUpdate or similar handles it.
+        // For now, simple close. The parent should have onSnapshot anyway.
+    } catch (e: any) {
+        console.error("Delete failed", e);
+        toast.error("삭제 실패: " + (e.message || e));
+    } finally {
+        setIsSaving(false);
     }
   };
 
@@ -167,30 +203,39 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
         updatedAt: new Date().toISOString()
       });
       onUpdate({ ...inquiry, notes, completedAt, workflowStatus: currentStatus });
-      alert('저장되었습니다!');
-    } catch (error) {
+      toast.success('저장되었습니다!');
+    } catch (error: any) {
       console.error('Save error:', error);
-      alert('저장 실패. 다시 시도해주세요.');
+      toast.error('저장 실패: ' + (error.message || error));
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div 
         className="bg-white rounded-3xl w-full max-w-7xl h-[95vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-gradient-to-r from-purple-50 to-indigo-50 shrink-0">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-linear-to-r from-purple-50 to-indigo-50 shrink-0">
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-1">프로젝트 관리</h3>
             <p className="text-sm text-gray-500">{inquiry.name} · {formatPhoneNumber(inquiry.email)}</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors">
-            <X className="h-6 w-6 text-gray-400" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+                onClick={() => setShowDeleteModal(true)}
+                className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full transition-colors"
+                title="문의 삭제"
+            >
+                <Trash2 className="h-6 w-6" />
+            </button>
+            <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors">
+                <X className="h-6 w-6 text-gray-400" />
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
@@ -408,6 +453,16 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
           </button>
         </div>
       </div>
+
+      <ConfirmationModal 
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDeleteInquiry}
+          title="문의 삭제"
+          message="이 문의 내역을 정말 삭제하시겠습니까? 삭제된 내역은 복구할 수 없습니다."
+          confirmLabel="삭제하기"
+          isDarkMode={false}
+      />
     </div>
   );
 }

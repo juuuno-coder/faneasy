@@ -4,8 +4,11 @@ import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, where } from 'firebase/firestore';
 import { db } from '@/lib/firebaseClient';
 import { UserRole } from '@/lib/types';
-import { Search, Loader2, Edit2, Check, X, ShieldAlert, Users } from 'lucide-react';
+import { Search, Loader2, Edit2, Check, X, ShieldAlert, Users, Download, Trash2, Mail, Copy } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
+import { toast } from 'react-hot-toast';
+import ConfirmationModal from '@/components/shared/confirmation-modal';
+import { deleteDoc } from 'firebase/firestore';
 
 interface UserData {
   id: string;
@@ -30,7 +33,10 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ role: UserRole; subdomain: string }>({ role: 'user', subdomain: '' });
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
   const isSuperAdmin = currentUser?.role === 'super_admin';
   const isOwner = currentUser?.role === 'owner';
@@ -118,6 +124,11 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
     setEditForm({ role: 'user', subdomain: '' });
   };
 
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} 복사되었습니다.`);
+  };
+
   const handleSave = async (userId: string) => {
     setSaving(true);
     try {
@@ -134,9 +145,10 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
 
       await updateDoc(userRef, updates);
       setEditingId(null);
+      toast.success("사용자 정보가 성공적으로 업데이트되었습니다.");
     } catch (error) {
       console.error("Error updating user:", error);
-      alert("업데이트 중 오류가 발생했습니다.");
+      toast.error("업데이트 중 오류가 발생했습니다.");
     } finally {
       setSaving(false);
     }
@@ -147,6 +159,81 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.subdomain?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const toggleSelectAll = () => {
+    if (selectedUsers.size === filteredUsers.length) {
+      setSelectedUsers(new Set());
+    } else {
+      setSelectedUsers(new Set(filteredUsers.map(u => u.id)));
+    }
+  };
+
+  const toggleSelectOne = (id: string) => {
+    const next = new Set(selectedUsers);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedUsers(next);
+  };
+
+  const exportToCSV = () => {
+    const listToExport = selectedUsers.size > 0 
+      ? users.filter(u => selectedUsers.has(u.id))
+      : filteredUsers;
+
+    const headers = ["Name", "Email", "Role", "Subdomain", "Joined Site", "Created At"];
+    const rows = listToExport.map(u => [
+      u.name,
+      u.email,
+      u.role,
+      u.subdomain || "-",
+      u.joinedSite || "-",
+      u.createdAt?.seconds ? new Date(u.createdAt.seconds * 1000).toISOString() : "-"
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `faneasy_users_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("CSV 파일이 생성되었습니다.");
+  };
+
+  const handleBatchDelete = async () => {
+    setSaving(true);
+    try {
+      const ids = Array.from(selectedUsers);
+      await Promise.all(ids.map(id => deleteDoc(doc(db, 'users', id))));
+      
+      setSelectedUsers(new Set());
+      toast.success(`${ids.length}명의 사용자가 삭제되었습니다.`);
+    } catch (error) {
+      console.error("Batch delete error:", error);
+      toast.error("일부 사용자 삭제 중 오류가 발생했습니다.");
+    } finally {
+      setSaving(false);
+      setShowDeleteModal(false);
+    }
+  };
+
+  const handleSingleDelete = async () => {
+    if (!userToDelete) return;
+    setSaving(true);
+    try {
+      await deleteDoc(doc(db, 'users', userToDelete));
+      toast.success("사용자가 삭제되었습니다.");
+    } catch (error) {
+       console.error("Delete error:", error);
+       toast.error("삭제 실패");
+    } finally {
+       setSaving(false);
+       setUserToDelete(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -171,15 +258,40 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
           </p>
         </div>
         
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-          <input 
-            type="text"
-            placeholder="이름, 이메일 검색..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors ${theme.inputBg}`}
-          />
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          {selectedUsers.size > 0 && (
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border animate-in slide-in-from-right-4 ${isDark ? 'bg-purple-500/10 border-purple-500/20' : 'bg-purple-50 border-purple-200'}`}>
+                <span className="text-xs font-bold text-purple-500">{selectedUsers.size}명 선택됨</span>
+                <div className="h-4 w-px bg-purple-500/20 mx-1" />
+                <button 
+                  onClick={() => setShowDeleteModal(true)}
+                  className="p-1 hover:text-red-500 transition-colors" 
+                  title="삭제"
+                >
+                  <Trash2 size={14} />
+                </button>
+                <button className="p-1 hover:text-blue-500 transition-colors" title="메일 발송"><Mail size={14} /></button>
+            </div>
+          )}
+          
+          <button 
+            onClick={exportToCSV}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+          >
+            <Download size={16} />
+            {selectedUsers.size > 0 ? '선택 내보내기' : '전체 내보내기'}
+          </button>
+
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input 
+              type="text"
+              placeholder="이름, 이메일 검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`w-full rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors ${theme.inputBg}`}
+            />
+          </div>
         </div>
       </div>
 
@@ -189,11 +301,19 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
           <table className="w-full text-left text-sm">
             <thead className={theme.headerBg}>
               <tr>
-                <th className="px-6 py-4 font-medium">사용자 정보</th>
-                <th className="px-6 py-4 font-medium">역할 (Role)</th>
-                {isSuperAdmin && <th className="px-6 py-4 font-medium">사이트 (Subdomain)</th>}
-                <th className="px-6 py-4 font-medium">가입일</th>
-                <th className="px-6 py-4 font-medium text-right">관리</th>
+                <th className="px-6 py-4 w-10">
+                  <input 
+                    type="checkbox" 
+                    checked={filteredUsers.length > 0 && selectedUsers.size === filteredUsers.length}
+                    onChange={toggleSelectAll}
+                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  />
+                </th>
+                <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">사용자 정보</th>
+                <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">역할 (Role)</th>
+                {isSuperAdmin && <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">사이트 (Subdomain)</th>}
+                <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">가입일</th>
+                <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider text-right">관리</th>
               </tr>
             </thead>
             <tbody className={`divide-y ${theme.divider}`}>
@@ -213,7 +333,15 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
                 </tr>
               ) : (
                 filteredUsers.map((user) => (
-                  <tr key={user.id} className={`${theme.rowHover} transition-colors`}>
+                  <tr key={user.id} className={`${theme.rowHover} transition-colors ${selectedUsers.has(user.id) ? (isDark ? 'bg-purple-500/5' : 'bg-purple-50/30') : ''}`}>
+                    <td className="px-6 py-4">
+                       <input 
+                        type="checkbox" 
+                        checked={selectedUsers.has(user.id)}
+                        onChange={() => toggleSelectOne(user.id)}
+                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      />
+                    </td>
                     {/* User Info */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -221,8 +349,18 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
                           {user.name?.[0] || 'U'}
                         </div>
                         <div>
-                          <div className={`font-bold ${theme.text}`}>{user.name}</div>
-                          <div className={`text-xs ${theme.textSub}`}>{user.email}</div>
+                          <div className={`font-bold ${theme.text} flex items-center gap-1`}>
+                            {user.name}
+                          </div>
+                          <div className={`text-xs ${theme.textSub} flex items-center gap-1 group/email`}>
+                            {user.email}
+                            <button 
+                              onClick={() => copyToClipboard(user.email, '이메일이')}
+                              className="opacity-0 group-hover/email:opacity-100 p-0.5 hover:text-purple-500 transition-all"
+                            >
+                              <Copy size={10} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -315,13 +453,22 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
                         </div>
                       ) : (
                         canEdit(user) && (
-                          <button
-                            onClick={() => handleEdit(user)}
-                            className={`px-3 py-1.5 rounded-lg border shadow-sm text-xs font-medium transition-all flex items-center gap-1 ml-auto ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-300 border-white/10' : 'bg-white hover:bg-gray-50 text-gray-600 border-gray-200'}`}
-                          >
-                            <Edit2 className="w-3 h-3" />
-                            관리
-                          </button>
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                                onClick={() => setUserToDelete(user.id)}
+                                className={`p-1.5 rounded-lg border shadow-sm transition-all ${isDark ? 'bg-white/5 hover:bg-red-500/10 text-gray-500 hover:text-red-400 border-white/10' : 'bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border-gray-200'}`}
+                                title="사용자 삭제"
+                            >
+                                <Trash2 className="w-3 h-3" />
+                            </button>
+                            <button
+                                onClick={() => handleEdit(user)}
+                                className={`px-3 py-1.5 rounded-lg border shadow-sm text-xs font-medium transition-all flex items-center gap-1 ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-300 border-white/10' : 'bg-white hover:bg-gray-50 text-gray-600 border-gray-200'}`}
+                            >
+                                <Edit2 className="w-3 h-3" />
+                                관리
+                            </button>
+                          </div>
                         )
                       )}
                     </td>
@@ -346,6 +493,27 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modals */}
+      <ConfirmationModal 
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleBatchDelete}
+          title="사용자 일괄 삭제"
+          message={`선택한 ${selectedUsers.size}명의 사용자를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+          confirmLabel="삭제하기"
+          isDarkMode={isDark}
+      />
+
+      <ConfirmationModal 
+          isOpen={!!userToDelete}
+          onClose={() => setUserToDelete(null)}
+          onConfirm={handleSingleDelete}
+          title="사용자 삭제"
+          message="이 사용자를 정말 삭제하시겠습니까? 모든 활동 정보가 함께 삭제됩니다."
+          confirmLabel="삭제하기"
+          isDarkMode={isDark}
+      />
     </div>
   );
 }

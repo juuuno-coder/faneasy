@@ -7,6 +7,8 @@ import { SiteBlock, BlockType } from '@/lib/types';
 import { getLegacyTemplate } from '@/lib/page-templates';
 import { logActivity } from '@/lib/activity-logger';
 import { useAuthStore } from '@/lib/store';
+import { toast } from 'react-hot-toast';
+import ConfirmationModal from '@/components/shared/confirmation-modal';
 import { 
   Plus, 
   Trash2, 
@@ -69,6 +71,13 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
   const [previewMode, setPreviewMode] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [activeSettingsBlock, setActiveSettingsBlock] = useState<string | null>(null);
+  
+  const [blockToDelete, setBlockToDelete] = useState<string | null>(null);
+  const [versionToRestore, setVersionToRestore] = useState<SiteBlock[] | null>(null);
+
+  // --- Live Visual Editing State ---
+  const [viewMode, setViewMode] = useState<'edit' | 'visual' | 'split'>('edit');
+  const [highlightedBlockId, setHighlightedBlockId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -113,13 +122,12 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
         description: 'Manual Save'
       });
 
-      // 2. Update live version
       await setDoc(doc(db, 'page_blocks', subdomain), {
         subdomain,
         blocks,
         updatedAt: serverTimestamp()
       });
-      alert('저장되었습니다. (히스토리에 백업됨)');
+      toast.success('게시되었습니다! 히스토리에 백업되었습니다.');
 
       // Log Activity
       logActivity({
@@ -136,17 +144,18 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
 
     } catch (err) {
       console.error('Save failed:', err);
-      alert('저장에 실패했습니다.');
+      toast.error('저장에 실패했습니다.');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleRestore = (legacyBlocks: SiteBlock[]) => {
-      if(confirm('이 버전으로 되돌리시겠습니까? 현재 작업 내용은 사라집니다.')) {
-          setBlocks(legacyBlocks);
-          setShowHistory(false);
-      }
+  const handleRestore = () => {
+      if(!versionToRestore) return;
+      setBlocks(versionToRestore);
+      setShowHistory(false);
+      setVersionToRestore(null);
+      toast.success('버전이 복구되었습니다.');
   };
 
   const addBlock = (type: BlockType) => {
@@ -163,17 +172,30 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
       }
     };
     setBlocks([...blocks, newBlock]);
+    setActiveSettingsBlock(newBlock.id);
   };
 
-  const deleteBlock = (id: string) => {
-    if (confirm('정말 삭제하시겠습니까?')) {
-      setBlocks(blocks.filter(b => b.id !== id));
-      if (activeSettingsBlock === id) setActiveSettingsBlock(null);
-    }
+  const deleteBlock = () => {
+    if (!blockToDelete) return;
+    setBlocks(blocks.filter(b => b.id !== blockToDelete));
+    if (activeSettingsBlock === blockToDelete) setActiveSettingsBlock(null);
+    setBlockToDelete(null);
+    toast.success('블록이 삭제되었습니다.');
   };
 
   const updateBlock = (id: string, updates: Partial<SiteBlock>) => {
     setBlocks(blocks.map(b => b.id === id ? { ...b, ...updates } : b));
+  };
+
+  const selectBlock = (id: string) => {
+    setActiveSettingsBlock(id);
+    setHighlightedBlockId(id);
+    
+    // Scroll editor or preview if needed
+    if (viewMode === 'split' || viewMode === 'edit') {
+       const el = document.getElementById(`editor-block-${id}`);
+       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   };
 
   // DnD Sensors
@@ -205,7 +227,7 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
     <div className="flex flex-col gap-6 relative">
       {/* Settings Modal Overlay */}
       <AnimatePresence>
-        {activeSettingsBlock && (
+        {activeSettingsBlock && viewMode !== 'split' && (
           <BlockSettingsPanel 
             block={blocks.find(b => b.id === activeSettingsBlock)!}
             onUpdate={(settings) => updateBlock(activeSettingsBlock, { settings })}
@@ -225,54 +247,74 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
       </AnimatePresence>
 
       {/* Page Builder Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/5 p-6 rounded-3xl border border-white/10 sticky top-0 z-40 backdrop-blur-xl transition-all">
-        <div>
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Layout className="h-5 w-5 text-purple-500" />
-            페이지 빌더 (PRO)
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">블록을 추가하고 자유롭게 디자인하세요.</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#111] p-6 rounded-3xl border border-white/10 sticky top-0 z-50 backdrop-blur-xl transition-all shadow-2xl">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-purple-600 rounded-2xl shadow-lg shadow-purple-600/30">
+            <Layout className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-black flex items-center gap-2">
+              페이지 빌더 (PRO)
+              <span className="bg-purple-600/20 text-purple-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">Live</span>
+            </h2>
+            <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest font-black opacity-50">Visual Design System</p>
+          </div>
         </div>
+        
+        <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/10">
+          <button 
+            onClick={() => setViewMode('edit')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'edit' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+          >
+            <Settings2 size={14} /> 에디터 전용
+          </button>
+          <button 
+            onClick={() => setViewMode('split')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'split' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+          >
+            <Maximize2 size={14} /> 실시간 편집
+          </button>
+          <button 
+            onClick={() => setViewMode('visual')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'visual' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+          >
+            <Eye size={14} /> 프리뷰 전용
+          </button>
+        </div>
+
         <div className="flex items-center gap-3 w-full md:w-auto">
            <button 
-             onClick={() => setPreviewMode(!previewMode)}
-             className={`flex-1 md:flex-none px-4 py-2 rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2 font-bold ${previewMode ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
-           >
-             {previewMode ? <Monitor className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-             {previewMode ? '편집 모드' : '실시간 미리보기'}
-           </button>
-           <button 
              onClick={() => setShowHistory(true)}
-             className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center gap-2 font-bold"
+             className="p-3 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center font-bold"
+             title="버전 히스토리"
            >
-             <History className="h-4 w-4" />
-             기록
+             <History className="h-5 w-5" />
            </button>
            <button 
              onClick={handleSave}
              disabled={saving}
-             className="flex-1 md:flex-none px-6 py-2 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-900/20 disabled:opacity-50 flex items-center justify-center gap-2 group"
+             className="px-8 py-3 rounded-2xl bg-purple-600 text-white font-black hover:bg-purple-700 transition-all shadow-xl shadow-purple-900/40 disabled:opacity-50 flex items-center justify-center gap-2 group text-sm"
            >
-             <Save className="h-4 w-4 group-hover:scale-110 transition-transform" />
+             <Save className="h-5 w-5 group-hover:scale-110 transition-transform" />
              {saving ? '저장 중...' : '확정 및 게시'}
            </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar: Add Blocks */}
-        {!previewMode && (
+      <div className={`grid grid-cols-1 ${viewMode === 'edit' ? 'lg:grid-cols-4' : 'lg:grid-cols-1'} gap-8 transition-all duration-500`}>
+        {/* Sidebar: Add Blocks - Only in standard edit mode */}
+        {viewMode === 'edit' && (
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white/5 rounded-3xl border border-white/10 p-6 sticky top-28">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">기본 요소</h3>
-              <div className="space-y-2 mb-8">
+              <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-6 opacity-50">기본 요소</h3>
+              <div className="grid grid-cols-1 gap-2 mb-8">
                 <AddBlockButton icon={<Layout />} label="히어로 섹션" onClick={() => addBlock('hero')} color="purple" />
                 <AddBlockButton icon={<Type />} label="리치 텍스트" onClick={() => addBlock('text')} color="blue" />
                 <AddBlockButton icon={<ImageIcon />} label="이미지/갤러리" onClick={() => addBlock('image')} color="green" />
               </div>
 
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">고급 컴포넌트</h3>
-              <div className="space-y-2 mb-8">
+              <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-6 opacity-50">고급 컴포넌트</h3>
+              <div className="grid grid-cols-1 gap-2 mb-8">
                 <AddBlockButton icon={<Zap />} label="주요 특징" onClick={() => addBlock('features')} color="yellow" />
                 <AddBlockButton icon={<CreditCard />} label="가격 정책" onClick={() => addBlock('pricing')} color="pink" />
                 <AddBlockButton icon={<HelpCircle />} label="자주 묻는 질문" onClick={() => addBlock('faq')} color="indigo" />
@@ -280,21 +322,103 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
                 <AddBlockButton icon={<Star />} label="고객 후기" onClick={() => addBlock('testimonials')} color="orange" />
               </div>
 
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">시스템</h3>
-              <div className="space-y-2">
+              <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-6 opacity-50">구성 요소</h3>
+              <div className="grid grid-cols-1 gap-2">
                 <AddBlockButton icon={<MessageSquare />} label="문의 양식" onClick={() => addBlock('form')} color="red" />
-                <AddBlockButton icon={<Square />} label="여백" onClick={() => addBlock('spacer')} color="gray" />
-                <AddBlockButton icon={<MoreVertical />} label="구분선" onClick={() => addBlock('divider')} color="gray" />
+                <AddBlockButton icon={<Square />} label="여백/선" onClick={() => addBlock('spacer')} color="gray" />
               </div>
             </div>
           </div>
         )}
 
-        {/* Editor / Preview Area */}
-        <div className={`${previewMode ? 'lg:col-span-4' : 'lg:col-span-3'}`}>
-          {previewMode ? (
-            <div className="bg-[#0A0A0A] rounded-[40px] border border-white/10 overflow-hidden shadow-2xl min-h-[800px]">
+        {/* --- Editor / Visual Area --- */}
+        <div className={`${viewMode === 'edit' ? 'lg:col-span-3' : 'lg:col-span-4'}`}>
+          {viewMode === 'visual' ? (
+            <div className="bg-[#0A0A0A] rounded-[48px] border border-white/10 overflow-hidden shadow-2xl min-h-[800px]">
                 <BlockRenderer blocks={blocks} site={subdomain} />
+            </div>
+          ) : viewMode === 'split' ? (
+            <div className="flex h-[85vh] gap-6 overflow-hidden">
+               {/* Fixed Left Sidebar Editor */}
+               <div className="w-[450px] shrink-0 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-4">
+                  <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
+                     <h3 className="text-sm font-black text-gray-400 mb-6 uppercase flex items-center justify-between">
+                        블록 구조
+                        <span className="text-[10px] bg-white/10 px-2 py-1 rounded-lg font-bold">{blocks.length} Blocks</span>
+                     </h3>
+                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                        <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+                           <div className="flex flex-col gap-4">
+                              {blocks.map((block) => (
+                                <SortableBlockItem 
+                                  key={block.id} 
+                                  block={block} 
+                                  isActive={activeSettingsBlock === block.id}
+                                  onDelete={() => setBlockToDelete(block.id)}
+                                  onUpdate={(content) => updateBlock(block.id, { content })}
+                                  onOpenSettings={() => selectBlock(block.id)}
+                                  compact={true}
+                                />
+                              ))}
+                           </div>
+                        </SortableContext>
+                     </DndContext>
+                     
+                     <div className="mt-8 pt-8 border-t border-white/10 grid grid-cols-2 gap-2">
+                        <button onClick={() => addBlock('hero')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all">+ 히어로</button>
+                        <button onClick={() => addBlock('features')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all">+ 특징</button>
+                        <button onClick={() => addBlock('text')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all">+ 텍스트</button>
+                        <button onClick={() => addBlock('image')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all">+ 이미지</button>
+                     </div>
+                  </div>
+
+                  {activeSettingsBlock && (
+                    <div className="bg-[#111] p-8 rounded-[32px] border border-white/10 shadow-2xl animate-in slide-in-from-left-4 duration-300">
+                      <div className="flex items-center justify-between mb-8">
+                        <h4 className="text-xl font-black flex items-center gap-3">
+                          <Settings2 className="text-purple-500" /> 세부 옵션
+                        </h4>
+                        <button onClick={() => setActiveSettingsBlock(null)} className="text-gray-500 hover:text-white">닫기</button>
+                      </div>
+                      <BlockSettingsPanel 
+                        inline={true}
+                        block={blocks.find(b => b.id === activeSettingsBlock)!}
+                        onUpdate={(settings) => updateBlock(activeSettingsBlock, { settings })}
+                        onClose={() => setActiveSettingsBlock(null)}
+                      />
+                    </div>
+                  )}
+               </div>
+
+               {/* Right Side Browser Frame Preview */}
+               <div className="flex-1 bg-[#0A0A0A] rounded-[48px] border-8 border-[#1A1A1A] overflow-y-auto overflow-x-hidden shadow-2xl relative custom-scrollbar group/preview">
+                  <div className="sticky top-0 left-0 right-0 h-10 bg-[#1A1A1A] flex items-center px-6 gap-2 z-40">
+                     <div className="flex gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
+                     </div>
+                     <div className="mx-auto bg-black/40 px-4 py-1 rounded-lg text-[10px] text-gray-500 font-bold tracking-widest uppercase">
+                        {subdomain}.faneasy.kr PREVIEW
+                     </div>
+                  </div>
+                  
+                  <BlockRenderer 
+                    blocks={blocks} 
+                    site={subdomain} 
+                    isEditable={true}
+                    activeBlockId={activeSettingsBlock}
+                    onUpdateBlock={(id, content) => updateBlock(id, { content })}
+                    onSelectBlock={(id) => selectBlock(id)}
+                  />
+
+                  {/* Visual Guides */}
+                  <div className="absolute top-14 right-6 pointer-events-none opacity-0 group-hover/preview:opacity-100 transition-opacity">
+                    <div className="bg-purple-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-2xl uppercase tracking-tighter">
+                      Canvas Active
+                    </div>
+                  </div>
+               </div>
             </div>
           ) : (
             <DndContext 
@@ -308,19 +432,22 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
               >
                 <div className="flex flex-col gap-6">
                   {blocks.map((block) => (
-                    <SortableBlockItem 
-                      key={block.id} 
-                      block={block} 
-                      onDelete={() => deleteBlock(block.id)}
-                      onUpdate={(content) => updateBlock(block.id, { content })}
-                      onOpenSettings={() => setActiveSettingsBlock(block.id)}
-                    />
+                    <div key={block.id} id={`editor-block-${block.id}`}>
+                      <SortableBlockItem 
+                        block={block} 
+                        isActive={activeSettingsBlock === block.id}
+                        onDelete={() => setBlockToDelete(block.id)}
+                        onUpdate={(content) => updateBlock(block.id, { content })}
+                        onOpenSettings={() => selectBlock(block.id)}
+                      />
+                    </div>
                   ))}
                   
                   {blocks.length === 0 && (
-                    <div className="p-32 border-2 border-dashed border-white/5 rounded-[40px] text-center text-gray-500 bg-white/1">
+                    <div className="p-32 border-2 border-dashed border-white/5 rounded-[48px] text-center text-gray-500 bg-white/1">
                       <Plus className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                      <p className="font-medium">왼쪽 사이드바에서 블록을 추가하여 시작하세요.</p>
+                      <p className="font-bold text-lg">새로운 페이지를 만들어보세요.</p>
+                      <p className="text-sm mt-2">왼쪽 사이드바에서 블록을 추가하여 시작할 수 있습니다.</p>
                     </div>
                   )}
                 </div>
@@ -329,6 +456,35 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
           )}
         </div>
       </div>
+
+      {showHistory && (
+        <HistoryModal 
+          subdomain={subdomain} 
+          onClose={() => setShowHistory(false)} 
+          onRestore={(legacyBlocks) => setVersionToRestore(legacyBlocks)} 
+        />
+      )}
+
+      <ConfirmationModal 
+          isOpen={!!blockToDelete}
+          onClose={() => setBlockToDelete(null)}
+          onConfirm={deleteBlock}
+          title="블록 삭제"
+          message="정말 이 블록을 삭제하시겠습니까? 관련 데이터가 모두 삭제됩니다."
+          confirmLabel="삭제하기"
+          isDarkMode={true}
+      />
+
+      <ConfirmationModal 
+          isOpen={!!versionToRestore}
+          onClose={() => setVersionToRestore(null)}
+          onConfirm={handleRestore}
+          title="버전 복구"
+          message="선택한 버전으로 되돌리시겠습니까? 현재 편집 중인 내용은 사라집니다."
+          confirmLabel="복구하기"
+          variant="warning"
+          isDarkMode={true}
+      />
     </div>
   );
 }
@@ -361,25 +517,37 @@ function AddBlockButton({ icon, label, onClick, color }: { icon: React.ReactNode
   );
 }
 
-function BlockSettingsPanel({ block, onUpdate, onClose }: { block: SiteBlock; onUpdate: (settings: any) => void; onClose: () => void }) {
+function BlockSettingsPanel({ 
+  block, 
+  onUpdate, 
+  onClose,
+  inline = false
+}: { 
+  block: SiteBlock; 
+  onUpdate: (settings: any) => void; 
+  onClose: () => void;
+  inline?: boolean;
+}) {
   const currentSettings = block.settings || {};
   
   return (
     <motion.div 
-      initial={{ x: 400, opacity: 0 }}
+      initial={inline ? { opacity: 0 } : { x: 400, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 400, opacity: 0 }}
-      className="fixed top-0 right-0 w-80 h-full bg-[#111] border-l border-white/10 z-50 shadow-2xl p-8 overflow-y-auto"
+      exit={inline ? { opacity: 0 } : { x: 400, opacity: 0 }}
+      className={inline ? "w-full space-y-8" : "fixed top-0 right-0 w-80 h-full bg-[#111] border-l border-white/10 z-50 shadow-2xl p-8 overflow-y-auto"}
     >
-      <div className="flex items-center justify-between mb-8">
-         <h2 className="text-xl font-bold flex items-center gap-2">
-            <Settings2 size={20} className="text-purple-500" />
-            블록 설정
-         </h2>
-         <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-            <X size={20} />
-         </button>
-      </div>
+      {!inline && (
+        <div className="flex items-center justify-between mb-8">
+           <h2 className="text-xl font-bold flex items-center gap-2">
+              <Settings2 size={20} className="text-purple-500" />
+              블록 설정
+           </h2>
+           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+              <X size={20} />
+           </button>
+        </div>
+      )}
 
       <div className="space-y-8">
         <div>
@@ -480,7 +648,21 @@ function BlockSettingsPanel({ block, onUpdate, onClose }: { block: SiteBlock; on
   );
 }
 
-function SortableBlockItem({ block, onDelete, onUpdate, onOpenSettings }: { block: SiteBlock; onDelete: () => void; onUpdate: (content: any) => void; onOpenSettings: () => void }) {
+function SortableBlockItem({ 
+  block, 
+  onDelete, 
+  onUpdate, 
+  onOpenSettings,
+  isActive = false,
+  compact = false
+}: { 
+  block: SiteBlock; 
+  onDelete: () => void; 
+  onUpdate: (content: any) => void; 
+  onOpenSettings: () => void;
+  isActive?: boolean;
+  compact?: boolean;
+}) {
   const {
     attributes,
     listeners,
@@ -503,9 +685,13 @@ function SortableBlockItem({ block, onDelete, onUpdate, onOpenSettings }: { bloc
     <div 
       ref={setNodeRef} 
       style={style} 
-      className={`group bg-white/5 rounded-3xl border transition-all ${isDragging ? 'shadow-2xl ring-2 ring-purple-500 border-purple-500/50' : 'hover:border-white/20 border-white/10'}`}
+      className={`group bg-white/5 rounded-3xl border transition-all ${
+        isDragging ? 'shadow-2xl ring-2 ring-purple-500 border-purple-500/50' : 
+        isActive ? 'border-purple-500/50 bg-purple-500/5' : 
+        'hover:border-white/20 border-white/10'
+      }`}
     >
-      <div className="flex items-center justify-between px-6 py-4 bg-white/2 border-b border-white/5">
+      <div className={`flex items-center justify-between px-6 py-4 bg-white/2 border-b border-white/5 ${compact ? 'py-3 px-4' : ''}`}>
         <div className="flex items-center gap-4">
           <div {...attributes} {...listeners} className="cursor-grab p-2 hover:bg-white/10 rounded-xl transition-colors">
             <GripVertical size={18} className="text-gray-600 group-hover:text-purple-500" />
@@ -541,7 +727,7 @@ function SortableBlockItem({ block, onDelete, onUpdate, onOpenSettings }: { bloc
         </div>
       </div>
 
-      {isExpanded && (
+      {isExpanded && !compact && (
         <div className="p-8">
           <BlockEditorFields block={block} onUpdate={onUpdate} />
         </div>

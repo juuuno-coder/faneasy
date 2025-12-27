@@ -34,7 +34,7 @@ export default function MZMarketing({ site }: { site: string }) {
             subdomain={site}
             field="heroTitle"
             as="h2"
-            className="text-[10vw] leading-[0.9] font-black text-white mix-blend-difference mb-12 uppercase"
+            className="text-5xl md:text-[10vw] leading-[0.9] font-black text-white mix-blend-difference mb-12 uppercase"
             data-aos="fade-up"
             defaultValue={
               <>
@@ -49,7 +49,7 @@ export default function MZMarketing({ site }: { site: string }) {
             subdomain={site}
             field="heroDescription"
             as="p"
-            className="max-w-xl text-xl text-gray-400 font-light border-l-2 border-[#FFE400] pl-6 ml-2"
+            className="max-w-xl text-lg md:text-xl text-gray-400 font-light border-l-2 border-[#FFE400] pl-6 ml-2"
             defaultValue={
               <>
                 오직 소수의 클라이언트만을 위한 프리미엄 솔루션. <br />
@@ -65,7 +65,7 @@ export default function MZMarketing({ site }: { site: string }) {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row gap-12">
             <div className="md:w-1/3">
-              <h3 className="text-3xl font-bold sticky top-24">
+              <h3 className="text-2xl md:text-3xl font-bold sticky top-24">
                 진행가능한 <br />
                 <span className="text-[#FFE400]">마케팅 매체</span>
               </h3>
@@ -94,7 +94,7 @@ export default function MZMarketing({ site }: { site: string }) {
               defaultContent={
                   <div className="flex flex-col md:flex-row gap-12">
                     <div className="md:w-1/3 order-1 md:order-2">
-                      <h3 className="text-3xl font-bold sticky top-24 text-right md:text-left">
+                      <h3 className="text-2xl md:text-3xl font-bold sticky top-24 text-right md:text-left">
                         온라인 <br />
                         <span className="text-blue-500">마케팅 솔루션</span>
                       </h3>
@@ -124,7 +124,7 @@ export default function MZMarketing({ site }: { site: string }) {
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
         <div className="mx-auto max-w-7xl px-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div>
-            <h4 className="text-3xl font-black mb-2">LIMITED EVENT</h4>
+            <h4 className="text-2xl md:text-3xl font-black mb-2">LIMITED EVENT</h4>
             <p className="font-bold text-lg opacity-80">신규 고객 전용 50% 할인 이벤트가 진행중입니다.</p>
           </div>
           <div className="bg-black text-[#FFE400] px-8 py-4 rounded-full font-bold text-xl animate-pulse">
@@ -137,7 +137,7 @@ export default function MZMarketing({ site }: { site: string }) {
       <section id="contact" className="py-24 px-6 relative">
            <div className="mx-auto max-w-3xl">
               <div className="text-center mb-16" data-aos="fade-up">
-                  <h2 className="text-4xl font-bold mb-4">프로젝트 문의하기</h2>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4">프로젝트 문의하기</h2>
                   <p className="text-gray-400">성공적인 마케팅, 지금 바로 시작하세요.</p>
               </div>
               <div className="bg-white/5 border border-white/10 p-8 md:p-12 rounded-3xl backdrop-blur-sm" data-aos="fade-up" data-aos-delay="100">

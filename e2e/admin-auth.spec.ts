@@ -15,7 +15,7 @@ async function seedAuth(page: any, user: any) {
     token: "test-token",
     isAuthenticated: true,
   });
-  await page.addInitScript((data) => {
+  await page.addInitScript((data: string) => {
     localStorage.setItem("faneasy-auth", data);
   }, value);
 }

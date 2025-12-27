@@ -52,7 +52,7 @@ export default function TechMarketing({ site }: { site: string }) {
               subdomain={site}
               field="heroTitle"
               as="h2"
-              className="text-6xl md:text-[7rem] font-black leading-[1.05] tracking-tighter mb-12"
+              className="text-4xl md:text-[7rem] font-black leading-[1.05] tracking-tighter mb-12"
               data-aos="fade-up"
               data-aos-delay="100"
               defaultValue={
@@ -68,7 +68,7 @@ export default function TechMarketing({ site }: { site: string }) {
                 subdomain={site}
                 field="heroDescription"
                 as="p"
-                className="text-xl text-gray-400 leading-relaxed font-medium border-l-4 border-indigo-500 pl-8"
+                className="text-lg md:text-xl text-gray-400 leading-relaxed font-medium border-l-4 border-indigo-500 pl-8"
                 defaultValue={
                     "단순한 광고 집행을 넘어, 고객의 비즈니스를 깊이 있게 이해하고 분석합니다. 우리는 숫자의 이면에서 기회를 찾아내어 확실한 성과로 연결합니다."
                 }
@@ -97,7 +97,7 @@ export default function TechMarketing({ site }: { site: string }) {
                <div className="absolute inset-0 bg-linear-to-t from-[#050614] via-transparent to-transparent" />
                <div className="absolute bottom-0 left-0 p-12 w-full flex justify-between items-end">
                   <div className="max-w-xl">
-                     <h3 className="text-4xl font-black mb-4 tracking-tighter">함께 성장하는 파트너십</h3>
+                     <h3 className="text-2xl md:text-4xl font-black mb-4 tracking-tighter">함께 성장하는 파트너십</h3>
                      <p className="text-gray-300 font-medium leading-relaxed">도도마케팅은 수많은 클라이언트의 성공을 함께 만들어왔습니다. 전문 마케터들이 직접 소통하며 최상의 마케팅 믹스를 제안합니다.</p>
                   </div>
                   <div className="flex gap-4">
@@ -143,7 +143,7 @@ export default function TechMarketing({ site }: { site: string }) {
                <div className="lg:w-2/5 space-y-12">
                   <div>
                      <h3 className="text-indigo-500 font-bold tracking-[0.2em] text-xs mb-4 uppercase">Advanced Solutions</h3>
-                     <h2 className="text-5xl font-black mb-8 leading-tight tracking-tighter">
+                     <h2 className="text-3xl md:text-5xl font-black mb-8 leading-tight tracking-tighter">
                         데이터로 앞서가는 <br/>
                         도도한 전략.
                      </h2>
@@ -180,7 +180,7 @@ export default function TechMarketing({ site }: { site: string }) {
                         />
                         <div className="absolute inset-0 bg-indigo-900/40" />
                         <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                           <h3 className="text-2xl font-black mb-4">정밀 분석 솔루션</h3>
+                           <h3 className="text-xl md:text-2xl font-black mb-4">정밀 분석 솔루션</h3>
                            <p className="text-sm text-gray-200 leading-relaxed font-medium">
                               도도마케팅만의 분석 툴을 통해 단순 노출 이상의 가치, 즉 '매출'이라는 명확한 결과물을 가져다 드립니다.
                            </p>
@@ -197,7 +197,7 @@ export default function TechMarketing({ site }: { site: string }) {
                              subdomain={site}
                              defaultContent={
                                <>
-                                 <div className="text-3xl tracking-tighter leading-tight mb-4">성장의 끝이 아닌 <br/> 새로운 시작</div>
+                                 <div className="text-xl md:text-3xl tracking-tighter leading-tight mb-4">성장의 끝이 아닌 <br/> 새로운 시작</div>
                                  <p className="text-sm text-gray-500 font-bold">도도마케팅과 함께라면 <br/> 비즈니스의 한계는 없습니다.</p>
                                </>
                              }
@@ -216,7 +216,7 @@ export default function TechMarketing({ site }: { site: string }) {
            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 blur-[120px] -z-10" />
            <div className="mx-auto max-w-3xl">
               <div className="text-center mb-16">
-                  <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter uppercase">LET'S CONNECT</h2>
+                  <h2 className="text-2xl md:text-6xl font-black mb-8 tracking-tighter uppercase">LET'S CONNECT</h2>
                   <p className="text-gray-400 font-bold text-lg">
                      상상하던 이상의 성장, <br/>
                      지금 도도마케팅과 바로 시작하세요. 

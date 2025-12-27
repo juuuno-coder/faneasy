@@ -212,6 +212,29 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  
+  --color-primary: #8b5cf6;
+  --color-primary-foreground: #ffffff;
+  
+  --color-secondary: #1e293b;
+  --color-secondary-foreground: #f8fafc;
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: #ffffff;
+  
+  --color-muted: #64748b;
+  --color-muted-foreground: #94a3b8;
+  
+  --color-border: var(--admin-border);
+  --color-input: var(--admin-border);
+  
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 2.5rem;
+  
+  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
+  --animate-scroll: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
+  --animate-scroll-up: scrollUp 20s linear infinite;
 }
 
 @media (prefers-color-scheme: dark) {

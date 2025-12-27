@@ -5,9 +5,11 @@ export function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const hostname = req.headers.get("host") || "";
 
-  // 1. Allow root level system routes to pass through
+  // 1. Allow root level system routes and static files to pass through
+  const isStaticFile = url.pathname.includes('.');
   const systemRoutes = ["/admin", "/login", "/api", "/sites", "/mypage", "/profile", "/checkout", "/_next", "/favicon.ico", "/images"];
-  if (systemRoutes.some(route => url.pathname.startsWith(route))) {
+  
+  if (isStaticFile || systemRoutes.some(route => url.pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
@@ -54,6 +56,6 @@ export const config = {
      * 3. /_static (inside /public)
      * 4. all root files inside /public (e.g. /favicon.ico)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|ico|json)$).*)",
   ],
 };
