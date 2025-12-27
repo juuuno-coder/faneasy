@@ -85,7 +85,13 @@ export const useAuthStore = create<AuthStore>()(
               };
 
               // Emergency Fix: If specific email, ensure they have Super Admin (if DB is somehow wrong)
-              if (fbUser.email === "kgw2642@gmail.com" && user.role !== "super_admin") {
+              const superAdminEmails = [
+                'kgw2642@gmail.com',
+                'juuuno@naver.com',
+                'designd@designd.co.kr',
+                'duscontactus@gmail.com'
+              ];
+              if (fbUser.email && superAdminEmails.includes(fbUser.email)) {
                  user.role = "super_admin";
               }
 

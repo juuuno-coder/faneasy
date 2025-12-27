@@ -2,8 +2,6 @@
 
 import { useMemo } from 'react';
 import { 
-  LineChart, 
-  Line, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -20,9 +18,10 @@ interface AnalyticsChartsProps {
   users: any[];
   sites?: any[];
   isDarkMode: boolean;
+  chartData?: any[];
 }
 
-export default function AnalyticsCharts({ users, sites = [], isDarkMode }: AnalyticsChartsProps) {
+export default function AnalyticsCharts({ users, sites = [], isDarkMode, chartData }: AnalyticsChartsProps) {
   const isDark = isDarkMode;
 
   const theme = {
@@ -34,8 +33,8 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode }: Analy
     accentSecondary: '#3B82F6', // Blue-500
   };
 
-  // Process data for User Growth (Last 7 Days)
-  const growthData = useMemo(() => {
+  // Process fallback growth data if chartData is not provided
+  const growthDataFallback = useMemo(() => {
     const last7Days = Array.from({ length: 7 }).map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
@@ -64,7 +63,19 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode }: Analy
     });
   }, [users]);
 
-  // Process data for Site Distribution (Super Admin only usually)
+  // Use provided chartData (Visitors/Inquiries) if available
+  const displayData = useMemo(() => {
+    if (chartData && chartData.length > 0) {
+        return chartData.map(d => ({
+            date: d.name, // MM-DD
+            visitors: d.visitors,
+            inquiries: d.inquiries
+        }));
+    }
+    return growthDataFallback;
+  }, [chartData, growthDataFallback]);
+
+  // Process data for Site Distribution
   const siteDistributionData = useMemo(() => {
     if (!sites.length) return [];
     
@@ -79,15 +90,17 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode }: Analy
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* User Growth Chart */}
+      {/* Primary Trend Chart (Visitors/Inquiries or Growth) */}
       <div className={`p-6 rounded-3xl border ${theme.card}`}>
         <div className="flex items-center justify-between mb-8">
           <div>
             <h3 className={`font-bold flex items-center gap-2 ${theme.text}`}>
               <TrendingUp className="h-4 w-4 text-purple-500" />
-              네트워크 성장 추이
+              {chartData ? '방문 및 문의 현황' : '네트워크 성장 추이'}
             </h3>
-            <p className={`text-xs mt-1 ${theme.textMuted}`}>최근 7일간의 신규 팬 가입 현황입니다.</p>
+            <p className={`text-xs mt-1 ${theme.textMuted}`}>
+                {chartData ? '최근 7일간의 방문자 및 문의 접수 현황입니다.' : '최근 7일간의 신규 팬 가입 현황입니다.'}
+            </p>
           </div>
           <div className={`px-3 py-1 rounded-full text-[10px] font-bold border ${isDark ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' : 'bg-purple-50 border-purple-100 text-purple-600'}`}>
             LIVE UPDATING
@@ -96,11 +109,15 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode }: Analy
 
         <div className="h-[300px] w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={growthData}>
+            <AreaChart data={displayData}>
               <defs>
-                <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={theme.accent} stopOpacity={0.3}/>
                   <stop offset="95%" stopColor={theme.accent} stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorSecond" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={theme.accentSecondary} stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor={theme.accentSecondary} stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme.grid} />
@@ -111,8 +128,6 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode }: Analy
                 className="text-[10px]" 
                 stroke={theme.textMuted}
                 tick={{ fontSize: 10 }}
-                interval="preserveStartEnd"
-                minTickGap={10}
               />
               <YAxis 
                 axisLine={false} 
@@ -130,15 +145,38 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode }: Analy
                   color: isDark ? '#FFFFFF' : '#000000'
                 }}
               />
-              <Area 
-                type="monotone" 
-                dataKey="newUsers" 
-                name="신규 팬"
-                stroke={theme.accent} 
-                strokeWidth={3}
-                fillOpacity={1} 
-                fill="url(#colorUsers)" 
-              />
+              {chartData ? (
+                <>
+                  <Area 
+                    type="monotone" 
+                    dataKey="visitors" 
+                    name="방문자"
+                    stroke={theme.accentSecondary} 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorSecond)" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="inquiries" 
+                    name="문의"
+                    stroke={theme.accent} 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorValue)" 
+                  />
+                </>
+              ) : (
+                <Area 
+                  type="monotone" 
+                  dataKey="newUsers" 
+                  name="신규 팬"
+                  stroke={theme.accent} 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorValue)" 
+                />
+              )}
             </AreaChart>
           </ResponsiveContainer>
         </div>

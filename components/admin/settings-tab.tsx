@@ -443,29 +443,6 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
         </div>
       </div>
 
-      {/* 6. Danger Zone */}
-      <div className={`rounded-3xl border p-8 transition-colors border-red-500/20 ${isDarkMode ? 'bg-red-500/5' : 'bg-red-50'}`}>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-            <AlertTriangle className="h-5 w-5 text-red-500" />
-          </div>
-          <h3 className={`text-xl font-bold text-red-500`}>위험 지역 (Danger Zone)</h3>
-        </div>
-
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div>
-                <h4 className={`font-bold ${t.text}`}>사이트 삭제</h4>
-                <p className={`text-sm ${t.textMuted}`}>이 사이트의 모든 설정, 페이지 디자인, 고객 데이터가 영구적으로 삭제됩니다.</p>
-            </div>
-            <button 
-                onClick={() => setShowDeleteSiteModal(true)}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-all flex items-center gap-2"
-            >
-                <Trash2 size={16} />
-                사이트 영구 삭제
-            </button>
-        </div>
-      </div>
 
       <div className="flex justify-end sticky bottom-6 z-10">
         <button
@@ -482,16 +459,6 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
         </button>
       </div>
 
-      <ConfirmationModal 
-          isOpen={showDeleteSiteModal}
-          onClose={() => setShowDeleteSiteModal(false)}
-          onConfirm={handleDeleteSite}
-          title="사이트 영구 삭제"
-          message={`정말 [${settings.siteName}] 사이트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 모든 데이터가 즉시 소멸됩니다.`}
-          confirmLabel="내용을 확인했으며 전체 삭제합니다"
-          variant="danger"
-          isDarkMode={isDarkMode}
-      />
     </div>
   );
 }

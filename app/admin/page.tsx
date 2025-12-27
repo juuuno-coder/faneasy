@@ -627,7 +627,7 @@ export default function AdminDashboard() {
 
         {/* Analytics Charts Section */}
         <div className="mb-12">
-           <AnalyticsCharts users={users} sites={sites} isDarkMode={isDarkMode} />
+           <AnalyticsCharts users={users} sites={sites} isDarkMode={isDarkMode} chartData={stats.chartData} />
         </div>
 
         {/* Recent Inquiries Section */}

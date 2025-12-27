@@ -53,11 +53,16 @@ export default function HeaderActions({ site }: { site: string }) {
 
       {user ? (
         <>
-          {/* Admin Dashboard Link - Only for Super Admins or the Site Owner */}
-          {((user.role === 'super_admin' || user.role === 'admin') || (user.role === 'owner' && (user as any).subdomain === site)) && (
+          {/* Admin Dashboard Link - Only for Super Admins, Admins, or the Site Owner (Email-based matching as requested) */}
+          {(
+            user.role === 'super_admin' || 
+            user.role === 'admin' || 
+            (user.role === 'owner' && (user as any).subdomain === site) || 
+            ['kgw2642@gmail.com', 'juuuno@naver.com', 'designd@designd.co.kr', 'duscontactus@gmail.com'].includes(user.email)
+          ) && (
             <Link 
               href="/admin" 
-              className="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1"
+              className="text-sm font-bold text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/5"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
