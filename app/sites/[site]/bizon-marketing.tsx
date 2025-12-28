@@ -287,7 +287,7 @@ export default function BizonMarketing({ site }: { site: string }) {
       </section>
 
       {/* Section 3: 지역장악마케팅 선언 - Full Screen */}
-      <section className="min-h-screen flex items-center justify-center py-24 px-6 bg-gray-900 text-white">
+      <section className="min-h-screen flex items-center justify-center py-24 px-6 bg-slate-950 text-white">
         <div className="max-w-6xl mx-auto w-full">
           
           {/* Top: 4 Key Differentiators */}
@@ -443,7 +443,7 @@ export default function BizonMarketing({ site }: { site: string }) {
           </div>
           
           <div 
-            className="mt-16 p-10 bg-gray-900 rounded-3xl text-center"
+            className="mt-16 p-10 bg-slate-950 rounded-3xl text-center"
             data-aos="zoom-in"
             data-aos-delay="200"
           >
