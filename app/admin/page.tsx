@@ -671,7 +671,7 @@ export default function AdminDashboard() {
                        <div className="text-sm font-medium text-gray-300">
                          {/* Traffic Control: Show Site Origin for Super Admins */}
                          {user?.role === 'super_admin' && (inquiry as any).siteDomain && (
-                           <span className={`inline-block mr-2 px-1.5 py-0.5 rounded text-[10px] uppercase font-black uppercase tracking-wider ${
+                           <span className={`inline-block mr-2 px-1.5 py-0.5 rounded text-[10px] uppercase font-black tracking-wider ${
                              (inquiry as any).siteDomain === 'bizon' 
                                ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
                                : 'bg-gray-700 text-gray-400 border border-gray-600'
@@ -747,7 +747,7 @@ export default function AdminDashboard() {
               setInquiries(prev => prev.map(inq => 
                 inq.id === updated.id ? updated : inq
               ));
-              setSelectedInquiry(null);
+              setSelectedInquiry(updated);
             }}
             isDarkMode={isDarkMode}
           />

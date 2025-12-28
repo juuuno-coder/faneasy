@@ -35,6 +35,7 @@ interface UserData {
   role: UserRole;
   subdomain?: string;
   joinedSite?: string; // Parent site subdomain
+  joinedInfluencerId?: string;
   photoURL?: string;
 }
 
@@ -79,6 +80,17 @@ export default function SiteTreeView({ userRole, currentSubdomain, isDarkMode = 
     buttonGhost: isDark ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-slate-100 text-slate-600',
     buttonPrimary: 'bg-purple-600 hover:bg-purple-700 text-white',
   };
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showModal) {
+        setShowModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showModal]);
 
   // 1. Initial Data Loading & Seeding
   useEffect(() => {
@@ -350,7 +362,10 @@ export default function SiteTreeView({ userRole, currentSubdomain, isDarkMode = 
 
             <div className="max-h-[300px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
               {allUsers
-                .filter(u => u.joinedSite === currentSubdomain || u.subdomain === currentSubdomain)
+                .filter(u => {
+                    const tid = targetSite?.id;
+                    return u.joinedSite === tid || u.joinedInfluencerId === tid || u.subdomain === tid;
+                })
                 .map(member => (
                 <button
                   key={member.id}

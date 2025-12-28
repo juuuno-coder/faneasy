@@ -110,7 +110,7 @@ export default function BizonMarketing({ site }: { site: string }) {
 
       // Local store update for UI
       addInquiry({
-        ...newInquiry,
+        ...(newInquiry as any),
         id: `inq-${Date.now()}`,
         status: 'pending' as any,
         workflowStatus: 'received',

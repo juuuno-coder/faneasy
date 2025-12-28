@@ -458,7 +458,7 @@ export default function SiteAdminPage({
               setInquiries(prev => prev.map(inq => 
                 inq.id === updated.id ? updated : inq
               ));
-              setSelectedInquiry(null);
+              setSelectedInquiry(updated);
             }}
           />
         )}
