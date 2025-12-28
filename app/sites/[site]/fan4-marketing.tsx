@@ -112,7 +112,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
         {/* Hero Content */}
         <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">
           <span className="inline-block px-4 py-2 bg-orange-500/20 backdrop-blur-sm text-orange-300 rounded-full text-sm font-bold mb-6 border border-orange-500/30 animate-pulse" data-aos="fade-down">
-            🔥 현재 300개 프랜차이즈 지점 마케팅 진행 중
+            현재 300개 프랜차이즈 지점 마케팅 관리 중
           </span>
           
           <h1 className="text-3xl md:text-5xl lg:text-7xl font-black leading-tight mb-6 text-white" data-aos="fade-up" data-aos-delay="100">
@@ -327,9 +327,9 @@ export default function Fan4Marketing({ site }: { site: string }) {
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             {[
-              { icon: MapPin, title: '가까운 곳', desc: '고객은 브랜드보다 가까운 곳을 먼저 찾습니다.' },
+              { icon: MapPin, title: '검색시 노출이 되는 곳', desc: '고객은 브랜드보다 가까운 곳을 먼저 찾습니다.' },
               { icon: Star, title: '후기 좋은 곳', desc: '같은 브랜드라도 리뷰 점수가 다르면 선택이 달라집니다.' },
-              { icon: Phone, title: '지금 가능한 곳', desc: '영업 중이고, 바로 예약/전화가 되는 곳을 선택합니다.' },
+              
             ].map((item, i) => (
               <div key={i} className="text-center p-8 rounded-3xl bg-white hover:bg-orange-50 transition-colors group shadow-lg border border-gray-100">
                 <div className="h-16 w-16 mx-auto rounded-2xl bg-orange-100 shadow-lg flex items-center justify-center mb-6 group-hover:bg-orange-500 transition-all">
@@ -401,6 +401,10 @@ export default function Fan4Marketing({ site }: { site: string }) {
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   한국브랜드마케팅협회 정회원
                 </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  성균관대학교 14대 창업연구회 회장
+                </li>
               </ul>
             </div>
           </div>
@@ -427,7 +431,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
             {[
               { 
                 icon: Target, 
-                title: '플레이스 주력', 
+                title: '플레이스 최적화', 
                 desc: '노출 구조 + 전환 동선 (전화/길찾기/예약) 설계',
                 color: 'orange'
               },
@@ -512,7 +516,8 @@ export default function Fan4Marketing({ site }: { site: string }) {
           
           <div className="mt-12 text-center">
             <span className="inline-block px-6 py-3 bg-gray-900 text-white rounded-full text-sm font-bold shadow-lg animate-bounce">
-                🚀 한 번으로 끝나는 게 아닙니다. 매주 성장합니다.
+                뻔한 마케팅으로 인한 뻔한 결과는 보여드리지 않겠습니다. <br />
+                차별화된 전략으로 소통해 나가겠습니다.
             </span>
           </div>
         </div>
@@ -540,7 +545,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">브랜드/지점명 *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">상호명 *</label>
                   <input
                     type="text"
                     required
@@ -551,7 +556,7 @@ export default function Fan4Marketing({ site }: { site: string }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">주소 (상권 파악) *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">지역 *</label>
                   <input
                     type="text"
                     required
@@ -635,16 +640,11 @@ export default function Fan4Marketing({ site }: { site: string }) {
                   {isSubmitting ? '접수 중...' : '우리 지점 지역장악 플랜 받기'}
                   {!isSubmitting && <ArrowRight className="h-5 w-5" />}
                 </button>
-                <button
-                  type="button"
-                  className="flex-1 py-4 border-2 border-white/20 text-white rounded-xl text-lg font-bold hover:border-orange-500 transition-all"
-                >
-                  디자인+플레이스 패키지 문의
-                </button>
+                
               </div>
 
               <p className="text-center text-sm text-gray-500 pt-4">
-                🔒 가능/불가능을 먼저 말씀드립니다. 불필요한 비용을 권하지 않습니다.
+                가능/불가능을 먼저 말씀드립니다. 불필요한 비용을 권하지 않습니다.
               </p>
             </form>
           )}

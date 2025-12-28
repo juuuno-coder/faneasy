@@ -1,49 +1,35 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 @import "tailwindcss";
 
 /* ============================================= */
-/* 기본 폰트 설정 - Tailwind 이후 적용 */
+/* 기본 폰트 설정 - Pretendard Robust */
 /* ============================================= */
 @layer base {
-  /* 프로젝트 폰트 정의 */
   :root {
-    --font-pretendard: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --font-poppins: 'Poppins', sans-serif;
-    --font-main: 'Poppins', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    --font-main: var(--font-pretendard);
   }
 
-  /* HTML/Body 기본 설정 */
-  html {
-    font-family: var(--font-main);
-  }
-  
-  body {
-    font-family: var(--font-main);
+  html, body {
+    font-family: var(--font-main) !important;
     word-break: keep-all;
     letter-spacing: -0.02em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 전역 폰트 적용 - 최우선 순위 */
+  /* Force Pretendard on everything */
   *, *::before, *::after {
     font-family: var(--font-main) !important;
   }
 }
 
 /* ============================================= */
-/* 영문/숫자 전용 폰트 클래스 */
+/* 전용 클래스 (Pretendard 기반) */
 /* ============================================= */
-.font-poppins {
-  font-family: var(--font-poppins) !important;
-  letter-spacing: 0;
-}
-
-.font-number {
-  font-family: var(--font-poppins) !important;
-  font-feature-settings: 'tnum' on, 'lnum' on;
-  letter-spacing: 0;
+.font-poppins, .font-number {
+  font-family: var(--font-pretendard) !important;
+  letter-spacing: -0.01em;
 }
 
 /* ============================================= */
@@ -371,4 +357,20 @@ body {
 
 .animate-scroll-up {
   animation: scrollUp 20s linear infinite;
+}
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-left {
+  animation: scrollLeft 60s linear infinite;
+}
+
+.text-shadow-sm {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }

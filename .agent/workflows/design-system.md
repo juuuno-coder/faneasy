@@ -1,3 +1,7 @@
+---
+description:
+---
+
 # FanEasy 디자인 시스템
 
 > 다른 프로젝트에 바로 적용 가능한 재사용 디자인 시스템
@@ -287,7 +291,7 @@
 ```tsx
 // 강조 배지
 <span className="inline-block px-4 py-2 bg-orange-500/20 backdrop-blur-sm text-orange-300 rounded-full text-sm font-bold border border-orange-500/30">
-  🔥 현재 300개 프랜차이즈 지점 마케팅 진행 중
+ 현재 300개 프랜차이즈 지점 마케팅 진행 중
 </span>
 
 // 일반 배지

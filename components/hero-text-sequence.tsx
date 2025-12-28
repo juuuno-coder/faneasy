@@ -10,20 +10,20 @@ export function HeroTextSequence() {
   const [showScroll, setShowScroll] = useState(false);
 
   useEffect(() => {
-    // Phase 1: 1.5s + 1.5s + 1s pause + 2s = 6 seconds total
+    // Phase 1: Speed improved by 1.5x (4 seconds instead of 6)
     const timer1 = setTimeout(() => {
       setPhase(2);
-    }, 6000);
+    }, 4000);
 
-    // Footer: Show after 13 seconds total (6s + 6s + 1s)
+    // Footer: Show after roughly 10 seconds total (delayed by user request)
     const timer2 = setTimeout(() => {
       setShowFooter(true);
-    }, 13000);
+    }, 10000);
 
-    // Scroll: Show after 14 seconds total (6s + 6s + 1s + 1s)
+    // Scroll: Show after roughly 11 seconds total
     const timer3 = setTimeout(() => {
       setShowScroll(true);
-    }, 14000);
+    }, 11000);
 
     return () => {
       clearTimeout(timer1);
@@ -34,8 +34,8 @@ export function HeroTextSequence() {
 
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center">
-      <span className="inline-block px-4 py-2 lg:px-6 lg:py-3 bg-orange-500/20 backdrop-blur-md text-orange-400 rounded-full text-sm lg:text-base font-bold mb-8 border border-orange-500/30">
-        현재 300개 프랜차이즈 지점 마케팅 진행 중
+      <span className="inline-block px-4 py-2 lg:px-6 lg:py-3 bg-orange-700/20 backdrop-blur-md text-orange-600 rounded-full text-sm lg:text-base font-bold mb-8 border border-orange-700/30">
+        현재 300개 프랜차이즈 지점 마케팅 관리 중
       </span>
 
       {/* Fixed height container to prevent position shift */}
@@ -56,23 +56,21 @@ export function HeroTextSequence() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.6 }}
                 >
-                  <span className="text-gray-400">프랜차이즈 매장이라</span>
+                  <span className="text-gray-400">혹시 프랜차이즈라서</span>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.8, duration: 0.6 }}
                 >
-                  마케팅이 불필요하다고요?
+                  마케팅이 필요없다고 생각하시나요?
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 4.3, duration: 0.6 }}
                 >
-                  <span className="bg-linear-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-                    절대 아닙니다.
-                  </span>
+                  
                 </motion.div>
               </h1>
             </motion.div>
@@ -90,7 +88,7 @@ export function HeroTextSequence() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.6 }}
+                  transition={{ delay: 0.3, duration: 0.4 }}
                   className="text-gray-300"
                 >
                   브랜드는 같아도,
@@ -98,7 +96,7 @@ export function HeroTextSequence() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.8, duration: 0.6 }}
+                  transition={{ delay: 1.6, duration: 0.4 }}
                   className="text-white"
                 >
                   성과는 지점마다 다릅니다.
@@ -106,11 +104,11 @@ export function HeroTextSequence() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 4.3, duration: 0.6 }}
+                  transition={{ delay: 3.7, duration: 0.4 }}
                   className="text-gray-300"
                 >
                   우리는{' '}
-                  <span className="text-orange-400">'선택'받는 지역장악 구조</span>
+                  <span className="text-orange-600">'선택'받는 지역장악 구조</span>
                   를 만듭니다.
                 </motion.div>
               </h1>
@@ -130,7 +128,7 @@ export function HeroTextSequence() {
               transition={{ duration: 0.5 }}
               className="text-sm text-gray-400 animate-pulse"
             >
-              🔒 불필요한 영업 없이, 가능/불가능 먼저 안내해 드립니다
+              불필요한 영업 없이, 가능/불가능 먼저 안내해 드립니다
             </motion.p>
           )}
         </AnimatePresence>

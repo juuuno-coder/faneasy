@@ -18,6 +18,8 @@ import {
   TrendingUp,
   MessageSquare,
   ChevronDown,
+  Store,
+  CheckCircle2,
   ShieldAlert,
   Shield,
   Smartphone,
@@ -43,15 +45,19 @@ export default function BizonMarketing({ site }: { site: string }) {
 
   // 스크롤 이벤트 리스너
   useEffect(() => {
+    // 초기 스크롤 위치 확인 (새로고침 시 대응)
+    if (window.scrollY > 50) setIsScrolled(true);
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   /* State Updates */
   const [formData, setFormData] = useState({
+    name: '',
     brandName: '',
     address: '',
     goal: [] as string[],
@@ -144,35 +150,29 @@ export default function BizonMarketing({ site }: { site: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans">
+    <div className="min-h-screen bg-white text-gray-900">
       {/* Fixed Header - Scroll-based styling */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
           ? 'bg-white/95 backdrop-blur-md border-b border-gray-100' 
           : 'bg-transparent backdrop-blur-sm border-b border-white/10'
       }`}>
-        <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="w-full md:w-[80%] max-w-[1500px] mx-auto px-6 md:px-0 h-[80px] md:h-[100px] flex items-center justify-between transition-all duration-300">
           {/* Logo - Left */}
             <div 
-              className="relative cursor-pointer transition-transform hover:scale-105 active:scale-95"
+              className="relative flex items-center cursor-pointer transition-all hover:scale-105 active:scale-95"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
-              <Image 
-                src="/bizon-logo.png" 
-                alt="비즈온" 
-                width={160} 
-                height={55}
-                priority
-                className={`object-contain transition-all duration-500 ${
-                  isScrolled 
-                    ? 'drop-shadow-[0_0_10px_rgba(249,115,22,0.2)]' // Slightly glow on scroll
-                    : 'brightness-0 invert' // White initially
-                }`}
-                style={{
-                  clipPath: 'inset(0 0 35% 0)', // 하단 마케팅 텍스트 제거
-                  marginTop: '-5px'
-                }}
-              />
+              <div className="relative w-[220px] h-[60px] md:w-[380px] md:h-[100px]">
+                <Image 
+                  src={isScrolled ? `/bizon-logo.png?v=10` : `/bizon-logo-dark.png?v=10`} 
+                  alt="비즈온" 
+                  fill
+                  priority
+                  className="object-contain object-left transition-opacity duration-300"
+                  unoptimized
+                />
+              </div>
             </div>
 
           {/* Navigation & CTA - Right */}
@@ -180,15 +180,15 @@ export default function BizonMarketing({ site }: { site: string }) {
             <nav className={`hidden lg:flex items-center gap-8 text-base font-bold transition-colors ${
               isScrolled ? 'text-gray-600' : 'text-white'
             }`}>
-              <a href="#reason" className={isScrolled ? 'hover:text-orange-500' : 'hover:text-orange-400'}>서비스 특징</a>
-              <a href="#process" className={isScrolled ? 'hover:text-orange-500' : 'hover:text-orange-400'}>진행 방식</a>
-              <a href="#review" className={isScrolled ? 'hover:text-orange-500' : 'hover:text-orange-400'}>고객 후기</a>
+              <a href="#reason" className={isScrolled ? 'hover:text-orange-700' : 'hover:text-orange-600'}>서비스 특징</a>
+              <a href="#process" className={isScrolled ? 'hover:text-orange-700' : 'hover:text-orange-600'}>진행 방식</a>
+              <a href="#review" className={isScrolled ? 'hover:text-orange-700' : 'hover:text-orange-600'}>고객 후기</a>
             </nav>
             <a 
               href="#contact-form"
               className={`px-6 py-3 rounded-full text-sm font-bold transition-all ${
                 isScrolled 
-                  ? 'bg-linear-to-r from-orange-500 to-red-500 text-white hover:shadow-lg hover:shadow-orange-500/30' 
+                  ? 'bg-linear-to-r from-orange-700 to-red-500 text-white hover:shadow-lg hover:shadow-orange-700/30' 
                   : 'bg-white text-gray-900 hover:bg-gray-100'
               }`}
             >
@@ -221,31 +221,23 @@ export default function BizonMarketing({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* Sticky Bottom Buttons - Swapped Order */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-t border-gray-100 md:bg-transparent md:backdrop-blur-none md:border-none">
-        <div className="max-w-7xl mx-auto px-4 py-3 md:py-4 flex flex-col md:flex-row gap-2 md:gap-3">
-          <a 
-            href="#contact-form"
-            className="flex-1 py-3.5 md:py-4 bg-white border-2 border-gray-200 text-gray-700 text-center text-base md:text-lg font-bold rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all shadow-sm"
-          >
-            우리 매장 새는 구멍 3개만 찾기
-          </a>
-          <a 
-            href="#contact-form"
-            className="flex-1 py-3.5 md:py-4 bg-linear-to-r from-orange-500 to-red-500 text-white text-center text-base md:text-lg font-bold rounded-xl shadow-lg hover:shadow-orange-500/50 transition-all flex items-center justify-center gap-2"
-          >
-            상담이 아니라 진단 요청하기
-            <ArrowRight className="h-5 w-5" />
-          </a>
-        </div>
+      {/* Sticky Bottom Button - Single & Balanced */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-48px)] max-w-2xl px-4 md:px-0">
+        <a 
+          href="#contact-form"
+          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-center text-lg md:text-xl font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,88,12,0.5)] hover:scale-[1.02] hover:shadow-orange-600/50 transition-all flex items-center justify-center gap-3 border border-white/20"
+        >
+          매장에서 새는 구멍 3개 찾기(상담문의)
+          <ArrowRight className="h-6 w-6" />
+        </a>
       </div>
 
-      {/* Kakao Button - Aligned with CTA */}
+      {/* Kakao Button - Adjusted position for mobile to avoid overlap */}
       <a 
         href="https://pf.kakao.com/_xxxx"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-[#FAE100] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all"
+        className="fixed bottom-28 md:bottom-6 right-6 z-50 w-16 h-16 bg-[#FAE100] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all"
         title="카카오톡 상담"
       >
         <svg className="w-8 h-8" viewBox="0 0 24 24" fill="#371717">
@@ -258,24 +250,23 @@ export default function BizonMarketing({ site }: { site: string }) {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16" data-aos="fade-up">
             <h2 className="text-2xl md:text-5xl font-black mb-4">
-              프랜차이즈도 <span className="text-orange-500">꼭 마케팅을 해야 하는 이유</span>
+              프랜차이즈도 <span className="text-orange-700">꼭 마케팅을 해야 하는 이유</span>
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
             {[
-              { icon: MapPin, title: '가까운 곳', desc: '고객은 브랜드보다 가까운 곳을 먼저 찾습니다.' },
+              { icon: MapPin, title: '검색시 노출이 되는 곳', desc: '고객은 브랜드보다 가까운 곳을 먼저 찾습니다.' },
               { icon: Star, title: '후기 좋은 곳', desc: '같은 브랜드라도 리뷰 점수가 다르면 선택이 달라집니다.' },
-              { icon: Phone, title: '지금 가능한 곳', desc: '영업 중이고, 바로 예약/전화가 되는 곳을 선택합니다.' },
-            ].map((item, i) => (
+                          ].map((item, i) => (
               <div 
                 key={i} 
                 className="text-center p-12 rounded-3xl bg-gray-50 hover:bg-orange-50 transition-colors group"
                 data-aos="fade-up"
                 data-aos-delay={i * 100}
               >
-                <div className="h-20 w-20 mx-auto rounded-2xl bg-white shadow-lg flex items-center justify-center mb-8 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                  <item.icon className="h-10 w-10 text-orange-500 group-hover:text-white" />
+                <div className="h-20 w-20 mx-auto rounded-2xl bg-white shadow-lg flex items-center justify-center mb-8 group-hover:bg-orange-700 group-hover:text-white transition-all">
+                  <item.icon className="h-10 w-10 text-orange-700 group-hover:text-white" />
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold mb-4">{item.title}</h3>
                 <p className="text-gray-600 text-lg">{item.desc}</p>
@@ -284,12 +275,12 @@ export default function BizonMarketing({ site }: { site: string }) {
           </div>
 
           <div 
-            className="text-center p-12 rounded-3xl bg-linear-to-r from-orange-500 to-red-500 text-white"
+            className="text-center p-12 rounded-3xl bg-linear-to-r from-orange-700 to-red-500 text-white"
             data-aos="zoom-in"
           >
             <p className="text-xl md:text-3xl font-bold leading-tight">
-              고객은 브랜드보다 <span className="underline decoration-2 underline-offset-8">가까운 곳, 후기 좋은 곳, 지금 가능한 곳</span>을 고릅니다.<br />
-              <span className="text-2xl md:text-5xl mt-6 block px-4">결국 성과는 <span className="text-yellow-300">노출 → 확신 → 행동</span>으로 결정됩니다.</span>
+              지점 별로 <span className="underline decoration-2 underline-offset-8">플레이스 마케팅</span> 관리를<br />
+              <span className="text-2xl md:text-5xl mt-6 block px-4">제대로 해주는 본사는 <span className="text-yellow-300">'없습니다'</span></span>
             </p>
           </div>
         </div>
@@ -313,22 +304,18 @@ export default function BizonMarketing({ site }: { site: string }) {
                 data-aos="fade-up"
                 data-aos-delay={i * 100}
               >
-                <item.icon className="h-10 w-10 text-orange-400" />
+                <item.icon className="h-10 w-10 text-orange-600" />
                 <span className="text-sm font-bold text-center">{item.label}</span>
               </div>
             ))}
           </div>
 
           {/* Middle: Main Message */}
-          <div className="text-center mb-16" data-aos="fade-up" data-aos-delay="400">
-            <h2 className="text-2xl md:text-6xl font-black mb-8 leading-tight">
-              우리는 "노출"이 아니라<br />
-              <span className="text-orange-400">지역 1등 전환 구조</span>를 만듭니다.
+          <div className="text-center mb-16 font-sans" data-aos="fade-up" data-aos-delay="400">
+            <h2 className="text-3xl md:text-5xl font-bold mb-8 leading-tight tracking-tight">
+              우리는 지역장악 마케팅을 합니다.<br />
+              사장님 업체를 <span className="text-orange-600">지역 1등 업체</span>로<br className="hidden md:block" /> 만들어 드리겠습니다.
             </h2>
-            
-            <p className="text-2xl text-gray-300 mb-12">
-              사장님 매장을 <span className="text-white font-bold">지역 1등 업체</span>로 만들어드리겠습니다.
-            </p>
           </div>
 
           {/* Bottom: Trust Indicators */}
@@ -340,7 +327,7 @@ export default function BizonMarketing({ site }: { site: string }) {
             {[
               { number: '300+', label: '프랜차이즈 지점', sublabel: '현재 진행 중' },
               { number: '4.8/5.0', label: '고객 만족도', sublabel: '평균 평점' },
-              { number: '평균 3배', label: '매출 증가율', sublabel: '6개월 기준' },
+              { number: '평균 2배', label: '매출 증가율', sublabel: '6개월 기준' },
             ].map((stat, i) => (
               <div 
                 key={i} 
@@ -348,7 +335,7 @@ export default function BizonMarketing({ site }: { site: string }) {
                 data-aos="zoom-in"
                 data-aos-delay={700 + i * 100}
               >
-                <div className="text-3xl md:text-5xl font-black text-orange-400 mb-3">
+                <div className="text-3xl md:text-5xl font-black text-orange-600 mb-3">
                   {stat.number}
                 </div>
                 <div className="text-xl font-bold mb-1">{stat.label}</div>
@@ -361,14 +348,15 @@ export default function BizonMarketing({ site }: { site: string }) {
       </section>
 
       {/* Section 4: 비즈온마케팅이 다른 이유 (신뢰) */}
-      <section className="py-24 px-6 bg-white">
+      <section className="py-24 px-6 bg-white font-sans">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16" data-aos="fade-up">
             <div className="inline-block px-6 py-2 bg-orange-100 text-orange-600 rounded-full text-sm font-bold mb-4">
               Why BIZON
             </div>
-            <h2 className="text-3xl md:text-5xl font-black">
-              진짜 전문가에게 맡기세요.
+            <h2 className="text-3xl md:text-5xl font-bold leading-tight tracking-tight">
+              가짜 비전공 마케팅 전문가가 판치는 <br />
+              자영업 마케팅 시장, 진짜 전문가인지 확인해 보세요.
             </h2>
           </div>
 
@@ -377,12 +365,23 @@ export default function BizonMarketing({ site }: { site: string }) {
               className="p-12 rounded-3xl bg-linear-to-br from-orange-50 to-red-50 border border-orange-100"
               data-aos="fade-right"
             >
-              <Building2 className="h-14 w-14 text-orange-500 mb-6" />
+              <Building2 className="h-14 w-14 text-orange-700 mb-6" />
               <h3 className="text-2xl md:text-3xl font-bold mb-5">직접 운영 경험</h3>
-              <p className="text-gray-600 text-xl leading-relaxed">
-                연매출 30억 규모의 요식업 매장 <strong className="text-gray-900">3곳 직접 운영</strong><br />
-                (현재도 성업 중)
-              </p>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-orange-700 shrink-0 mt-1" />
+                  <p className="text-gray-600 text-xl leading-relaxed">
+                    연매출 30억 규모의 요식업 매장 <strong className="text-gray-900">3곳 직접 운영</strong><br />
+                    (현재도 성업 중)<br />
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-orange-700 shrink-0 mt-1" />
+                  <p className="text-gray-600 text-xl leading-relaxed">
+                    자영업자이기에 누구보다 <strong className="text-gray-900">자영업자의 마음</strong>을 잘 이해합니다.<br />
+                  </p>
+                </div>
+              </div>
             </div>
             
             <div 
@@ -393,101 +392,209 @@ export default function BizonMarketing({ site }: { site: string }) {
               <h3 className="text-2xl md:text-3xl font-bold mb-5">검증된 자격</h3>
               <ul className="text-gray-600 space-y-4 text-lg">
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500 shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-blue-600 shrink-0" />
                   성균관대학교 경영학 석사
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500 shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-blue-600 shrink-0" />
                   브랜드관리사 1급 / 브랜드매니저 1급
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500 shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-blue-600 shrink-0" />
                   한국브랜드마케팅협회 정회원
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="h-6 w-6 text-blue-600 shrink-0" />
+                  성균관대학교 14대 창업연구회 회장
                 </li>
               </ul>
             </div>
           </div>
-          
-          {/* Certificates Section (Newly Added) */}
-          <div className="mt-12">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-               {[0, 1, 2, 3, 4].map((i) => (
-                 <div 
-                   key={i} 
-                   className="relative aspect-2/3 rounded-2xl bg-white overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all group"
-                   data-aos="fade-up"
-                   data-aos-delay={i * 100}
-                 >
-                   <Image 
-                     src={`/assets/certificates/cert${i}.png`}
-                     alt={`자격증 ${i + 1}`}
-                     fill
-                     className="object-cover group-hover:scale-110 transition-transform duration-500"
-                   />
-                   <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                 </div>
-               ))}
+
+          {/* Certificates Section (Full Width Showcase - 8 Unique Items) */}
+          <div className="mt-24 relative w-screen left-1/2 -translate-x-1/2 overflow-hidden bg-white/50 border-y border-gray-100/50">
+            <div className="flex animate-scroll-left py-20 w-fit">
+              {[...Array(4)].map((_, setIdx) => (
+                <div key={setIdx} className="flex gap-4 md:gap-6 px-2 md:px-3">
+                  {[...Array(8)].map((_, i) => {
+                    const isPhoto = i >= 5; // cert6, cert7, cert8 (indices 5, 6, 7)
+                    return (
+                      <div 
+                        key={`${setIdx}-${i}`} 
+                        className="relative w-[180px] md:w-[260px] aspect-3/4 bg-white border border-gray-100 flex flex-col items-center justify-center overflow-hidden shadow-sm rounded-xl"
+                      >
+                        <Image 
+                          src={`/uploads/certificates/cert${i + 1}.png`}
+                          alt={`인증자료 ${i + 1}`}
+                          fill
+                          className={`${isPhoto ? 'object-cover' : 'object-contain p-3 md:p-5'}`}
+                          unoptimized
+                          onError={(e) => {
+                            (e.target as any).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23ea580c" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M12 15l-3-3 3-3"/%3E%3Cpath d="M15 12H9"/%3E%3Crect x="3" y="3" width="18" height="18" rx="2"/%3E%3C/svg%3E';
+                          }}
+                        />
+                        {!isPhoto && <Award className="h-10 w-10 text-gray-200 absolute opacity-10" />}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           </div>
-
+          
           <div 
             className="mt-16 p-10 bg-gray-900 rounded-3xl text-center"
             data-aos="zoom-in"
             data-aos-delay="200"
           >
-            <p className="text-white text-xl md:text-2xl font-medium">
-              "<span className="text-orange-400">말</span>"이 아니라 "<span className="text-orange-400">근거와 결과</span>"로 증명합니다.
+            <p className="text-white text-xl md:text-3xl font-medium leading-relaxed">
+              "<span className="text-orange-600 font-bold">말</span>"이 아니라 "<span className="text-orange-600 font-bold">실제 운영 경험과 결과</span>"로 증명합니다.
             </p>
           </div>
         </div>
+
+
       </section>
 
-
-      {/* Section 5: 핵심 서비스 */}
-      <section className="py-24 px-6 bg-gray-50">
+      {/* Unified Core Services & Bizon Logic Section */}
+      <section className="py-24 px-6 bg-gray-50 overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black mb-4">
-              핵심 서비스
-            </h2>
-            <p className="text-xl text-gray-600">프랜차이즈 지점에 딱 맞는 실행형 서비스</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { 
-                icon: Target, 
-                title: '플레이스 주력', 
-                desc: '노출 구조 + 전환 동선 (전화/길찾기/예약) 설계',
-                color: 'orange'
-              },
-              { 
-                icon: Palette, 
-                title: '디자인물 제작', 
-                desc: '메뉴/배너/이벤트/리뷰 유도물 (매장 실사용)',
-                color: 'blue'
-              },
-              { 
-                icon: BarChart3, 
-                title: '프랜차이즈 컨설팅', 
-                desc: '지점별 KPI 기준 우선순위 실행',
-                color: 'green'
-              },
-            ].map((service, i) => (
-              <div 
-                key={i} 
-                className="p-10 rounded-3xl bg-white shadow-xl hover:shadow-2xl transition-all border border-gray-100 group"
-              >
-                <div className={`h-16 w-16 rounded-2xl bg-${service.color}-100 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
-                  <service.icon className={`h-8 w-8 text-${service.color}-500`} />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4">{service.title}</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">{service.desc}</p>
+          <div className="relative bg-white rounded-[60px] md:rounded-[100px] p-8 md:p-24 shadow-[0_50px_150px_rgba(0,0,0,0.06)] border border-gray-50 overflow-hidden" data-aos="fade-up">
+            {/* Background Accent Gradients */}
+            <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-radial-at-tr from-orange-50/50 to-transparent pointer-events-none" />
+            
+            {/* 1. The 3 Strategic Pillars - Unifying the top part */}
+            <div className="relative z-10 text-center mb-16 font-sans">
+              
+              <div className="mb-12">
+                <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">핵심 서비스</h2>
+                <p className="text-gray-500 text-lg md:text-xl font-medium leading-tight">
+                  프랜차이즈 지점에 최적화된 <br className="md:hidden" />
+                  <span className="text-orange-600 font-bold">토탈 마케팅 시스템</span>
+                </p>
               </div>
-            ))}
+              
+              <div className="grid md:grid-cols-3 gap-10">
+                {[
+                  { title: '플레이스 주력', desc: '검색 노출을 넘어 방문 전환까지 설계된 압도적인 플레이스 구축', icon: Target },
+                  { title: '고감도 브랜딩', desc: '고객의 무의식을 자극해 첫인상에서 승기를 잡는 고퀄리티 디자인', icon: Palette },
+                  { title: '매출 최적화 컨설팅', desc: '데이터 기반 상권 분석을 통한 지점별 맞춤형 성장 로드맵 제시', icon: BarChart3 }
+                ].map((pillar, i) => (
+                  <div key={i} className="flex flex-col items-center text-center p-8 rounded-[40px] bg-orange-50/30 border border-orange-100/50">
+                    <div className="h-16 w-16 rounded-3xl bg-white shadow-lg flex items-center justify-center mb-6 text-orange-600">
+                      <pillar.icon className="h-8 w-8" />
+                    </div>
+                    <h4 className="text-2xl font-bold mb-4">{pillar.title}</h4>
+                    <p className="text-gray-500 leading-relaxed font-medium">{pillar.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. Detailed Execution Logic */}
+            <div className="relative z-10 text-center font-sans">
+              
+              <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-16">
+                로직이 다르면 <br className="md:hidden" />
+                <span className="text-orange-600 underline decoration-orange-200 underline-offset-10">본질</span>이 달라집니다.
+              </h3>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
+                {[
+                  { title: '심층 고객 페르소나 설계', desc: '상권 내 실질 방문 고객의 행동 패턴 분석' },
+                  { title: '고감도 미디어 고도화', icon: '📸', desc: '매장의 무드를 압도적으로 표현하는 촬영/보정' },
+                  { title: '트래픽 선순환 최적화', desc: '검색부터 유입까지 정교한 로직 알고리즘 적용' },
+                  { title: '체류 시간 극대화 로직', desc: '정보 전달을 넘어 머물게 만드는 정보 설계' },
+                  { title: '문의/예약 전환 장치', icon: '📱', desc: '톡톡/예약으로 이어지는 버튼 동선 정밀화' },
+                  { title: '브랜드 팬덤 리뷰 관리', desc: '단순 평점이 아닌 팬을 만드는 리뷰 솔루션' }
+                ].map((item, i) => (
+                  <div key={i} className="group p-10 rounded-[48px] bg-gray-50 border border-transparent hover:border-orange-200 hover:bg-white hover:shadow-2xl transition-all duration-500 text-left">
+                     <div className="h-14 w-14 rounded-2xl bg-white shadow-lg flex items-center justify-center mb-8 border border-gray-100 group-hover:bg-orange-600 transition-colors duration-500">
+                       <CheckCircle className="h-6 w-6 text-orange-600 group-hover:text-white" />
+                     </div>
+                     <h4 className="text-2xl font-bold mb-4 group-hover:text-orange-600 transition-colors tracking-tight">{item.title}</h4>
+                     <p className="text-gray-500 font-medium leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Messaging */}
+              <div className="space-y-16 mb-32">
+                <div className="h-px w-32 bg-orange-600 mx-auto" />
+                <h4 className="text-3xl md:text-6xl font-black leading-tight tracking-tighter">
+                  <span className="text-orange-600 font-bold">1등은 당연한 수치</span>일 뿐, <br />
+                  비즈온은 그 너머의 <br className="md:hidden" /><span className="bg-orange-600 text-white px-4 py-1 inline-block mt-2 md:mt-0">압도적 매출</span>을 만듭니다.
+                </h4>
+              </div>
+
+              {/* 3. Re-designed Stats Comparison */}
+              <div className="max-w-6xl mx-auto">
+                <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+                   <div className="space-y-8 md:space-y-10" data-aos="fade-up">
+                     <div className="text-left space-y-3 md:space-y-4">
+                       <h5 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight italic">비즈온 도입 전</h5>
+                       <p className="text-gray-400 text-sm md:text-lg font-medium">마케팅의 부재로 인해 새고 있던 잠재 고객들</p>
+                     </div>
+                     <div className="p-6 md:p-10 rounded-[30px] md:rounded-[48px] bg-gray-100/50 border border-gray-200">
+                       <div className="space-y-6 md:space-y-8">
+                         <div className="flex justify-between items-center bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100">
+                           <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px] md:text-xs">월간 유입량</span>
+                           <span className="text-xl md:text-2xl font-black text-gray-400 italic">412 회</span>
+                         </div>
+                         <div className="flex justify-between items-center bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100">
+                           <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px] md:text-xs">방문 전환율</span>
+                           <span className="text-xl md:text-2xl font-black text-gray-400 italic">2.41%</span>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+
+                   <div className="relative group" data-aos="fade-up">
+                     <div className="absolute -inset-4 bg-orange-600/30 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                     <div className="relative p-8 md:p-12 rounded-[40px] md:rounded-[60px] bg-orange-600 text-white shadow-[0_30px_60px_rgba(234,88,12,0.3)] md:shadow-[0_50px_100px_rgba(234,88,12,0.4)] border border-orange-500 overflow-hidden">
+                       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+                       <div className="relative z-10 space-y-8 md:space-y-12 text-left">
+                         <div className="flex justify-between items-start">
+                           <div>
+                             <div className="px-3 py-1 bg-white text-orange-600 text-[8px] md:text-[10px] font-black rounded-md mb-2 md:mb-4 inline-block">성과 분석 리포트</div>
+                             <h5 className="text-2xl md:text-4xl font-black italic">비즈온 도입 후</h5>
+                           </div>
+                           <div className="text-right">
+                             <div className="text-2xl md:text-4xl font-black text-yellow-100">↑ 842%</div>
+                             <div className="text-[8px] md:text-xs font-bold text-orange-100 tracking-widest">핵심 지표 성장</div>
+                           </div>
+                         </div>
+                         <div className="space-y-4 md:space-y-6">
+                           <div className="space-y-1 md:space-y-2">
+                             <div className="flex justify-between text-[10px] md:text-xs font-black text-orange-100 uppercase tracking-widest">유입 트래픽</div>
+                             <div className="text-4xl md:text-6xl font-black tracking-tighter">3,892 <span className="text-lg md:text-2xl font-medium opacity-60">회</span></div>
+                           </div>
+                           <div className="h-2 md:h-3 w-full bg-black/20 rounded-full overflow-hidden">
+                             <div className="h-full bg-white w-full shadow-[0_0_20px_rgba(255,255,255,1)]" />
+                           </div>
+                         </div>
+                         <div className="grid grid-cols-2 gap-4 md:gap-8 pt-6 md:pt-8 border-t border-white/20">
+                            <div>
+                              <div className="text-[8px] md:text-[10px] font-bold text-orange-200 mb-1">전화 연결 수</div>
+                              <div className="text-xl md:text-3xl font-black">112 <span className="text-sm opacity-60">+</span></div>
+                            </div>
+                            <div>
+                              <div className="text-[8px] md:text-[10px] font-bold text-orange-200 mb-1">예약 요청 수</div>
+                              <div className="text-xl md:text-3xl font-black">165 <span className="text-sm opacity-60">+</span></div>
+                            </div>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+
+
 
       {/* Section 6: 비즈온의 마케팅 성공방식 - Redesigned */}
       <section id="process" className="py-32 px-6 bg-linear-to-b from-gray-50 to-white overflow-hidden">
@@ -501,7 +608,7 @@ export default function BizonMarketing({ site }: { site: string }) {
               비즈온의 마케팅 성공방식
             </h2>
             <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
-              멈추지 않고 계속 돌아가는 <span className="text-orange-500 font-black">성공의 수레바퀴</span>
+              멈추지 않고 계속 돌아가는 <span className="text-orange-700 font-black">성공의 수레바퀴</span>
             </p>
           </div>
 
@@ -552,11 +659,11 @@ export default function BizonMarketing({ site }: { site: string }) {
                   01
                 </div>
                 
-                {/* 3D Icon */}
+                {/* 3D Icon - Removed Emoji */}
                 <div className="w-20 h-20 mb-6 relative">
                   <div className="absolute inset-0 bg-linear-to-br from-blue-400 to-cyan-500 rounded-3xl blur-sm opacity-30 transform translate-y-2"></div>
                   <div className="absolute inset-0 bg-linear-to-br from-blue-400 to-cyan-500 rounded-3xl shadow-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                    <span className="text-5xl filter drop-shadow-lg">🔍</span>
+                    <Target className="h-10 w-10 text-white" />
                   </div>
                 </div>
 
@@ -582,15 +689,15 @@ export default function BizonMarketing({ site }: { site: string }) {
                 data-aos="fade-left"
                 data-aos-delay="200"
               >
-                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-linear-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-linear-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
                   02
                 </div>
                 
-                {/* 3D Icon */}
+                {/* 3D Icon - Removed Emoji */}
                 <div className="w-20 h-20 mb-6 relative ml-auto">
-                  <div className="absolute inset-0 bg-linear-to-br from-amber-400 to-orange-500 rounded-3xl blur-sm opacity-30 transform translate-y-2"></div>
-                  <div className="absolute inset-0 bg-linear-to-br from-amber-400 to-orange-500 rounded-3xl shadow-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                    <span className="text-5xl filter drop-shadow-lg">📋</span>
+                  <div className="absolute inset-0 bg-linear-to-br from-amber-400 to-orange-600 rounded-3xl blur-sm opacity-30 transform translate-y-2"></div>
+                  <div className="absolute inset-0 bg-linear-to-br from-amber-400 to-orange-600 rounded-3xl shadow-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                    <Palette className="h-10 w-10 text-white" />
                   </div>
                 </div>
 
@@ -620,11 +727,11 @@ export default function BizonMarketing({ site }: { site: string }) {
                   03
                 </div>
                 
-                {/* 3D Icon */}
+                {/* 3D Icon - Removed Emoji */}
                 <div className="w-20 h-20 mb-6 relative ml-auto">
                   <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-500 rounded-3xl blur-sm opacity-30 transform translate-y-2"></div>
                   <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-500 rounded-3xl shadow-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                    <span className="text-5xl filter drop-shadow-lg">⚡</span>
+                    <Zap className="h-10 w-10 text-white" />
                   </div>
                 </div>
 
@@ -650,29 +757,29 @@ export default function BizonMarketing({ site }: { site: string }) {
                 data-aos="fade-right"
                 data-aos-delay="400"
               >
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-linear-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-linear-to-br from-orange-600 to-red-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
                   04
                 </div>
                 
-                {/* 3D Icon */}
+                {/* 3D Icon - Removed Emoji */}
                 <div className="w-20 h-20 mb-6 relative">
-                  <div className="absolute inset-0 bg-linear-to-br from-orange-400 to-red-500 rounded-3xl blur-sm opacity-30 transform translate-y-2"></div>
-                  <div className="absolute inset-0 bg-linear-to-br from-orange-400 to-red-500 rounded-3xl shadow-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                    <span className="text-5xl filter drop-shadow-lg">📊</span>
+                  <div className="absolute inset-0 bg-linear-to-br from-orange-700 to-red-600 rounded-3xl blur-sm opacity-30 transform translate-y-2"></div>
+                  <div className="absolute inset-0 bg-linear-to-br from-orange-700 to-red-600 rounded-3xl shadow-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                    <BarChart3 className="h-10 w-10 text-white" />
                   </div>
                 </div>
 
-                <h3 className="text-3xl font-black mb-4 text-orange-600">주간 개선</h3>
+                <h3 className="text-3xl font-black mb-4 text-orange-700">주간 개선</h3>
                 <p className="text-lg text-gray-700 leading-relaxed mb-4">
                   데이터 기반 지속적 성장
                 </p>
                 <ul className="space-y-2 text-gray-600">
                   <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
+                    <div className="w-1.5 h-1.5 bg-orange-600 rounded-full"></div>
                     성과 분석
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
+                    <div className="w-1.5 h-1.5 bg-orange-600 rounded-full"></div>
                     전략 조정
                   </li>
                 </ul>
@@ -682,9 +789,9 @@ export default function BizonMarketing({ site }: { site: string }) {
           
           {/* Bottom CTA */}
           <div className="mt-20 text-center" data-aos="zoom-in">
-            <div className="inline-block px-12 py-6 bg-gray-900 text-white rounded-2xl text-2xl md:text-3xl font-bold shadow-2xl hover:shadow-orange-500/20 transition-all hover:scale-105 leading-relaxed">
-              🚀 한 번으로 끝나는 게 아닙니다.<br />
-              우리는 매주 성장합니다.
+            <div className="inline-block px-14 py-8 md:px-20 md:py-12 bg-gray-900 text-white rounded-[32px] text-xl md:text-4xl font-black shadow-[0_30px_60px_rgba(0,0,0,0.3)] hover:shadow-orange-700/20 transition-all hover:scale-[1.03] leading-tight md:leading-relaxed">
+              뻔한 마케팅으로 인한 뻔한 결과는 보여드리지 않겠습니다.<br />
+              <span className="text-orange-600 block mt-2">차별화된 전략으로 소통해 나가겠습니다.</span>
             </div>
           </div>
         </div>
@@ -694,11 +801,11 @@ export default function BizonMarketing({ site }: { site: string }) {
       <section id="review" className="py-24 px-6 bg-gray-900 text-white overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <span className="inline-block px-5 py-2 bg-orange-500/20 text-orange-400 rounded-full text-sm font-bold mb-6 border border-orange-500/30 tracking-widest uppercase">
+            <span className="inline-block px-5 py-2 bg-orange-700/20 text-orange-600 rounded-full text-sm font-bold mb-6 border border-orange-700/30 tracking-widest uppercase">
               Real Review
             </span>
             <h2 className="text-4xl md:text-6xl font-black">
-              실제 <span className="text-orange-400">사장님들</span>의 이야기
+              실제 <span className="text-orange-600">사장님들</span>의 이야기
             </h2>
           </div>
 
@@ -724,8 +831,8 @@ export default function BizonMarketing({ site }: { site: string }) {
               },
             ].map((review, i) => (
               <div key={i} className="relative group">
-                <div className="bg-gray-800 rounded-3xl p-10 border border-gray-700 hover:border-orange-500/50 transition-all h-full flex flex-col">
-                  <span className="inline-block px-4 py-1 bg-orange-500 text-white text-xs font-bold rounded mb-6 w-fit">
+                <div className="bg-gray-800 rounded-3xl p-10 border border-gray-700 hover:border-orange-700/50 transition-all h-full flex flex-col">
+                  <span className="inline-block px-4 py-1 bg-orange-700 text-white text-xs font-bold rounded mb-6 w-fit">
                     BIZON SUCCESS
                   </span>
                   <p className="text-gray-300 text-xl leading-relaxed mb-8 flex-1">
@@ -737,8 +844,8 @@ export default function BizonMarketing({ site }: { site: string }) {
                     ))}
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-orange-500/20 flex items-center justify-center">
-                      <Users className="h-6 w-6 text-orange-400" />
+                    <div className="h-12 w-12 rounded-full bg-orange-700/20 flex items-center justify-center">
+                      <Users className="h-6 w-6 text-orange-600" />
                     </div>
                     <div>
                       <p className="font-bold text-white text-lg">{review.name}</p>
@@ -758,86 +865,91 @@ export default function BizonMarketing({ site }: { site: string }) {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-black mb-4">
               비즈온과 함께한<br />
-              수 많은 사장님들과의 <span className="text-orange-500">소통 메세지</span>
+              수 많은 사장님들과의 <span className="text-orange-700">소통 메세지</span>
             </h2>
             <p className="text-gray-600">비즈온마케팅은 소통을 가장 중요하게 생각합니다</p>
           </div>
 
-          <div className="relative h-[500px] overflow-hidden rounded-2xl">
+          <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-2xl">
             <div className="absolute top-0 left-0 right-0 h-20 bg-linear-to-b from-gray-50 to-transparent z-10 pointer-events-none" />
             <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-gray-50 to-transparent z-10 pointer-events-none" />
 
-            <div className="flex gap-4 h-full">
+            <div className="flex gap-4 md:gap-6 h-full px-2">
               <div className="flex-1 flex flex-col gap-4 animate-scroll-up">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[
-                      '대표님! 제가 네이버에서 찾아보니까 정말 좋아지고 있어요 👍',
-                      '매출이 확 올랐어요! 감사합니다 🙏',
-                      '리뷰 관리 시스템 너무 좋습니다',
-                      '기대 이상의 결과였어요',
-                    ].map((msg, i) => (
-                      <div key={`${setIdx}-${i}`} className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-                        <div className="flex items-start gap-3">
-                          <div className="h-8 w-8 rounded-full bg-yellow-400 flex items-center justify-center text-sm">😊</div>
-                          <div className="flex-1"><p className="text-sm text-gray-800">{msg}</p></div>
+                      { msg: '대표님! 제가 네이버에서 찾아보니까 정말 좋아지고 있어요', initial: '박', color: 'bg-orange-100 text-orange-600' },
+                      { msg: '매출이 확 올랐어요! 감사합니다', initial: '김', color: 'bg-blue-100 text-blue-600' },
+                      { msg: '리뷰 관리 시스템 너무 좋습니다', initial: '최', color: 'bg-green-100 text-green-600' },
+                      { msg: '기대 이상의 결과였어요', initial: '이', color: 'bg-purple-100 text-purple-600' },
+                    ].map((item, i) => (
+                      <div key={`${setIdx}-${i}`} className="bg-white rounded-xl md:rounded-2xl p-3 md:p-4 shadow-md md:shadow-lg border border-gray-100">
+                        <div className="flex items-start gap-2 md:gap-3">
+                          <div className={`h-6 w-6 md:h-8 md:w-8 rounded-full ${item.color} flex items-center justify-center text-[10px] md:text-sm font-bold shrink-0`}>{item.initial}</div>
+                          <div className="flex-1"><p className="text-xs md:text-sm text-gray-800 leading-snug">{item.msg}</p></div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ))}
               </div>
+
+              {/* Column 2 - Responsive */}
               <div className="flex-1 flex flex-col gap-4 animate-scroll-up">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[
-                      '저희 가게 지역에서 1등이 됐어요!',
-                      '손님들이 네이버 보고 왔다고 해요 😄',
-                      '전화 문의가 확실히 늘었어요',
-                      '투명하게 진행해주셔서 믿음이 갑니다',
-                    ].map((msg, i) => (
-                      <div key={`${setIdx}-${i}`} className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-                        <div className="flex items-start gap-3">
-                          <div className="h-8 w-8 rounded-full bg-green-400 flex items-center justify-center text-sm">🎉</div>
-                          <div className="flex-1"><p className="text-sm text-gray-800">{msg}</p></div>
+                      { msg: '저희 가게 지역에서 1등이 됐어요!', initial: '정', color: 'bg-blue-100 text-blue-600' },
+                      { msg: '손님들이 네이버 보고 왔다고 해요', initial: '안', color: 'bg-orange-100 text-orange-600' },
+                      { msg: '전화 문의가 확실히 늘었어요', initial: '강', color: 'bg-emerald-100 text-emerald-600' },
+                      { msg: '투명하게 진행해주셔서 믿음이 갑니다', initial: 'A', color: 'bg-indigo-100 text-indigo-600' },
+                      { msg: '다음 달도 계속 진행할게요!', initial: 'J', color: 'bg-rose-100 text-rose-600' },
+                    ].map((item, i) => (
+                      <div key={`${setIdx}-${i}`} className="bg-white rounded-xl md:rounded-2xl p-3 md:p-4 shadow-md md:shadow-lg border border-gray-100">
+                        <div className="flex items-start gap-2 md:gap-3">
+                          <div className={`h-6 w-6 md:h-8 md:w-8 rounded-full ${item.color} flex items-center justify-center text-[10px] md:text-sm font-bold shrink-0`}>{item.initial}</div>
+                          <div className="flex-1"><p className="text-xs md:text-sm text-gray-800 leading-snug">{item.msg}</p></div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ))}
               </div>
-              <div className="flex-1 flex flex-col gap-4 animate-scroll-up">
+
+              {/* Column 3 - Fast (Hidden on Mobile) */}
+              <div className="hidden md:flex flex-1 flex-col gap-4 animate-[scrollUp_22s_linear_infinite]">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[
-                      '대표님 덕분에 장사가 잘 됩니다!',
-                      '예약률이 3배나 올랐어요',
-                      '주변에도 추천하고 있어요',
-                      '꼼꼼하게 관리해주셔서 감사해요',
-                    ].map((msg, i) => (
-                      <div key={`${setIdx}-${i}`} className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
+                      { msg: '대표님 덕분에장사가 잘 됩니다!', initial: 'S', color: 'bg-purple-100 text-purple-600' },
+                      { msg: '예약률이 3배나 올랐어요', initial: '송', color: 'bg-cyan-100 text-cyan-600' },
+                      { msg: '주변에도 추천하고 있어요', initial: 'H', color: 'bg-pink-100 text-pink-600' },
+                      { msg: '꼼꼼하게 관리해주셔서 감사해요', initial: '백', color: 'bg-orange-100 text-orange-600' },
+                    ].map((item, i) => (
+                      <div key={`${setIdx}-${i}`} className="bg-white rounded-xl md:rounded-2xl p-4 shadow-lg border border-gray-100">
                         <div className="flex items-start gap-3">
-                          <div className="h-8 w-8 rounded-full bg-blue-400 flex items-center justify-center text-sm">💙</div>
-                          <div className="flex-1"><p className="text-sm text-gray-800">{msg}</p></div>
+                          <div className={`h-8 w-8 rounded-full ${item.color} flex items-center justify-center text-sm font-bold shrink-0`}>{item.initial}</div>
+                          <div className="flex-1"><p className="text-sm text-gray-800">{item.msg}</p></div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ))}
               </div>
-              <div className="hidden md:flex flex-1 flex-col gap-4 animate-scroll-up">
+              <div className="hidden lg:flex flex-1 flex-col gap-4 animate-scroll-up">
                 {[...Array(2)].map((_, setIdx) => (
                   <div key={setIdx} className="flex flex-col gap-4">
                     {[
-                      '솔직하게 말씀해주셔서 좋았어요',
-                      '다른 업체랑 달라요!',
-                      '결과가 눈에 보이니까 좋네요',
-                      '사장님들 필수입니다 ㅎㅎ',
-                    ].map((msg, i) => (
+                      { msg: '솔직하게 말씀해주셔서 좋았어요', initial: '윤', color: 'bg-yellow-100 text-yellow-700' },
+                      { msg: '다른 업체랑 달라요!', initial: '최', color: 'bg-indigo-100 text-indigo-600' },
+                      { msg: '결과가 눈에 보이니까 좋네요', initial: 'K', color: 'bg-emerald-100 text-emerald-600' },
+                      { msg: '사장님들 필수입니다 ㅎㅎ', initial: 'P', color: 'bg-violet-100 text-violet-600' },
+                    ].map((item, i) => (
                       <div key={`${setIdx}-${i}`} className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
                         <div className="flex items-start gap-3">
-                          <div className="h-8 w-8 rounded-full bg-purple-400 flex items-center justify-center text-sm">💜</div>
-                          <div className="flex-1"><p className="text-sm text-gray-800">{msg}</p></div>
+                          <div className={`h-8 w-8 rounded-full ${item.color} flex items-center justify-center text-sm font-bold shrink-0`}>{item.initial}</div>
+                          <div className="flex-1"><p className="text-sm text-gray-800">{item.msg}</p></div>
                         </div>
                       </div>
                     ))}
@@ -851,15 +963,14 @@ export default function BizonMarketing({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* Section 10: 문의폼 */}
-      <section id="contact-form" className="py-24 px-6 bg-gradient-to-b from-gray-900 to-black text-white">
+      <section id="contact-form" className="py-24 px-6 bg-linear-to-b from-gray-900 to-black text-white">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-block px-4 py-1 bg-orange-500/10 text-orange-500 rounded-full text-sm font-bold mb-4">
-              초간단 6가지 질문
+            <div className="inline-block px-4 py-1 bg-orange-700/10 text-orange-700 rounded-full text-sm font-bold mb-4">
+              초간단 질문
             </div>
             <h2 className="text-4xl md:text-6xl font-black mb-6">
-              상담이 아니라 <span className="text-orange-400">진단</span>부터 받으세요.
+              상담이 아니라 <span className="text-orange-600">진단</span>부터 받으세요.
             </h2>
             <p className="text-gray-400 text-xl">
               대표님 매장에 맞는 <span className="text-white font-bold">실행 우선순위 1장</span>으로 답합니다.
@@ -867,138 +978,100 @@ export default function BizonMarketing({ site }: { site: string }) {
           </div>
 
           {submitted ? (
-            <div className="text-center p-16 rounded-3xl bg-white/5 border border-white/10">
-              <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-8" />
+            <div className="text-center p-16 rounded-3xl bg-white/5 border border-white/10" data-aos="zoom-in">
+              <CheckCircle className="h-20 w-20 text-green-700 mx-auto mb-8" />
               <h3 className="text-3xl font-bold mb-4">진단 요청이 접수되었습니다!</h3>
               <p className="text-xl text-gray-400">영업일 기준 1일 내로 담당자가 연락드립니다.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-12">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                  <label className="flex items-center gap-3 text-sm font-medium text-gray-300 mb-3">
-                    <span className="flex items-center justify-center w-7 h-7 bg-orange-500 text-white rounded-full text-xs font-black shadow-lg shadow-orange-500/40">1</span>
-                    브랜드/지점명 *
-                  </label>
+                  <label className="block text-base font-bold text-gray-200 mb-3">상호명 *</label>
                   <input
                     type="text"
                     required
                     value={formData.brandName}
                     onChange={(e) => setFormData({...formData, brandName: e.target.value})}
-                    placeholder="예: 맘스터치 강남역점"
-                    className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition text-lg"
+                    placeholder="예: 비즈온 마케팅"
+                    className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-700 outline-none transition text-lg font-medium"
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-3 text-sm font-medium text-gray-300 mb-3">
-                    <span className="flex items-center justify-center w-7 h-7 bg-orange-500 text-white rounded-full text-xs font-black shadow-lg shadow-orange-500/40">2</span>
-                    주소 (상권 파악) *
-                  </label>
+                  <label className="block text-base font-bold text-gray-200 mb-3">지역 *</label>
                   <input
                     type="text"
                     required
                     value={formData.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
-                    placeholder="예: 서울시 강남구 역삼동"
-                    className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition text-lg"
+                    placeholder="예: 서울시 강남구"
+                    className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-700 outline-none transition text-lg font-medium"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="flex items-center gap-3 text-sm font-medium text-gray-300 mb-3">
-                  <span className="flex items-center justify-center w-7 h-7 bg-orange-500 text-white rounded-full text-xs font-black shadow-lg shadow-orange-500/40">3</span>
-                  목표 (중복 선택 가능)
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {['전화', '길찾기', '예약', '방문', '리뷰'].map(item => (
-                    <button
-                      type="button"
-                      key={item}
-                      onClick={() => toggleGoal(item)}
-                      className={`px-6 py-3 rounded-full text-base font-medium border transition ${
-                        formData.goal.includes(item) 
-                          ? 'bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-500/30' 
-                          : 'bg-transparent border-white/20 text-gray-300 hover:border-orange-500'
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  ))}
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <label className="block text-base font-bold text-gray-200 mb-3">성함 *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name || ''}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    placeholder="성함을 입력해주세요"
+                    className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-700 outline-none transition text-lg font-medium"
+                  />
+                </div>
+                <div>
+                   <label className="block text-base font-bold text-gray-200 mb-3">연락처 *</label>
+                   <input
+                     type="tel"
+                     required
+                     value={formData.contact}
+                     onChange={(e) => setFormData({...formData, contact: e.target.value})}
+                     placeholder="010-0000-0000"
+                     className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-700 outline-none transition text-lg font-medium"
+                   />
                 </div>
               </div>
 
               <div>
-                <label className="flex items-center gap-3 text-sm font-medium text-gray-300 mb-4">
-                  <span className="flex items-center justify-center w-7 h-7 bg-orange-500 text-white rounded-full text-xs font-black shadow-lg shadow-orange-500/40">4</span>
-                  현재 운영 중인 마케팅 (중복 선택 가능)
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {['플레이스', '블로그', '광고', 'SNS', '없음'].map(item => (
-                    <button
-                      type="button"
-                      key={item}
-                      onClick={() => toggleMarketing(item)}
-                      className={`px-6 py-3 rounded-full text-base font-medium border transition ${
-                        formData.currentMarketing.includes(item) 
-                          ? 'bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/30' 
-                          : 'bg-transparent border-white/20 text-gray-300 hover:border-blue-500'
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="flex items-center gap-3 text-sm font-medium text-gray-300 mb-3">
-                  <span className="flex items-center justify-center w-7 h-7 bg-orange-500 text-white rounded-full text-xs font-black shadow-lg shadow-orange-500/40">5</span>
-                  가장 큰 고민 (한 줄)
-                </label>
-                <input
-                  type="text"
+                <label className="block text-base font-bold text-gray-200 mb-3">문의내용 *</label>
+                <textarea
+                  required
                   value={formData.concern}
                   onChange={(e) => setFormData({...formData, concern: e.target.value})}
-                  placeholder="예: 노출은 되는데 전화가 안 와요"
-                  className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition text-lg"
+                  placeholder="구체적인 고민이나 궁금하신 점을 남겨주세요"
+                  className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-700 outline-none transition text-lg font-medium h-40 resize-none"
                 />
               </div>
 
-              <div>
-                <label className="flex items-center gap-3 text-sm font-medium text-gray-300 mb-3">
-                  <span className="flex items-center justify-center w-7 h-7 bg-orange-500 text-white rounded-full text-xs font-black shadow-lg shadow-orange-500/40">6</span>
-                  연락처 *
+              {/* Privacy Agreement Checkbox */}
+              <div className="flex items-center gap-3 py-0">
+                <input 
+                  type="checkbox" 
+                  id="privacy-agree" 
+                  required 
+                  className="w-5 h-5 rounded border-gray-100 bg-white/5 accent-orange-700 cursor-pointer"
+                />
+                <label htmlFor="privacy-agree" className="text-gray-400 text-sm md:text-base cursor-pointer hover:text-gray-200 transition-colors">
+                  <span className="text-orange-500 font-bold">[필수]</span> 개인정보 수집 및 이용에 동의합니다.
                 </label>
-                <input
-                  type="tel"
-                  required
-                  value={formData.contact}
-                  onChange={(e) => setFormData({...formData, contact: e.target.value})}
-                  placeholder="010-0000-0000"
-                  className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition text-lg"
-                />
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-6">
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-5 bg-linear-to-r from-orange-500 to-red-500 text-white rounded-2xl text-xl font-bold hover:shadow-2xl hover:shadow-orange-500/40 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+                  className="w-full py-6 bg-linear-to-r from-orange-700 to-orange-500 text-white rounded-2xl text-xl md:text-2xl font-black hover:shadow-2xl hover:shadow-orange-700/40 transition-all disabled:opacity-70 flex items-center justify-center gap-3 group"
                 >
                   {isSubmitting ? '접수 중...' : '우리 매장 지역장악 플랜 받기'}
-                  {!isSubmitting && <ArrowRight className="h-6 w-6" />}
-                </button>
-                <button
-                  type="button"
-                  className="flex-1 py-5 border-2 border-white/20 text-white rounded-2xl text-xl font-bold hover:border-orange-500 transition-all bg-white/5"
-                >
-                  디자인+플레이스 패키지 문의
+                  {!isSubmitting && <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />}
                 </button>
               </div>
 
-              <p className="text-center text-sm text-gray-500 pt-6">
-                🔒 가능/불가능을 먼저 말씀드립니다. 불필요한 비용을 권하지 않습니다.
+              <p className="text-center text-sm text-gray-500">
+                가능/불가능을 먼저 말씀드립니다. 불필요한 비용을 권하지 않습니다.
               </p>
             </form>
           )}
@@ -1011,21 +1084,18 @@ export default function BizonMarketing({ site }: { site: string }) {
           src="/bizon-logo.png" 
           alt="비즈온" 
           width={180} 
-          height={50}
-          className="object-contain mx-auto mb-4 brightness-0 invert opacity-30"
-          style={{
-            clipPath: 'inset(0 0 35% 0)' // 하단 35% 잘라내기 (마케팅 텍스트 제거)
-          }}
+          height={60}
+          className="object-contain mx-auto mb-6 brightness-0 invert opacity-20"
         />
         <div className="max-w-3xl mx-auto space-y-4">
-          <p>© 2025 비즈온마케팅. All rights reserved.</p>
+          <p>© 2025 비즈온마케팅 주식회사. All rights reserved.</p>
           <p className="text-gray-400 text-base">
-            대표: 양승환 | 사업자등록번호: 565-81-03594
+            대표: 양승협 | 사업자등록번호: 565-81-03594
           </p>
-          <p className="text-gray-400 text-sm">
-            주소: 경기도 수원시 영통구 광산로213번길 15, 2층 201-B66(월드타운)
+          <p className="text-gray-400 text-sm leading-relaxed">
+            주소: 경기도 수원시 장안구 화산로 213번길 15, 2층 201-B66
           </p>
-          <p className="text-orange-500/50 mt-10 text-xl font-bold">우리는 '대행'이 아니라 매출 실험을 설계합니다.</p>
+          <p className="text-orange-700/50 mt-10 text-xl font-bold">우리는 '대행'이 아니라 매출 실험을 설계합니다.</p>
         </div>
       </footer>
     </div>

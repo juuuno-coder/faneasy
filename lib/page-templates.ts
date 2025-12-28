@@ -145,7 +145,7 @@ export function getLegacyTemplate(siteSlug: string): SiteBlock[] | null {
           title: '핵심 서비스',
           description: '프랜차이즈 지점에 딱 맞는 실행형 서비스',
           items: [
-            { title: '플레이스 주력', description: '노출 구조 + 전환 동선 (전화/길찾기/예약) 설계' },
+            { title: '플레이스 최적화', description: '노출 구조 + 전환 동선 (전화/길찾기/예약) 설계' },
             { title: '디자인물 제작', description: '메뉴/배너/이벤트/리뷰 유도물 (매장 실사용)' },
             { title: '프랜차이즈 컨설팅', description: '지점별 KPI 기준 우선순위 실행' }
           ]

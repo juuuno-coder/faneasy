@@ -200,8 +200,15 @@ export default function SiteAdminPage({
           const inquiryMap: Record<string, number> = {};
           inquiries.forEach(inq => {
               let dKey = '';
-              if((inq as any).createdAt?.toDate) dKey = (inq as any).createdAt.toDate().toISOString().split('T')[0];
-              else if(typeof inq.createdAt === 'string') dKey = inq.createdAt.split('T')[0];
+              const created = inq.createdAt as any;
+              
+              if(created?.toDate) {
+                  dKey = created.toDate().toISOString().split('T')[0];
+              } else if(typeof created === 'string') {
+                  dKey = created.split('T')[0];
+              } else if(created instanceof Date) {
+                  dKey = created.toISOString().split('T')[0];
+              }
               
               if(dKey) inquiryMap[dKey] = (inquiryMap[dKey] || 0) + 1;
           });
