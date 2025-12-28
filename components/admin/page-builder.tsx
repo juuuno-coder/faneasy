@@ -813,7 +813,6 @@ function BlockEditorFields({ block, onUpdate, isDarkMode }: { block: SiteBlock, 
              <TiptapEditor 
                content={block.content.json} 
                onChange={(json) => onUpdate({ ...block.content, json })}
-               isDarkMode={isDark}
              />
           </div>
         </div>
