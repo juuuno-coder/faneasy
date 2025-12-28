@@ -125,99 +125,98 @@ export default function AdminDashboard() {
 
   // Fetch Visit Stats & Calculate Chart Data
   useEffect(() => {
-    if (!user) return;
-
     const fetchAndCalculate = async () => {
-      // Emergency Fix: If admin/owner, use 'kkang' or their subdomain as the primary stat source
-      const docId = user.subdomain || (user.email === 'kgw2642@gmail.com' ? 'kkang' : user.id);
-      const today = new Date().toISOString().split('T')[0];
+      if (!mounted || !user) return;
       
-      let totalV = 0;
-      let todayV = 0;
-      const dailyVisitCounts: Record<string, number> = {};
-
-      try {
-        // 1. Fetch Total Visits
-        const statsRef = doc(db, 'site_stats', docId);
-        const statsSnap = await getDoc(statsRef);
-        
-        // If 'kkang' stats don't exist yet, try a fallback (for development/legacy)
-        if (statsSnap.exists()) {
-          totalV = statsSnap.data().totalVisits || 0;
-        } else if (docId !== 'kkang' && user.email === 'kgw2642@gmail.com') {
-           const kkangSnap = await getDoc(doc(db, 'site_stats', 'kkang'));
-           if (kkangSnap.exists()) totalV = kkangSnap.data().totalVisits || 0;
-        }
-
-        // 2. Fetch Today's Visits
-        const todayRef = doc(db, 'site_stats', docId, 'daily_stats', today);
-        const todaySnap = await getDoc(todayRef);
-        if (todaySnap.exists()) {
-          todayV = todaySnap.data().visits || 0;
-        }
-        
-        dailyVisitCounts[today] = todayV;
-
-      } catch (e) {
-        console.error("Stats fetch error:", e);
-      }
-
-      // 3. Process Inquiries for Chart
-      const inquiryCounts: Record<string, number> = {};
-      inquiries.forEach(inq => {
-        let dateKey = '';
-        if ((inq as any).createdAt?.toDate) {
-             dateKey = (inq as any).createdAt.toDate().toISOString().split('T')[0];
-        } else if (typeof inq.createdAt === 'string') {
-             dateKey = (inq.createdAt as unknown as string).split('T')[0]; // ISO string
-        }
-        if (dateKey) {
-            inquiryCounts[dateKey] = (inquiryCounts[dateKey] || 0) + 1;
-        }
-      });
-
-      // 4. Generate Last 7 Days Data
+      const docId = user.subdomain || (user.email === 'kgw2642@gmail.com' ? 'kkang' : user.id);
+      const isSuperAdmin = user.role === 'super_admin' || user.email === 'designd@designd.co.kr';
+      const today = new Date().toISOString().split('T')[0];
       const sevenDays = [...Array(7)].map((_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - i);
         return d.toISOString().split('T')[0];
       }).reverse();
 
+      let totalV = 0;
+      let todayV = 0;
+      const visitsMap: Record<string, number> = {};
+
+      try {
+        if (isSuperAdmin) {
+           // Super Admin: Aggregate Top Sites or Platform General Stats
+           // For now, let's fetch the 'platform' stats or sum up top 5 sites
+           const platformSnap = await getDoc(doc(db, 'site_stats', 'platform'));
+           if (platformSnap.exists()) {
+             totalV = platformSnap.data().totalVisits || 0;
+             todayV = platformSnap.data().todayVisits || 0;
+           }
+           
+           // Fetch daily stats for platform
+           await Promise.all(sevenDays.map(async (date) => {
+             const dRef = doc(db, 'site_stats', 'platform', 'daily_stats', date);
+             const snap = await getDoc(dRef);
+             visitsMap[date] = snap.exists() ? snap.data().visits || 0 : 0;
+           }));
+        } else {
+           // Site Owner: Fetch site-specific
+           const statsRef = doc(db, 'site_stats', docId);
+           const statsSnap = await getDoc(statsRef);
+           if (statsSnap.exists()) totalV = statsSnap.data().totalVisits || 0;
+
+           await Promise.all(sevenDays.map(async (date) => {
+             const dRef = doc(db, 'site_stats', docId, 'daily_stats', date);
+             const snap = await getDoc(dRef);
+             visitsMap[date] = snap.exists() ? snap.data().visits || 0 : 0;
+           }));
+           todayV = visitsMap[today] || 0;
+        }
+      } catch (e) {
+        console.error("Stats fetch error:", e);
+      }
+
+      // Process Inquiries
+      const inquiryMap: Record<string, number> = {};
+      inquiries.forEach(inq => {
+        let dKey = '';
+        if ((inq as any).createdAt?.toDate) dKey = (inq as any).createdAt.toDate().toISOString().split('T')[0];
+        else if (typeof inq.createdAt === 'string') dKey = (inq.createdAt as string).split('T')[0];
+        if (dKey) inquiryMap[dKey] = (inquiryMap[dKey] || 0) + 1;
+      });
+
       const newChartData = sevenDays.map(date => ({
-        name: date.slice(5), // MM-DD
-        visitors: dailyVisitCounts[date] || 0,
-        inquiries: inquiryCounts[date] || 0
+        name: date.slice(5),
+        visitors: visitsMap[date] || 0,
+        inquiries: inquiryMap[date] || 0
       }));
 
-      // 5. Hierarchical Site & Fan Counts (The 'Influencer' perspective)
+      // Counts
       let tSites = 0;
       let tFans = 0;
-
-      if (user.role !== 'super_admin') {
+      if (!isSuperAdmin) {
         const subdomain = user.subdomain || docId;
-        
-        // Count sub-sites
         const qSites = query(collection(db, 'sites'), where('parentSiteId', '==', subdomain));
         const sitesSnap = await getDocs(qSites);
         tSites = sitesSnap.docs.length;
 
-        // Count fans brought by this person
         const qFans = query(collection(db, 'users'), where('joinedInfluencerId', '==', subdomain));
         const fansSnap = await getDocs(qFans);
         tFans = fansSnap.docs.length;
+      } else {
+        tSites = sites.length;
+        tFans = users.length;
       }
 
       setStats({
         totalVisits: totalV,
         todayVisits: todayV,
-        totalSites: tSites + 1, // Base site + subsites
+        totalSites: tSites,
         totalFans: tFans,
         chartData: newChartData
       });
     };
 
     fetchAndCalculate();
-  }, [user, inquiries]);
+  }, [user, inquiries, mounted, sites.length, users.length]);
 
 
   useEffect(() => {
@@ -269,6 +268,13 @@ export default function AdminDashboard() {
         collection(db, "inquiries"),
         orderBy("createdAt", "desc")
       );
+    } else if (user.subdomain === 'bizon' || user.id === 'bizon') {
+       // Bizon 관리자는 ownerId 대신 siteDomain으로 조회
+        q = query(
+        collection(db, "inquiries"),
+        where("siteDomain", "==", "bizon")
+        // orderBy("createdAt", "desc") // Removed to avoid index issues
+      );
     } else {
       // owner, admin, user는 본인(또는 소속) 데이터만 조회
       // user(팬페이지 주인)도 본인의 문의/데이터만 봄
@@ -285,6 +291,13 @@ export default function AdminDashboard() {
         ...doc.data(),
         createdAt: doc.data().createdAt || new Date().toISOString()
       })) as Inquiry[];
+      
+      // Client-side sort to ensure order even without index
+      firestoreInquiries.sort((a, b) => {
+        const dateA = new Date((a as any).createdAt?.toDate ? (a as any).createdAt.toDate() : a.createdAt);
+        const dateB = new Date((b as any).createdAt?.toDate ? (b as any).createdAt.toDate() : b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      });
       
       if (firestoreInquiries.length > 0) {
         setInquiries(firestoreInquiries);
@@ -655,7 +668,19 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                       <div className="text-sm font-medium text-gray-300">{(inquiry as any).plan || '프로젝트 문의'}</div>
+                       <div className="text-sm font-medium text-gray-300">
+                         {/* Traffic Control: Show Site Origin for Super Admins */}
+                         {user?.role === 'super_admin' && (inquiry as any).siteDomain && (
+                           <span className={`inline-block mr-2 px-1.5 py-0.5 rounded text-[10px] uppercase font-black uppercase tracking-wider ${
+                             (inquiry as any).siteDomain === 'bizon' 
+                               ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                               : 'bg-gray-700 text-gray-400 border border-gray-600'
+                           }`}>
+                             {(inquiry as any).siteDomain}
+                           </span>
+                         )}
+                         {(inquiry as any).plan || '프로젝트 문의'}
+                       </div>
                        <div className="text-xs text-gray-500">{new Date(inquiry.createdAt).toLocaleString()}</div>
                     </div>
                     <div className="rounded-full bg-purple-500/10 px-3 py-1 text-[10px] font-bold text-purple-400 border border-purple-500/20">

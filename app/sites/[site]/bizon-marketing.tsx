@@ -27,6 +27,9 @@ import { useAOS } from '@/hooks/use-aos';
 import { useDataStore } from '@/lib/data-store';
 import { HeroTextSequence } from '@/components/hero-text-sequence';
 import { RotatingBizonO, RotatingOuterRing } from '@/components/rotating-bizon-o';
+import { db } from "@/lib/firebaseClient";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { logActivity } from "@/lib/logger";
 
 export default function BizonMarketing({ site }: { site: string }) {
   // AOS 스크롤 애니메이션 초기화
@@ -34,7 +37,6 @@ export default function BizonMarketing({ site }: { site: string }) {
 
   const { getPageContent } = useDataStore();
   const pageContent = getPageContent(site);
-  const videoRef = useRef<HTMLIFrameElement>(null);
   
   // 스크롤 상태 관리
   const [isScrolled, setIsScrolled] = useState(false);
@@ -47,19 +49,6 @@ export default function BizonMarketing({ site }: { site: string }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
-  // 유튜브 영상 ID 추출 및 설정
-  const defaultVideoId = 'homsIWrbeo0';
-  
-  // URL에서 ID 추출 로직 (v=id 또는 youtu.be/id 형식 지원)
-  const getVideoId = (url: string | undefined) => {
-    if (!url) return defaultVideoId;
-    if (url.includes('v=')) return url.split('v=')[1].split('&')[0];
-    if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0];
-    return url; // ID만 입력된 경우
-  };
-
-  const heroVideoId = getVideoId(pageContent?.heroVideoUrl);
 
   /* State Updates */
   const [formData, setFormData] = useState({
@@ -73,15 +62,67 @@ export default function BizonMarketing({ site }: { site: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  // Zustand Store
+  const { addInquiry } = useDataStore();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setSubmitted(true);
+    try {
+      const newInquiry = {
+        ownerId: 'bizon-admin', // Default owner for Bizon
+        siteDomain: site || 'bizon',
+        name: formData.brandName, // Map brandName to name
+        email: '', // Not collected in this form
+        phone: formData.contact,
+        company: formData.brandName,
+        address: formData.address,
+        goals: formData.goal,
+        currentMarketing: formData.currentMarketing,
+        message: formData.concern, // Map concern to message
+        plan: 'custom', 
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      };
+
+      // Save to Firestore
+      await addDoc(collection(db, "inquiries"), {
+        ...newInquiry,
+        serverCreatedAt: serverTimestamp(),
+      });
+
+      // Log Activity
+      await logActivity({
+        type: 'inquiry',
+        userName: formData.brandName,
+        userEmail: formData.contact,
+        action: '비즈온 마케팅 진단 요청',
+        target: '진단 요청',
+        subdomain: site || 'bizon'
+      });
+
+      // Local store update for UI
+      addInquiry({
+        ...newInquiry,
+        id: `inq-${Date.now()}`,
+        status: 'pending' as any,
+        workflowStatus: 'received',
+        notes: [],
+        timeline: [{
+          status: 'received',
+          timestamp: new Date().toISOString(),
+          note: '마케팅 진단 자동 접수'
+        }]
+      });
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Submission failed:", error);
+      alert("접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleMarketing = (item: string) => {
@@ -162,16 +203,16 @@ export default function BizonMarketing({ site }: { site: string }) {
         {/* Video Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/80 z-10" /> {/* Dark Overlay for Readability */}
-          {heroVideoId && (
-            <iframe
-              ref={videoRef}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full min-h-[56.25vw] h-[100.1%] pointer-events-none scale-110"
-              src={`https://www.youtube.com/embed/${heroVideoId}?autoplay=1&mute=1&loop=1&playlist=${heroVideoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
-              title="Background Video"
-              allow="autoplay; encrypted-media; picture-in-picture"
-              style={{ opacity: 0.7 }}
-            />
-          )}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full object-cover scale-110"
+            style={{ opacity: 0.7 }}
+          >
+            <source src="/videos/bizon-main.mp4" type="video/mp4" />
+          </video>
         </div>
 
         {/* Hero Content - Animated Text Sequence */}
@@ -366,9 +407,31 @@ export default function BizonMarketing({ site }: { site: string }) {
               </ul>
             </div>
           </div>
+          
+          {/* Certificates Section (Newly Added) */}
+          <div className="mt-12">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+               {[0, 1, 2, 3, 4].map((i) => (
+                 <div 
+                   key={i} 
+                   className="relative aspect-2/3 rounded-2xl bg-white overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all group"
+                   data-aos="fade-up"
+                   data-aos-delay={i * 100}
+                 >
+                   <Image 
+                     src={`/assets/certificates/cert${i}.png`}
+                     alt={`자격증 ${i + 1}`}
+                     fill
+                     className="object-cover group-hover:scale-110 transition-transform duration-500"
+                   />
+                   <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                 </div>
+               ))}
+            </div>
+          </div>
 
           <div 
-            className="mt-12 p-10 bg-gray-900 rounded-3xl text-center"
+            className="mt-16 p-10 bg-gray-900 rounded-3xl text-center"
             data-aos="zoom-in"
             data-aos-delay="200"
           >

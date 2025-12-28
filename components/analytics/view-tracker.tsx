@@ -8,25 +8,15 @@ export default function ViewTracker({ siteId }: { siteId: string }) {
   useEffect(() => {
     const trackView = async () => {
       // Prevent duplicate counting in same session
-      const sessionKey = `viewed_${siteId}`;
+      const sessionKey = `viewed_${siteId}_${new Date().toISOString().split('T')[0]}`;
       if (sessionStorage.getItem(sessionKey)) return;
 
       try {
-        const today = new Date().toISOString().split('T')[0];
-        const statsRef = doc(db, 'site_stats', siteId);
-        const dailyRef = doc(db, 'site_stats', siteId, 'daily_stats', today);
-
-        // Update Total Visits (Simple increment)
-        await setDoc(statsRef, { 
-          totalVisits: increment(1),
-          lastUpdated: new Date().toISOString()
-        }, { merge: true });
-
-        // Update Daily Visits
-        await setDoc(dailyRef, {
-          visits: increment(1),
-          date: today
-        }, { merge: true });
+        await fetch('/api/track-view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ siteId })
+        });
 
         // Mark as viewed in session
         sessionStorage.setItem(sessionKey, 'true');

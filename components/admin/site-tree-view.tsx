@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebaseClient';
 import { UserRole, SiteNode } from '@/lib/types';
+import Link from 'next/link';
 import { 
   ChevronRight, 
   ChevronDown, 
@@ -279,20 +280,31 @@ export default function SiteTreeView({ userRole, currentSubdomain, isDarkMode = 
           </div>
 
           {/* Site Actions */}
-          {isSite && siteData?.id !== currentSubdomain && (
+          {isSite && (
             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button 
-                onClick={() => handleAssign('owner', siteData!)}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-black border border-green-500/30 text-green-500 hover:bg-green-500 hover:text-white transition-all`}
+              <Link 
+                href={siteData?.id === 'kkang' ? '/admin' : `/sites/${siteData?.id}/admin`}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black bg-purple-600 text-white hover:bg-purple-700 transition-all`}
               >
-                [소유자 지정]
-              </button>
-              <button 
-                onClick={() => handleAssign('admin', siteData!)}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-black border border-blue-500/30 text-blue-500 hover:bg-blue-500 hover:text-white transition-all`}
-              >
-                [관리자 지정]
-              </button>
+                관리 바로가기 <ChevronRight size={10} />
+              </Link>
+              
+              {isSuperAdmin && siteData?.id !== currentSubdomain && (
+                <>
+                  <button 
+                    onClick={() => handleAssign('owner', siteData!)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-black border border-green-500/30 text-green-500 hover:bg-green-500 hover:text-white transition-all`}
+                  >
+                    [소유자 지정]
+                  </button>
+                  <button 
+                    onClick={() => handleAssign('admin', siteData!)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-black border border-blue-500/30 text-blue-500 hover:bg-blue-500 hover:text-white transition-all`}
+                  >
+                    [관리자 지정]
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

@@ -18,9 +18,11 @@ import {
   Sun,
   Moon,
   Clock,
-  Copy
+  Copy,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import ProfileModal from '@/components/profile-modal';
 import PageBuilder from '@/components/admin/page-builder';
 import SiteTreeView from '@/components/admin/site-tree-view';
 import InquiriesTab from '@/components/admin/inquiries-tab';
@@ -50,24 +52,79 @@ export default function SiteAdminPage({
   const [sites, setSites] = useState<SiteNode[]>([]);
   const [totalFans, setTotalFans] = useState(0);
   const [totalSubSites, setTotalSubSites] = useState(0);
+  const [totalVisits, setTotalVisits] = useState(0);
+  const [todayVisits, setTodayVisits] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [siteTitle, setSiteTitle] = useState('');
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (!mounted || !siteSlug) return;
+    
+    const fetchSiteTitle = async () => {
+        try {
+            const settingRef = doc(db, 'site_settings', siteSlug);
+            const settingSnap = await getDoc(settingRef);
+            if (settingSnap.exists() && settingSnap.data().siteName) {
+                setSiteTitle(`${settingSnap.data().siteName.toUpperCase()} ADMIN`);
+            } else {
+                setSiteTitle(`${siteSlug.toUpperCase()} ADMIN`);
+            }
+        } catch (e) {
+            setSiteTitle(`${siteSlug.toUpperCase()} ADMIN`);
+        }
+    };
+    fetchSiteTitle();
+  }, [mounted, siteSlug]);
+
+  // Auth & RBAC Protection
+  useEffect(() => {
+    if (!mounted) return;
+
+    if (!user) {
+      toast.error('로그인이 필요합니다.');
+      router.push('/login');
+      return;
+    }
+
+    // RBAC: Allow Super Admin OR Site Owner
+    const isSuperAdmin = user.role === 'super_admin' || user.email === 'designd@designd.co.kr'; // fallback check
+    const isSiteOwner = user.subdomain === siteSlug || user.id === siteSlug || (user.role === 'owner' && user.subdomain === siteSlug);
+
+    if (!isSuperAdmin && !isSiteOwner) {
+       toast.error('접근 권한이 없습니다.');
+       router.push('/');
+    }
+  }, [mounted, user, router, siteSlug]);
+
   // Fetch Site specific data
   useEffect(() => {
     if (!mounted || !siteSlug) return;
 
-    // 1. Inquiries for this site or site owner's network
+    // 1. Inquiries for this site (Fixed: siteDomain & remove orderBy)
     const qInq = query(
         collection(db, 'inquiries'),
-        where('subdomain', '==', siteSlug),
-        orderBy('createdAt', 'desc')
+        where('siteDomain', '==', siteSlug)
     );
     const unsubInq = onSnapshot(qInq, (snap) => {
-        setInquiries(snap.docs.map(d => ({ id: d.id, ...d.data() } as Inquiry)));
+        const fetched = snap.docs.map(d => ({ 
+            id: d.id, 
+            ...d.data(),
+            createdAt: d.data().createdAt || new Date().toISOString()
+        } as Inquiry));
+        
+        // Client-side Sort
+        fetched.sort((a, b) => {
+             const dateA = new Date((a as any).createdAt?.toDate ? (a as any).createdAt.toDate() : a.createdAt);
+             const dateB = new Date((b as any).createdAt?.toDate ? (b as any).createdAt.toDate() : b.createdAt);
+             return dateB.getTime() - dateA.getTime();
+        });
+        setInquiries(fetched);
     });
 
     // 2. Fans who joined this site
@@ -89,6 +146,26 @@ export default function SiteAdminPage({
         setTotalFans(snap.docs.length);
     });
 
+    // 5. Fetch Visitor Stats (Unified)
+    const fetchStats = async () => {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Fetch Total
+            const statsRef = doc(db, 'site_stats', siteSlug);
+            const statsSnap = await getDoc(statsRef);
+            if (statsSnap.exists()) setTotalVisits(statsSnap.data().totalVisits || 0);
+
+            // Fetch Today
+            const todayRef = doc(db, 'site_stats', siteSlug, 'daily_stats', today);
+            const todaySnap = await getDoc(todayRef);
+            if (todaySnap.exists()) setTodayVisits(todaySnap.data().visits || 0);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+    fetchStats();
+
     return () => {
         unsubInq();
         unsubFans();
@@ -96,6 +173,51 @@ export default function SiteAdminPage({
         unsubUsers();
     };
   }, [mounted, siteSlug]);
+
+  // Chart Data Calculation Effect
+  useEffect(() => {
+      if (!mounted || !siteSlug) return;
+      
+      const calculateChart = async () => {
+          // 1. Fetch Daily Visits (Last 7 Days)
+          const sevenDays: string[] = [...Array(7)].map((_, i) => {
+              const d = new Date();
+              d.setDate(d.getDate() - i);
+              return d.toISOString().split('T')[0];
+          }).reverse();
+
+          const visitsMap: Record<string, number> = {};
+          
+          // Parallel fetch for 7 days (Optimization: Maybe query range if possible, but subcollections don't support range query easily without Collection Group)
+          // For < 10 docs, parallel getDoc is fine.
+          await Promise.all(sevenDays.map(async (date) => {
+              const dRef = doc(db, 'site_stats', siteSlug, 'daily_stats', date);
+              const snap = await getDoc(dRef);
+              visitsMap[date] = snap.exists() ? snap.data().visits || 0 : 0;
+          }));
+
+          // 2. Map Inquiries
+          const inquiryMap: Record<string, number> = {};
+          inquiries.forEach(inq => {
+              let dKey = '';
+              if((inq as any).createdAt?.toDate) dKey = (inq as any).createdAt.toDate().toISOString().split('T')[0];
+              else if(typeof inq.createdAt === 'string') dKey = inq.createdAt.split('T')[0];
+              
+              if(dKey) inquiryMap[dKey] = (inquiryMap[dKey] || 0) + 1;
+          });
+
+          // 3. Merge
+          const merged = sevenDays.map(date => ({
+              name: date.slice(5),
+              visitors: visitsMap[date] || 0,
+              inquiries: inquiryMap[date] || 0
+          }));
+          
+          setChartData(merged);
+      };
+      
+      calculateChart();
+  }, [inquiries, siteSlug, mounted]);
 
   if (!mounted) return null;
 
@@ -128,7 +250,7 @@ export default function SiteAdminPage({
           <div className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-purple-500" />
             <span className={`font-bold tracking-tight text-sm uppercase ${theme.text}`}>
-              {siteSlug} ADMIN
+              {siteTitle || `${siteSlug.toUpperCase()} ADMIN`}
             </span>
           </div>
         </div>
@@ -192,9 +314,12 @@ export default function SiteAdminPage({
              </button>
              <div className={`h-8 w-px mx-2 ${theme.divider}`} />
              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-purple-500/20 border border-purple-500/50 flex items-center justify-center font-bold text-purple-500">
+                <button 
+                  onClick={() => setShowProfileModal(true)}
+                  className="h-10 w-10 rounded-full bg-purple-500/20 border border-purple-500/50 flex items-center justify-center font-bold text-purple-500 hover:scale-105 transition-transform"
+                >
                    {siteSlug[0].toUpperCase()}
-                </div>
+                </button>
                 <div className="text-left hidden sm:block">
                    <div className={`text-sm font-bold uppercase ${theme.text} flex items-center gap-2`}>
                        {siteSlug}
@@ -217,26 +342,46 @@ export default function SiteAdminPage({
 
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className={`${theme.card} p-6 rounded-3xl border`}>
-                    <div className={`${theme.mutedText} text-xs font-bold uppercase mb-2`}>가입 팬 수</div>
-                    <div className={`text-3xl font-bold ${theme.text}`}>{totalFans.toLocaleString()}명</div>
+                    <div className={`${theme.mutedText} text-[10px] font-bold uppercase mb-2`}>전체 문의</div>
+                    <div className={`text-3xl font-bold ${theme.text}`}>{inquiries.length.toLocaleString()}건</div>
                 </div>
                 <div className={`${theme.card} p-6 rounded-3xl border`}>
-                    <div className={`${theme.mutedText} text-xs font-bold uppercase mb-2`}>하위 사이트</div>
-                    <div className={`text-3xl font-bold ${theme.text}`}>{totalSubSites}개</div>
+                    <div className={`${theme.mutedText} text-[10px] font-bold uppercase mb-2`}>오늘 방문자</div>
+                    <div className={`text-3xl font-bold ${theme.text}`}>{todayVisits.toLocaleString()}명</div>
+                </div>
+                <div className={`${theme.card} p-6 rounded-3xl border border-purple-500/20`}>
+                    <div className={`${theme.mutedText} text-[10px] font-bold uppercase mb-2`}>누적 방문자</div>
+                    <div className={`text-3xl font-bold ${theme.text}`}>{totalVisits.toLocaleString()}명</div>
                 </div>
                 <div className={`${theme.card} p-6 rounded-3xl border`}>
-                    <div className={`${theme.mutedText} text-xs font-bold uppercase mb-2`}>대기 중인 문의</div>
-                    <div className="text-3xl font-bold text-orange-400">
-                        {inquiries.filter(i => i.status === 'pending').length}건
+                    <div className={`${theme.mutedText} text-[10px] font-bold uppercase mb-2`}>문의 전환율</div>
+                    <div className="text-3xl font-bold text-purple-400">
+                        {totalVisits > 0 ? ((inquiries.length / totalVisits) * 100).toFixed(1) : '0'}%
                     </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-80">
+                <div className={`${theme.card} p-4 rounded-2xl border flex items-center justify-between`}>
+                    <div className={`${theme.mutedText} text-xs font-bold`}>가입 팬 수</div>
+                    <div className={`text-xl font-bold ${theme.text}`}>{totalFans.toLocaleString()}명</div>
+                </div>
+                <div className={`${theme.card} p-4 rounded-2xl border flex items-center justify-between`}>
+                    <div className={`${theme.mutedText} text-xs font-bold`}>하위 사이트</div>
+                    <div className={`text-xl font-bold ${theme.text}`}>{totalSubSites}개</div>
                 </div>
             </div>
 
             {/* Analytics Charts */}
             <div className="mt-8">
-                <AnalyticsCharts users={users} sites={sites} isDarkMode={isDarkMode} />
+                <AnalyticsCharts 
+                    users={users} 
+                    sites={sites} 
+                    isDarkMode={isDarkMode} 
+                    chartData={chartData}
+                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -273,7 +418,7 @@ export default function SiteAdminPage({
         )}
 
         {activeTab === 'builder' && (
-          <PageBuilder subdomain={siteSlug} />
+          <PageBuilder subdomain={siteSlug} isDarkMode={isDarkMode} />
         )}
 
         {activeTab === 'users' && (
@@ -300,6 +445,7 @@ export default function SiteAdminPage({
         {selectedInquiry && (
           <InquiryManagementModal
             inquiry={selectedInquiry}
+            isDarkMode={isDarkMode}
             onClose={() => setSelectedInquiry(null)}
             onUpdate={(updated) => {
               setInquiries(prev => prev.map(inq => 
@@ -308,6 +454,24 @@ export default function SiteAdminPage({
               setSelectedInquiry(null);
             }}
           />
+        )}
+
+        {/* Profile Modal */}
+        {showProfileModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+             <div className="bg-white rounded-2xl w-[400px] overflow-hidden">
+                <ProfileModal 
+                    isOpen={showProfileModal}
+                    onClose={() => setShowProfileModal(false)}
+                    user={user}
+                    onSave={async (updated) => {
+                      useAuthStore.getState().updateUser(updated);
+                      setShowProfileModal(false);
+                      toast.success('프로필이 업데이트되었습니다.');
+                    }}
+                />
+             </div>
+          </div>
         )}
       </main>
     </div>

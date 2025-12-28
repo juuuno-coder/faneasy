@@ -400,6 +400,77 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
       </div>
 
 
+      {/* 5. Certificates/Portfolio Banners (Restored & Renamed) */}
+      <div className={`rounded-3xl border p-8 transition-colors ${t.card}`}>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+              <ImageIcon className="h-5 w-5 text-orange-500" />
+            </div>
+            <div>
+              <h3 className={`text-xl font-bold ${t.text}`}>자격증 및 포트폴리오 관리</h3>
+              <p className={`text-sm ${t.textMuted}`}>성공 사례 및 자격증 배너를 관리합니다. (2:3 비율 권장)</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => setSettings(prev => ({
+              ...prev,
+              portfolioBanners: [...(prev.portfolioBanners || []), { id: `bn-${Date.now()}`, url: '', title: '', subtitle: '' }]
+            }))}
+            className={`px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white hover:bg-purple-700 transition-all flex items-center gap-2`}
+          >
+            <Plus className="w-4 h-4" />
+            배너 추가
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {(settings.portfolioBanners || []).map((banner, index) => (
+            <div key={banner.id} className={`group relative p-4 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-100'}`}>
+              <button 
+                onClick={() => setSettings(prev => ({
+                  ...prev,
+                  portfolioBanners: prev.portfolioBanners?.filter(b => b.id !== banner.id)
+                }))}
+                className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+              
+              <ImageUpload 
+                label={`이미지 ${index + 1}`}
+                value={banner.url}
+                onChange={(url) => setSettings(prev => ({
+                  ...prev,
+                  portfolioBanners: prev.portfolioBanners?.map(b => b.id === banner.id ? { ...b, url } : b)
+                }))}
+                aspectRatio="portrait"
+                isDarkMode={isDarkMode}
+              />
+              
+              <div className="mt-4 space-y-2">
+                <input 
+                  type="text"
+                  placeholder="제목 (선택)"
+                  value={banner.title || ''}
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    portfolioBanners: prev.portfolioBanners?.map(b => b.id === banner.id ? { ...b, title: e.target.value } : b)
+                  }))}
+                  className={`w-full px-3 py-2 text-xs rounded-lg border focus:outline-none focus:ring-1 focus:ring-purple-500 ${t.input}`}
+                />
+              </div>
+            </div>
+          ))}
+          
+          {(settings.portfolioBanners || []).length === 0 && (
+            <div className="col-span-full py-12 text-center border-2 border-dashed border-gray-200 rounded-3xl">
+              <p className={t.textMuted}>등록된 이미지가 없습니다. '배너 추가'를 눌러 시작하세요.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* 5. Domain Management */}
       <div className={`rounded-3xl border p-8 transition-colors ${t.card}`}>
         <div className="flex items-center gap-3 mb-6">
