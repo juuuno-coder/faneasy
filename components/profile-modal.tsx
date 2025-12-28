@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, User, Mail, Save, Lock, Shield, Loader2, CheckCircle2 } from 'lucide-react';
 import { getAuth, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import toast from 'react-hot-toast';
@@ -27,6 +27,17 @@ export default function ProfileModal({ isOpen, onClose, user, onSave }: ProfileM
   // Password Change State
   const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
   const [passLoading, setPassLoading] = useState(false);
+  
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

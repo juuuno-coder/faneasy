@@ -213,7 +213,7 @@ export interface Inquiry {
   phone: string;
   company?: string;
   message: string;
-  plan: "basic" | "pro" | "master";
+  plan: "basic" | "pro" | "master" | "custom";
   desiredDomain?: string; // 희망 도메인
   
   // Legacy status (kept for backward compatibility)

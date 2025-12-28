@@ -87,9 +87,9 @@ export default function BizonMarketing({ site }: { site: string }) {
         goals: formData.goal,
         currentMarketing: formData.currentMarketing,
         message: formData.concern, // Map concern to message
-        plan: 'custom', 
+        plan: 'custom' as const, 
         status: 'pending',
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(),
       };
 
       // Save to Firestore
@@ -110,7 +110,7 @@ export default function BizonMarketing({ site }: { site: string }) {
 
       // Local store update for UI
       addInquiry({
-        ...(newInquiry as any),
+        ...newInquiry,
         id: `inq-${Date.now()}`,
         status: 'pending' as any,
         workflowStatus: 'received',
