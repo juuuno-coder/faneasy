@@ -210,7 +210,7 @@ export default function AdminDashboard() {
       setStats({
         totalVisits: totalV,
         todayVisits: todayV,
-        totalSites: tSites,
+        totalSites: tSites + 1, // Base site + subsites
         totalFans: tFans,
         chartData: newChartData
       });
@@ -615,10 +615,10 @@ export default function AdminDashboard() {
           ) : (
             // Influencer/Owner Stats (Network)
             [
-              { label: '할당된 사이트', value: stats.totalSites, icon: Globe, color: 'blue' },
-              { label: '가입시킨 팬', value: stats.totalFans.toLocaleString(), icon: Users, color: 'green' },
-              { label: '새 문의 내역', value: inquiries.filter(i => i.status === 'pending').length, icon: MessageSquare, color: 'amber' },
-              { label: '팬 전환율', value: stats.totalFans > 0 ? ((inquiries.length / stats.totalFans) * 100).toFixed(1) + '%' : '0%', icon: CheckCircle2, color: 'purple' },
+              { label: '제작한 사이트 현황', value: stats.totalSites, icon: Globe, color: 'blue' },
+              { label: '고객 회원', value: stats.totalFans.toLocaleString(), icon: Users, color: 'green' },
+              { label: '문의내역', value: inquiries.length, icon: MessageSquare, color: 'amber' },
+              { label: '문의 전환율', value: stats.totalVisits > 0 ? ((inquiries.length / stats.totalVisits) * 100).toFixed(1) + '%' : '0%', icon: CheckCircle2, color: 'purple' },
             ].map((stat, i) => (
                 <StatCard key={i} stat={stat} theme={theme} isDark={isDark} />
             ))
@@ -686,11 +686,14 @@ export default function AdminDashboard() {
 
         {/* Page Builder Tab Content */}
         {activeTab === 'builder' && (
-          <PageBuilder subdomain={user?.subdomain || (user?.role === 'super_admin' ? 'kkang' : user?.id || 'temp')} />
+          <PageBuilder 
+            subdomain={user?.subdomain || (user?.role === 'super_admin' ? 'kkang' : user?.id || 'temp')} 
+            isDarkMode={isDark}
+          />
         )}
 
         {/* Customers Tab Content */}
-        {activeTab === 'customers' && <CustomersTab inquiries={inquiries} isDarkMode={isDark} />}
+        {activeTab === 'customers' && <CustomersTab inquiries={inquiries} sites={sites} users={users} isDarkMode={isDark} />}
 
         {/* Inquiries Tab Content */}
         {activeTab === 'inquiries' && (
@@ -721,6 +724,7 @@ export default function AdminDashboard() {
               ));
               setSelectedInquiry(null);
             }}
+            isDarkMode={isDarkMode}
           />
         )}
 

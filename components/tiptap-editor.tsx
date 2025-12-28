@@ -4,50 +4,53 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Bold, Italic, Strikethrough, Code, List, ListOrdered } from 'lucide-react';
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor, isDarkMode }: { editor: any, isDarkMode: boolean }) => {
   if (!editor) {
     return null;
   }
 
+  const btnClass = `p-2 rounded transition-all ${isDarkMode ? 'hover:bg-white/10 text-gray-300' : 'hover:bg-gray-100 text-gray-700'}`;
+  const activeClass = isDarkMode ? 'bg-white/20 text-white' : 'bg-gray-200 text-black';
+
   return (
-    <div className="flex gap-2 p-2 border-b border-gray-200 mb-4 flex-wrap">
+    <div className={`flex gap-2 p-2 border-b ${isDarkMode ? 'border-white/10' : 'border-gray-200'} mb-4 flex-wrap pb-2`}>
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         disabled={!editor.can().chain().focus().toggleBold().run()}
-        className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
+        className={`${btnClass} ${editor.isActive('bold') ? activeClass : ''}`}
       >
         <Bold className="w-4 h-4" />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleItalic().run()}
         disabled={!editor.can().chain().focus().toggleItalic().run()}
-        className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
+        className={`${btnClass} ${editor.isActive('italic') ? activeClass : ''}`}
       >
         <Italic className="w-4 h-4" />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleStrike().run()}
         disabled={!editor.can().chain().focus().toggleStrike().run()}
-        className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('strike') ? 'bg-gray-200' : ''}`}
+        className={`${btnClass} ${editor.isActive('strike') ? activeClass : ''}`}
       >
         <Strikethrough className="w-4 h-4" />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleCode().run()}
         disabled={!editor.can().chain().focus().toggleCode().run()}
-        className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('code') ? 'bg-gray-200' : ''}`}
+        className={`${btnClass} ${editor.isActive('code') ? activeClass : ''}`}
       >
         <Code className="w-4 h-4" />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('bulletList') ? 'bg-gray-200' : ''}`}
+        className={`${btnClass} ${editor.isActive('bulletList') ? activeClass : ''}`}
       >
         <List className="w-4 h-4" />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('orderedList') ? 'bg-gray-200' : ''}`}
+        className={`${btnClass} ${editor.isActive('orderedList') ? activeClass : ''}`}
       >
         <ListOrdered className="w-4 h-4" />
       </button>
@@ -58,9 +61,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
 interface TiptapEditorProps {
     content: string;
     onChange: (html: string) => void;
+    isDarkMode?: boolean;
 }
 
-export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
+export default function TiptapEditor({ content, onChange, isDarkMode = false }: TiptapEditorProps) {
   const editor = useEditor({
     extensions: [StarterKit],
     content: content,
@@ -69,15 +73,15 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     },
     editorProps: {
         attributes: {
-            class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4'
+            class: `focus:outline-none min-h-[300px] p-4 ${isDarkMode ? 'prose-invert' : 'prose'} prose-sm sm:prose lg:prose-lg mx-auto`
         }
     },
     immediatelyRender: false,
   });
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white text-black text-left">
-      <MenuBar editor={editor} />
+    <div className={`border ${isDarkMode ? 'border-white/10 bg-white/5 text-white' : 'border-gray-200 bg-white text-black'} rounded-lg overflow-hidden text-left`}>
+      <MenuBar editor={editor} isDarkMode={isDarkMode} />
       <EditorContent editor={editor} />
     </div>
   )

@@ -244,6 +244,12 @@ export interface SiteSettings {
   ogImageUrl?: string;   // Added
   seoTitle: string;
   seoDescription: string;
+  portfolioBanners?: {
+    id: string;
+    url: string;
+    title?: string;
+    subtitle?: string;
+  }[];
   updatedAt: string;
 }
 

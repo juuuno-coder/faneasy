@@ -27,6 +27,7 @@ interface Props {
   inquiry: Inquiry;
   onClose: () => void;
   onUpdate: (updated: Inquiry) => void;
+  isDarkMode: boolean;
 }
 
 const WORKFLOW_STEPS: { status: InquiryWorkflowStatus; label: string; color: string }[] = [
@@ -41,7 +42,7 @@ const WORKFLOW_STEPS: { status: InquiryWorkflowStatus; label: string; color: str
   { status: 'subscription_active', label: '구독료 발생 중', color: 'bg-indigo-500' },
 ];
 
-export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: Props) {
+export default function InquiryManagementModal({ inquiry, onClose, onUpdate, isDarkMode }: Props) {
   const { user: currentUser } = useAuthStore();
   const [currentStatus, setCurrentStatus] = useState<InquiryWorkflowStatus>(
     inquiry.workflowStatus || 'received'
@@ -51,6 +52,19 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
   const [completedAt, setCompletedAt] = useState(inquiry.completedAt || '');
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const isDark = isDarkMode;
+  const t = {
+    bg: isDark ? 'bg-[#111] border-white/10' : 'bg-white border-gray-100',
+    header: isDark ? 'bg-linear-to-r from-purple-950/30 to-indigo-950/30 border-white/5' : 'bg-linear-to-r from-purple-50 to-indigo-50 border-gray-100',
+    text: isDark ? 'text-white' : 'text-gray-900',
+    textMuted: isDark ? 'text-gray-400' : 'text-gray-500',
+    textDim: isDark ? 'text-gray-300' : 'text-gray-700',
+    card: isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200',
+    panel: isDark ? 'bg-black/20' : 'bg-gray-50',
+    input: isDark ? 'bg-white/5 border-white/10 text-white placeholder-gray-500' : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400',
+    divider: isDark ? 'border-white/5' : 'border-gray-100',
+  };
 
   const currentStepIndex = WORKFLOW_STEPS.findIndex(s => s.status === currentStatus);
 
@@ -215,53 +229,53 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div 
-        className="bg-white rounded-3xl w-full max-w-7xl h-[95vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200"
+        className={`${t.bg} rounded-3xl w-full max-w-7xl h-[95vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-linear-to-r from-purple-50 to-indigo-50 shrink-0">
+        <div className={`p-6 border-b ${t.header} flex justify-between items-start shrink-0`}>
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-1">프로젝트 관리</h3>
-            <p className="text-sm text-gray-500">{inquiry.name} · {formatPhoneNumber(inquiry.email)}</p>
+            <h3 className={`text-2xl font-bold ${t.text} mb-1`}>프로젝트 관리</h3>
+            <p className={`text-sm ${t.textMuted}`}>{inquiry.name} · {formatPhoneNumber(inquiry.email)}</p>
           </div>
           <div className="flex items-center gap-2">
             <button 
                 onClick={() => setShowDeleteModal(true)}
-                className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full transition-colors"
+                className={`p-2 hover:${isDark ? 'bg-red-500/10' : 'bg-red-50'} text-gray-400 hover:text-red-500 rounded-full transition-colors`}
                 title="문의 삭제"
             >
                 <Trash2 className="h-6 w-6" />
             </button>
-            <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors">
-                <X className="h-6 w-6 text-gray-400" />
+            <button onClick={onClose} className={`p-2 hover:${isDark ? 'bg-white/10' : 'bg-white'} rounded-full transition-colors`}>
+                <X className={`h-6 w-6 ${t.textMuted}`} />
             </button>
           </div>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
           {/* Left: Customer Info & Timeline */}
-          <div className="w-1/3 border-r border-gray-100 p-6 overflow-y-auto bg-gray-50">
+          <div className={`w-1/3 border-r ${t.divider} p-6 overflow-y-auto ${t.panel}`}>
             <div className="space-y-6">
               {/* Customer Info */}
               <div>
-                <h4 className="text-sm font-bold text-gray-400 uppercase mb-3">고객 정보</h4>
+                <h4 className={`text-sm font-bold ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase mb-3`}>고객 정보</h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
                     <Phone className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-700 font-mono tracking-wide">{formatPhoneNumber(inquiry.phone)}</span>
+                    <span className={`${t.textDim} font-mono tracking-wide`}>{formatPhoneNumber(inquiry.phone)}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Mail className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-700">{inquiry.email}</span>
+                    <span className={t.textDim}>{inquiry.email}</span>
                   </div>
                   {inquiry.company && (
                     <div className="flex items-center gap-2 text-sm">
                       <Building2 className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-700">{inquiry.company}</span>
+                      <span className={t.textDim}>{inquiry.company}</span>
                     </div>
                   )}
-                  <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
-                    <div className="text-xs text-gray-500 mb-1">희망 플랜</div>
+                  <div className={`mt-4 p-3 ${t.card} rounded-lg`}>
+                    <div className={`text-xs ${t.textMuted} mb-1`}>희망 플랜</div>
                     <div className="text-sm font-bold text-purple-600 uppercase">{inquiry.plan}</div>
                   </div>
                 </div>
@@ -269,7 +283,7 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
 
               {/* Timeline */}
               <div>
-                <h4 className="text-sm font-bold text-gray-400 uppercase mb-3">진행 이력</h4>
+                <h4 className={`text-sm font-bold ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase mb-3`}>진행 이력</h4>
                 <div className="space-y-2">
                   {(inquiry.timeline || []).slice().reverse().map((item, i) => { // Reverse to show newest first
                     const step = WORKFLOW_STEPS.find(s => s.status === item.status);
@@ -279,8 +293,8 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
                           <CheckCircle2 className="h-3 w-3" />
                         </div>
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900">{step?.label}</div>
-                          <div className="text-gray-500">{new Date(item.timestamp).toLocaleString('ko-KR')}</div>
+                          <div className={`font-medium ${t.text}`}>{step?.label}</div>
+                          <div className={t.textMuted}>{new Date(item.timestamp).toLocaleString('ko-KR')}</div>
                         </div>
                       </div>
                     );
@@ -291,18 +305,18 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
               {/* Important Dates */}
               {(completedAt || inquiry.subscriptionStartDate) && (
                 <div>
-                  <h4 className="text-sm font-bold text-gray-400 uppercase mb-3">중요 날짜</h4>
+                  <h4 className={`text-sm font-bold ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase mb-3`}>중요 날짜</h4>
                   <div className="space-y-2 text-sm">
                     {completedAt && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">완료일</span>
-                        <span className="font-medium">{completedAt}</span>
+                        <span className={t.textMuted}>완료일</span>
+                        <span className={`font-medium ${t.text}`}>{completedAt}</span>
                       </div>
                     )}
                     {inquiry.subscriptionStartDate && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">구독 시작일</span>
-                        <span className="font-medium text-green-600">{inquiry.subscriptionStartDate}</span>
+                        <span className={t.textMuted}>구독 시작일</span>
+                        <span className="font-medium text-green-500">{inquiry.subscriptionStartDate}</span>
                       </div>
                     )}
                   </div>
@@ -315,7 +329,7 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
           <div className="flex-1 p-6 overflow-y-auto">
             {/* Workflow Status */}
             <div className="mb-6">
-              <h4 className="text-sm font-bold text-gray-700 mb-3">진행 단계 (클릭 시 자동 저장)</h4>
+              <h4 className={`text-sm font-bold ${t.textDim} mb-3`}>진행 단계 (클릭 시 자동 저장)</h4>
               <div className="grid grid-cols-3 gap-3">
                 {WORKFLOW_STEPS.map((step, index) => {
                   const isActive = step.status === currentStatus;
@@ -329,18 +343,18 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
                         isActive 
                           ? `${step.color} text-white border-transparent shadow-lg scale-[1.02]` 
                           : isPast
-                          ? 'bg-gray-50 text-gray-500 border-gray-100'
-                          : 'bg-white text-gray-600 border-gray-100 hover:border-purple-300'
+                          ? `${isDark ? 'bg-white/5 text-gray-500 border-white/5' : 'bg-gray-50 text-gray-500 border-gray-100'}`
+                          : `${isDark ? 'bg-white/2 text-gray-600 border-white/5' : 'bg-white text-gray-600 border-gray-100'} hover:border-purple-300`
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2 relative z-10">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20' : 'bg-gray-200/50'}`}>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20' : (isDark ? 'bg-white/10' : 'bg-gray-200/50')}`}>
                             STEP {index + 1}
                         </span>
                         {isPast && <CheckCircle2 className="h-4 w-4 text-green-500" />}
                         {isActive && <div className="animate-pulse w-2 h-2 rounded-full bg-white"></div>}
                       </div>
-                      <div className={`text-sm font-bold relative z-10 ${isActive ? 'text-white' : 'text-gray-700'}`}>
+                      <div className={`text-sm font-bold relative z-10 ${isActive ? 'text-white' : (isDark ? 'text-gray-400' : 'text-gray-700')}`}>
                           {step.label}
                       </div>
 
@@ -356,8 +370,8 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
 
             {/* Completion Date (if status is completed) */}
             {currentStatus === 'completed' && (
-              <div className="mb-6 p-4 bg-teal-50 rounded-xl border border-teal-200">
-                <label className="block text-sm font-bold text-teal-900 mb-2">
+              <div className={`mb-6 p-4 ${isDark ? 'bg-teal-500/10 border-teal-500/30' : 'bg-teal-50 border-teal-200'} rounded-xl border`}>
+                <label className={`block text-sm font-bold ${isDark ? 'text-teal-400' : 'text-teal-900'} mb-2`}>
                   <Calendar className="h-4 w-4 inline mr-1" />
                   완료일 설정
                 </label>
@@ -365,9 +379,9 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
                   type="date"
                   value={completedAt}
                   onChange={(e) => setCompletedAt(e.target.value)}
-                  className="w-full px-3 py-2 border border-teal-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                  className={`w-full px-3 py-2 ${isDark ? 'bg-black/40 border-teal-500/50 text-white' : 'border-teal-300'} border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none`}
                 />
-                <p className="text-xs text-teal-700 mt-2">
+                <p className={`text-xs ${isDark ? 'text-teal-500/80' : 'text-teal-700'} mt-2`}>
                   💡 구독 시작일은 완료일 다음날로 자동 설정됩니다.
                 </p>
               </div>
@@ -375,7 +389,7 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
 
             {/* Notes Section */}
             <div className="flex flex-col h-[400px]">
-              <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+              <h4 className={`text-sm font-bold ${t.textDim} mb-3 flex items-center gap-2`}>
                 <MessageSquare className="h-4 w-4" />
                 상담 메모
               </h4>
@@ -383,8 +397,8 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
               {/* Existing Notes Scrollable */}
               <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-2 custom-scrollbar">
                 {notes.map((note) => (
-                  <div key={note.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200 relative group hover:border-purple-200 transition-colors">
-                    <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{note.content}</div>
+                  <div key={note.id} className={`p-4 ${isDark ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'} rounded-xl border relative group hover:border-purple-200 transition-colors`}>
+                    <div className={`text-sm ${t.textDim} whitespace-pre-wrap leading-relaxed`}>{note.content}</div>
                     <div className="text-[10px] text-gray-400 mt-2 flex justify-between items-center">
                       <span>{new Date(note.createdAt).toLocaleString('ko-KR')}</span>
                       <span>by {note.createdBy}</span>
@@ -392,20 +406,20 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
                   </div>
                 ))}
                 {notes.length === 0 && (
-                    <div className="text-center py-10 text-gray-400 text-sm bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                    <div className={`text-center py-10 ${t.textMuted} text-sm ${isDark ? 'bg-white/2' : 'bg-gray-50/50'} rounded-xl border border-dashed ${t.divider}`}>
                         작성된 메모가 없습니다.
                     </div>
                 )}
               </div>
 
               {/* Add New Note Fixed at Bottom of Section */}
-              <div className="space-y-2 mt-auto pt-4 border-t border-gray-100">
+              <div className={`space-y-2 mt-auto pt-4 border-t ${t.divider}`}>
                 <textarea
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
                   placeholder="통화 내용, 진행 사항, 특이사항 등을 기록하세요..."
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none resize-none text-sm transition-shadow text-gray-900 bg-white placeholder-gray-400"
+                  className={`w-full px-4 py-3 border ${t.divider} rounded-xl focus:ring-2 focus:ring-purple-500 outline-none resize-none text-sm transition-shadow ${t.textDim} ${isDark ? 'bg-black/40' : 'bg-white'} placeholder-gray-500`}
                   onKeyDown={(e) => {
                       if(e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
@@ -416,18 +430,18 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
                 <button
                   onClick={handleAddNote}
                   disabled={!newNote.trim()}
-                  className="w-full py-2 bg-gray-900 hover:bg-black text-white rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.99]"
+                  className={`w-full py-2 ${isDark ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-900 hover:bg-black'} text-white rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.99]`}
                 >
                   <Plus className="h-4 w-4" />
-                  메모 목록에 추가 (저장 버튼을 눌러야 최종 반영됩니다)
+                  메모 목록에 추가
                 </button>
               </div>
             </div>
             
              {/* Original Message */}
              <div className="mt-8 pt-6 border-t border-gray-200">
-              <h4 className="text-sm font-bold text-gray-400 uppercase mb-2">최초 문의 내용</h4>
-              <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 whitespace-pre-wrap border border-gray-200">
+              <h4 className={`text-sm font-bold ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase mb-2`}>최초 문의 내용</h4>
+              <div className={`${isDark ? 'bg-black/40 border-white/5' : 'bg-gray-50 border-gray-200'} rounded-xl p-4 text-sm ${t.textDim} whitespace-pre-wrap border`}>
                 {inquiry.message}
               </div>
             </div>
@@ -436,10 +450,10 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
         </div>
 
         {/* Footer - Always Visible */}
-        <div className="p-4 bg-white border-t border-gray-100 flex gap-3 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-20">
+        <div className={`p-4 ${isDark ? 'bg-black/40 border-white/10' : 'bg-white border-gray-100'} border-t flex gap-3 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-20`}>
           <button 
             onClick={onClose}
-            className="flex-1 py-4 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-colors text-lg"
+            className={`flex-1 py-4 px-4 ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'} rounded-xl font-bold transition-colors text-lg`}
           >
             닫기 (ESC)
           </button>
@@ -461,7 +475,7 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate }: P
           title="문의 삭제"
           message="이 문의 내역을 정말 삭제하시겠습니까? 삭제된 내역은 복구할 수 없습니다."
           confirmLabel="삭제하기"
-          isDarkMode={false}
+          isDarkMode={isDark}
       />
     </div>
   );

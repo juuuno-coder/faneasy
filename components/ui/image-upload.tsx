@@ -11,7 +11,7 @@ interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
   disabled?: boolean;
-  aspectRatio?: 'square' | 'video' | 'wide';
+  aspectRatio?: 'square' | 'video' | 'wide' | 'portrait';
   isDarkMode?: boolean;
 }
 
@@ -77,6 +77,7 @@ export default function ImageUpload({
     switch (aspectRatio) {
       case 'video': return 'aspect-video';
       case 'wide': return 'aspect-[3/1]';
+      case 'portrait': return 'aspect-[2/3]';
       case 'square': default: return 'aspect-square'; 
     }
   };

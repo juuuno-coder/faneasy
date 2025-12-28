@@ -2,14 +2,16 @@
 
 import { Search, Mail, Phone, Building, Calendar, Download } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import type { Inquiry } from '@/lib/types';
+import type { Inquiry, SiteNode } from '@/lib/types';
 
 interface CustomersTabProps {
   inquiries: Inquiry[];
+  sites: SiteNode[];
+  users: any[];
   isDarkMode: boolean;
 }
 
-export default function CustomersTab({ inquiries, isDarkMode }: CustomersTabProps) {
+export default function CustomersTab({ inquiries, sites, users, isDarkMode }: CustomersTabProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const t = {
@@ -27,24 +29,56 @@ export default function CustomersTab({ inquiries, isDarkMode }: CustomersTabProp
     const uniqueCustomers = new Map();
 
     inquiries.forEach((inquiry) => {
+      const inquiryDate = inquiry.createdAt instanceof Date 
+        ? inquiry.createdAt 
+        : new Date(inquiry.createdAt as any);
+
       if (!uniqueCustomers.has(inquiry.email)) {
+        // Find if this customer is a site owner
+        const user = users.find(u => u.email === inquiry.email);
+        const userSite = sites.find(s => s.ownerId === user?.id || s.name.toLowerCase() === user?.subdomain?.toLowerCase());
+        
+        let monthsActive = '-';
+        let expiryDate = '-';
+
+        if (userSite) {
+          const startDate = new Date(userSite.createdAt);
+          const now = new Date();
+          const diffMonths = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
+          monthsActive = `${Math.max(1, diffMonths + 1)}개월차`;
+          
+          if (user?.subscriptionExpiry) {
+            expiryDate = new Date(user.subscriptionExpiry).toLocaleDateString();
+          } else if (user?.plan === 'master') {
+            expiryDate = '무제한';
+          }
+        }
+
         uniqueCustomers.set(inquiry.email, {
           id: inquiry.id,
           name: inquiry.name,
           email: inquiry.email,
           phone: inquiry.phone,
           company: (inquiry as any).company || '-',
-          firstInteraction: inquiry.createdAt,
+          firstInteraction: inquiryDate,
+          lastInteraction: inquiryDate,
           totalInquiries: 1,
+          monthsActive,
+          expiryDate,
+          isMember: !!user,
+          hasSite: !!userSite
         });
       } else {
         const existing = uniqueCustomers.get(inquiry.email);
         existing.totalInquiries += 1;
+        if (inquiryDate > existing.lastInteraction) {
+          existing.lastInteraction = inquiryDate;
+        }
       }
     });
 
     return Array.from(uniqueCustomers.values());
-  }, [inquiries]);
+  }, [inquiries, sites, users]);
 
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -57,7 +91,7 @@ export default function CustomersTab({ inquiries, isDarkMode }: CustomersTabProp
     const csvContent = [
       headers.join(','),
       ...filteredCustomers.map(c => 
-        [c.name, c.email, c.phone, c.company, new Date(c.firstInteraction).toLocaleDateString(), c.totalInquiries].join(',')
+        [c.name, c.email, c.phone, c.company, new Date(c.lastInteraction).toLocaleDateString(), c.totalInquiries, c.monthsActive, c.expiryDate].join(',')
       )
     ].join('\n');
 
@@ -96,9 +130,9 @@ export default function CustomersTab({ inquiries, isDarkMode }: CustomersTabProp
           <div className={`text-3xl font-bold ${t.text}`}>{customers.length}명</div>
         </div>
         <div className={`rounded-2xl p-6 transition-colors border ${t.bg}`}>
-          <div className={`${t.textMuted} text-xs mb-1 font-bold uppercase tracking-wider`}>금월 신규 고객</div>
+          <div className={`${t.textMuted} text-xs mb-1 font-bold uppercase tracking-wider`}>이번달 신규 고객</div>
           <div className="text-3xl font-bold text-green-500">
-            {customers.filter(c => new Date(c.firstInteraction).getMonth() === new Date().getMonth()).length}명
+            {customers.filter(c => new Date(c.lastInteraction).getMonth() === new Date().getMonth() && new Date(c.lastInteraction).getFullYear() === new Date().getFullYear()).length}명
           </div>
         </div>
       </div>
@@ -109,11 +143,11 @@ export default function CustomersTab({ inquiries, isDarkMode }: CustomersTabProp
             <thead>
               <tr className={`border-b transition-colors ${t.tableHeader}`}>
                 <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>고객명</th>
-                <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>이메일</th>
-                <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>연락처</th>
+                <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>이메일 / 연락처</th>
                 <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>회사/단체</th>
-                <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>관심도(문의)</th>
-                <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>최초 접속일</th>
+                <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>사이트 현황</th>
+                <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>구독 만료일</th>
+                <th className={`px-6 py-5 text-left text-xs font-bold uppercase tracking-wider ${t.textDim}`}>최근 접속일</th>
               </tr>
             </thead>
             <tbody className={`divide-y transition-colors ${isDarkMode ? 'divide-white/5' : 'divide-gray-100'}`}>
@@ -128,32 +162,44 @@ export default function CustomersTab({ inquiries, isDarkMode }: CustomersTabProp
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className={`flex items-center gap-2 font-medium ${t.textDim}`}>
-                      <Mail className="h-4 w-4 text-gray-500" />
-                      {customer.email}
+                    <div className="space-y-1">
+                      <div className={`flex items-center gap-2 text-xs font-medium ${t.textDim}`}>
+                        <Mail className="h-3 w-3 text-gray-500" />
+                        {customer.email}
+                      </div>
+                      <div className={`flex items-center gap-2 text-xs font-medium ${t.textMuted}`}>
+                        <Phone className="h-3 w-3 text-gray-500" />
+                        {customer.phone}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className={`flex items-center gap-2 font-medium ${t.textDim}`}>
-                      <Phone className="h-4 w-4 text-gray-500" />
-                      {customer.phone}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className={`flex items-center gap-2 font-medium ${t.textDim}`}>
+                    <div className={`flex items-center gap-2 text-sm ${t.textDim}`}>
                       <Building className="h-4 w-4 text-gray-500" />
                       {customer.company}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold border ${isDarkMode ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : 'bg-purple-100 text-purple-700 border-purple-200'}`}>
-                      {customer.totalInquiries}회
-                    </span>
+                    <div className="space-y-1">
+                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${customer.hasSite ? (isDarkMode ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-green-100 text-green-700 border-green-200') : (isDarkMode ? 'bg-gray-500/20 text-gray-400 border-gray-500/30' : 'bg-gray-100 text-gray-600 border-gray-200')}`}>
+                         {customer.hasSite ? '서비스 이용 중' : '미개설'}
+                       </span>
+                       {customer.hasSite && (
+                         <div className={`text-[10px] font-bold ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>
+                           {customer.monthsActive}
+                         </div>
+                       )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                     <div className={`text-xs font-medium ${t.textDim}`}>
+                        {customer.expiryDate}
+                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className={`flex items-center gap-2 text-sm ${t.textMuted}`}>
                       <Calendar className="h-4 w-4" />
-                      {new Date(customer.firstInteraction).toLocaleDateString()}
+                      {new Date(customer.lastInteraction).toLocaleDateString()}
                     </div>
                   </td>
                 </tr>

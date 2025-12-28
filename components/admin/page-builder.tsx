@@ -61,9 +61,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface PageBuilderProps {
   subdomain: string;
+  isDarkMode: boolean;
 }
 
-export default function PageBuilder({ subdomain }: PageBuilderProps) {
+export default function PageBuilder({ subdomain, isDarkMode }: PageBuilderProps) {
   const { user } = useAuthStore();
   const [blocks, setBlocks] = useState<SiteBlock[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,7 +76,21 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
   const [blockToDelete, setBlockToDelete] = useState<string | null>(null);
   const [versionToRestore, setVersionToRestore] = useState<SiteBlock[] | null>(null);
 
-  // --- Live Visual Editing State ---
+  const isDark = isDarkMode;
+  const theme = {
+    bg: isDark ? 'bg-[#0A0A0A]' : 'bg-slate-50',
+    headerBg: isDark ? 'bg-[#111]' : 'bg-white',
+    card: isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm',
+    panel: isDark ? 'bg-[#111] border-white/10' : 'bg-white border-slate-200 shadow-xl',
+    text: isDark ? 'text-white' : 'text-slate-900',
+    textMuted: isDark ? 'text-gray-500' : 'text-slate-500',
+    border: isDark ? 'border-white/10' : 'border-slate-200',
+    divider: isDark ? 'border-white/5' : 'border-slate-100',
+    input: isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900',
+    btnGhost: isDark ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200',
+    browserFrame: isDark ? 'border-[#1A1A1A]' : 'border-slate-300',
+  };
+
   const [viewMode, setViewMode] = useState<'edit' | 'visual' | 'split'>('edit');
   const [highlightedBlockId, setHighlightedBlockId] = useState<string | null>(null);
 
@@ -224,7 +239,8 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
   if (loading) return <div className="p-12 text-center text-gray-500">데이터를 불러오는 중...</div>;
 
   return (
-    <div className="flex flex-col gap-6 relative">
+    <>
+      <div className="flex flex-col gap-6 relative">
       {/* Settings Modal Overlay */}
       <AnimatePresence>
         {activeSettingsBlock && viewMode !== 'split' && (
@@ -232,6 +248,7 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
             block={blocks.find(b => b.id === activeSettingsBlock)!}
             onUpdate={(settings) => updateBlock(activeSettingsBlock, { settings })}
             onClose={() => setActiveSettingsBlock(null)}
+            isDarkMode={isDark}
           />
         )}
       </AnimatePresence>
@@ -242,41 +259,42 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
                 subdomain={subdomain}
                 onClose={() => setShowHistory(false)}
                 onRestore={handleRestore}
+                isDarkMode={isDark}
             />
         )}
       </AnimatePresence>
 
       {/* Page Builder Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#111] p-6 rounded-3xl border border-white/10 sticky top-0 z-50 backdrop-blur-xl transition-all shadow-2xl">
+      <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${theme.headerBg} p-6 rounded-3xl border ${theme.border} sticky top-0 z-50 backdrop-blur-xl transition-all shadow-2xl`}>
         <div className="flex items-center gap-4">
           <div className="p-3 bg-purple-600 rounded-2xl shadow-lg shadow-purple-600/30">
             <Layout className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-black flex items-center gap-2">
+            <h2 className={`text-xl font-black flex items-center gap-2 ${theme.text}`}>
               페이지 빌더 (PRO)
               <span className="bg-purple-600/20 text-purple-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">Live</span>
             </h2>
-            <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest font-black opacity-50">Visual Design System</p>
+            <p className={`text-xs ${theme.textMuted} mt-1 uppercase tracking-widest font-black opacity-50`}>Visual Design System</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/10">
+        <div className={`flex items-center gap-2 ${isDark ? 'bg-white/5' : 'bg-slate-100'} p-1.5 rounded-2xl border ${theme.border}`}>
           <button 
             onClick={() => setViewMode('edit')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'edit' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'edit' ? (isDark ? 'bg-white text-black shadow-lg' : 'bg-purple-600 text-white shadow-lg') : theme.textMuted + ' hover:text-purple-500'}`}
           >
             <Settings2 size={14} /> 에디터 전용
           </button>
           <button 
             onClick={() => setViewMode('split')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'split' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'split' ? (isDark ? 'bg-white text-black shadow-lg' : 'bg-purple-600 text-white shadow-lg') : theme.textMuted + ' hover:text-purple-500'}`}
           >
             <Maximize2 size={14} /> 실시간 편집
           </button>
           <button 
             onClick={() => setViewMode('visual')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'visual' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'visual' ? (isDark ? 'bg-white text-black shadow-lg' : 'bg-purple-600 text-white shadow-lg') : theme.textMuted + ' hover:text-purple-500'}`}
           >
             <Eye size={14} /> 프리뷰 전용
           </button>
@@ -285,7 +303,7 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
         <div className="flex items-center gap-3 w-full md:w-auto">
            <button 
              onClick={() => setShowHistory(true)}
-             className="p-3 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center font-bold"
+             className={`p-3 rounded-2xl ${theme.btnGhost} transition-all flex items-center justify-center font-bold`}
              title="버전 히스토리"
            >
              <History className="h-5 w-5" />
@@ -305,46 +323,45 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
         {/* Sidebar: Add Blocks - Only in standard edit mode */}
         {viewMode === 'edit' && (
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white/5 rounded-3xl border border-white/10 p-6 sticky top-28">
-              <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-6 opacity-50">기본 요소</h3>
+            <div className={`${theme.card} rounded-3xl p-6 sticky top-28`}>
+              <h3 className={`text-xs font-black ${theme.textMuted} uppercase tracking-widest mb-6 opacity-50`}>기본 요소</h3>
               <div className="grid grid-cols-1 gap-2 mb-8">
-                <AddBlockButton icon={<Layout />} label="히어로 섹션" onClick={() => addBlock('hero')} color="purple" />
-                <AddBlockButton icon={<Type />} label="리치 텍스트" onClick={() => addBlock('text')} color="blue" />
-                <AddBlockButton icon={<ImageIcon />} label="이미지/갤러리" onClick={() => addBlock('image')} color="green" />
+                <AddBlockButton icon={<Layout />} label="히어로 섹션" onClick={() => addBlock('hero')} color="purple" isDarkMode={isDark} />
+                <AddBlockButton icon={<Type />} label="리치 텍스트" onClick={() => addBlock('text')} color="blue" isDarkMode={isDark} />
+                <AddBlockButton icon={<ImageIcon />} label="이미지/갤러리" onClick={() => addBlock('image')} color="green" isDarkMode={isDark} />
               </div>
 
-              <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-6 opacity-50">고급 컴포넌트</h3>
+              <h3 className={`text-xs font-black ${theme.textMuted} uppercase tracking-widest mb-6 opacity-50`}>고급 컴포넌트</h3>
               <div className="grid grid-cols-1 gap-2 mb-8">
-                <AddBlockButton icon={<Zap />} label="주요 특징" onClick={() => addBlock('features')} color="yellow" />
-                <AddBlockButton icon={<CreditCard />} label="가격 정책" onClick={() => addBlock('pricing')} color="pink" />
-                <AddBlockButton icon={<HelpCircle />} label="자주 묻는 질문" onClick={() => addBlock('faq')} color="indigo" />
-                <AddBlockButton icon={<BarChart3 />} label="성과 지표" onClick={() => addBlock('stats')} color="cyan" />
-                <AddBlockButton icon={<Star />} label="고객 후기" onClick={() => addBlock('testimonials')} color="orange" />
+                <AddBlockButton icon={<Zap />} label="주요 특징" onClick={() => addBlock('features')} color="yellow" isDarkMode={isDark} />
+                <AddBlockButton icon={<CreditCard />} label="가격 정책" onClick={() => addBlock('pricing')} color="pink" isDarkMode={isDark} />
+                <AddBlockButton icon={<HelpCircle />} label="자주 묻는 질문" onClick={() => addBlock('faq')} color="indigo" isDarkMode={isDark} />
+                <AddBlockButton icon={<BarChart3 />} label="성과 지표" onClick={() => addBlock('stats')} color="cyan" isDarkMode={isDark} />
+                <AddBlockButton icon={<Star />} label="고객 후기" onClick={() => addBlock('testimonials')} color="orange" isDarkMode={isDark} />
               </div>
 
-              <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-6 opacity-50">구성 요소</h3>
+              <h3 className={`text-xs font-black ${theme.textMuted} uppercase tracking-widest mb-6 opacity-50`}>구성 요소</h3>
               <div className="grid grid-cols-1 gap-2">
-                <AddBlockButton icon={<MessageSquare />} label="문의 양식" onClick={() => addBlock('form')} color="red" />
-                <AddBlockButton icon={<Square />} label="여백/선" onClick={() => addBlock('spacer')} color="gray" />
+                <AddBlockButton icon={<MessageSquare />} label="문의 양식" onClick={() => addBlock('form')} color="red" isDarkMode={isDark} />
+                <AddBlockButton icon={<Square />} label="여백/선" onClick={() => addBlock('spacer')} color="gray" isDarkMode={isDark} />
               </div>
             </div>
           </div>
         )}
 
         {/* --- Editor / Visual Area --- */}
-        <div className={`${viewMode === 'edit' ? 'lg:col-span-3' : 'lg:col-span-4'}`}>
-          {viewMode === 'visual' ? (
-            <div className="bg-[#0A0A0A] rounded-[48px] border border-white/10 overflow-hidden shadow-2xl min-h-[800px]">
-                <BlockRenderer blocks={blocks} site={subdomain} />
-            </div>
+                  {viewMode === 'visual' ? (
+                    <div className={`${isDark ? 'bg-[#0A0A0A]' : 'bg-white'} rounded-[48px] border ${theme.border} overflow-hidden shadow-2xl min-h-[800px]`}>
+                        <BlockRenderer blocks={blocks} site={subdomain} />
+                    </div>
           ) : viewMode === 'split' ? (
             <div className="flex h-[85vh] gap-6 overflow-hidden">
                {/* Fixed Left Sidebar Editor */}
                <div className="w-[450px] shrink-0 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-4">
-                  <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
-                     <h3 className="text-sm font-black text-gray-400 mb-6 uppercase flex items-center justify-between">
+                  <div className={`${theme.card} p-6 rounded-3xl shadow-sm`}>
+                     <h3 className={`text-sm font-black ${theme.textMuted} mb-6 uppercase flex items-center justify-between`}>
                         블록 구조
-                        <span className="text-[10px] bg-white/10 px-2 py-1 rounded-lg font-bold">{blocks.length} Blocks</span>
+                        <span className={`text-[10px] ${isDark ? 'bg-white/10' : 'bg-slate-100'} px-2 py-1 rounded-lg font-bold`}>{blocks.length} Blocks</span>
                      </h3>
                      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
@@ -358,50 +375,52 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
                                   onUpdate={(content) => updateBlock(block.id, { content })}
                                   onOpenSettings={() => selectBlock(block.id)}
                                   compact={true}
+                                  isDarkMode={isDark}
                                 />
                               ))}
                            </div>
                         </SortableContext>
                      </DndContext>
                      
-                     <div className="mt-8 pt-8 border-t border-white/10 grid grid-cols-2 gap-2">
-                        <button onClick={() => addBlock('hero')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all">+ 히어로</button>
-                        <button onClick={() => addBlock('features')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all">+ 특징</button>
-                        <button onClick={() => addBlock('text')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all">+ 텍스트</button>
-                        <button onClick={() => addBlock('image')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all">+ 이미지</button>
+                     <div className={`mt-8 pt-8 border-t ${theme.divider} grid grid-cols-2 gap-2`}>
+                        <button onClick={() => addBlock('hero')} className={`p-3 ${theme.btnGhost} rounded-xl text-xs font-bold transition-all`}>+ 히어로</button>
+                        <button onClick={() => addBlock('features')} className={`p-3 ${theme.btnGhost} rounded-xl text-xs font-bold transition-all`}>+ 특징</button>
+                        <button onClick={() => addBlock('text')} className={`p-3 ${theme.btnGhost} rounded-xl text-xs font-bold transition-all`}>+ 텍스트</button>
+                        <button onClick={() => addBlock('image')} className={`p-3 ${theme.btnGhost} rounded-xl text-xs font-bold transition-all`}>+ 이미지</button>
                      </div>
                   </div>
 
                   {activeSettingsBlock && (
-                    <div className="bg-[#111] p-8 rounded-[32px] border border-white/10 shadow-2xl animate-in slide-in-from-left-4 duration-300">
+                    <div className={`${theme.panel} p-8 rounded-[32px] shadow-2xl animate-in slide-in-from-left-4 duration-300`}>
                       <div className="flex items-center justify-between mb-8">
-                        <h4 className="text-xl font-black flex items-center gap-3">
+                        <h4 className={`text-xl font-black flex items-center gap-3 ${theme.text}`}>
                           <Settings2 className="text-purple-500" /> 세부 옵션
                         </h4>
-                        <button onClick={() => setActiveSettingsBlock(null)} className="text-gray-500 hover:text-white">닫기</button>
+                        <button onClick={() => setActiveSettingsBlock(null)} className={`${theme.textMuted} hover:${theme.text}`}>닫기</button>
                       </div>
                       <BlockSettingsPanel 
                         inline={true}
                         block={blocks.find(b => b.id === activeSettingsBlock)!}
                         onUpdate={(settings) => updateBlock(activeSettingsBlock, { settings })}
                         onClose={() => setActiveSettingsBlock(null)}
+                        isDarkMode={isDark}
                       />
                     </div>
                   )}
                </div>
 
-               {/* Right Side Browser Frame Preview */}
-               <div className="flex-1 bg-[#0A0A0A] rounded-[48px] border-8 border-[#1A1A1A] overflow-y-auto overflow-x-hidden shadow-2xl relative custom-scrollbar group/preview">
-                  <div className="sticky top-0 left-0 right-0 h-10 bg-[#1A1A1A] flex items-center px-6 gap-2 z-40">
-                     <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
-                     </div>
-                     <div className="mx-auto bg-black/40 px-4 py-1 rounded-lg text-[10px] text-gray-500 font-bold tracking-widest uppercase">
-                        {subdomain}.faneasy.kr PREVIEW
-                     </div>
-                  </div>
+                {/* Right Side Browser Frame Preview */}
+                <div className={`flex-1 ${isDark ? 'bg-[#0A0A0A]' : 'bg-white'} rounded-[48px] border-8 ${theme.browserFrame} overflow-y-auto overflow-x-hidden shadow-2xl relative custom-scrollbar group/preview`}>
+                   <div className={`sticky top-0 left-0 right-0 h-10 ${isDark ? 'bg-[#1A1A1A]' : 'bg-slate-200'} flex items-center px-6 gap-2 z-40`}>
+                      <div className="flex gap-1.5">
+                         <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+                         <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+                         <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
+                      </div>
+                      <div className={`mx-auto ${isDark ? 'bg-black/40' : 'bg-white/40'} px-4 py-1 rounded-lg text-[10px] ${theme.textMuted} font-bold tracking-widest uppercase`}>
+                         {subdomain}.faneasy.kr PREVIEW
+                      </div>
+                   </div>
                   
                   <BlockRenderer 
                     blocks={blocks} 
@@ -439,14 +458,15 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
                         onDelete={() => setBlockToDelete(block.id)}
                         onUpdate={(content) => updateBlock(block.id, { content })}
                         onOpenSettings={() => selectBlock(block.id)}
+                        isDarkMode={isDark}
                       />
                     </div>
                   ))}
                   
                   {blocks.length === 0 && (
-                    <div className="p-32 border-2 border-dashed border-white/5 rounded-[48px] text-center text-gray-500 bg-white/1">
+                    <div className={`p-32 border-2 border-dashed ${theme.divider} rounded-[48px] text-center ${theme.textMuted} ${isDark ? 'bg-white/1' : 'bg-slate-50'}`}>
                       <Plus className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                      <p className="font-bold text-lg">새로운 페이지를 만들어보세요.</p>
+                      <p className={`font-bold text-lg ${theme.text}`}>새로운 페이지를 만들어보세요.</p>
                       <p className="text-sm mt-2">왼쪽 사이드바에서 블록을 추가하여 시작할 수 있습니다.</p>
                     </div>
                   )}
@@ -462,6 +482,7 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
           subdomain={subdomain} 
           onClose={() => setShowHistory(false)} 
           onRestore={(legacyBlocks) => setVersionToRestore(legacyBlocks)} 
+          isDarkMode={isDark}
         />
       )}
 
@@ -472,7 +493,7 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
           title="블록 삭제"
           message="정말 이 블록을 삭제하시겠습니까? 관련 데이터가 모두 삭제됩니다."
           confirmLabel="삭제하기"
-          isDarkMode={true}
+          isDarkMode={isDark}
       />
 
       <ConfirmationModal 
@@ -483,13 +504,26 @@ export default function PageBuilder({ subdomain }: PageBuilderProps) {
           message="선택한 버전으로 되돌리시겠습니까? 현재 편집 중인 내용은 사라집니다."
           confirmLabel="복구하기"
           variant="warning"
-          isDarkMode={true}
+          isDarkMode={isDark}
       />
-    </div>
+    </>
   );
 }
 
-function AddBlockButton({ icon, label, onClick, color }: { icon: React.ReactNode; label: string; onClick: () => void; color?: string }) {
+function AddBlockButton({ 
+  icon, 
+  label, 
+  onClick, 
+  color,
+  isDarkMode 
+}: { 
+  icon: React.ReactNode; 
+  label: string; 
+  onClick: () => void; 
+  color?: string;
+  isDarkMode: boolean;
+}) {
+  const isDark = isDarkMode;
   const colorClasses: any = {
     purple: "text-purple-400 bg-purple-400/10",
     blue: "text-blue-400 bg-blue-400/10",
@@ -506,7 +540,7 @@ function AddBlockButton({ icon, label, onClick, color }: { icon: React.ReactNode
   return (
     <button 
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all text-gray-400 hover:text-white group"
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl ${isDark ? 'bg-white/5 border-white/5' : 'bg-white border-slate-200 shadow-xs'} hover:border-purple-500/30 hover:bg-purple-500/5 transition-all ${isDark ? 'text-gray-400' : 'text-slate-600'} hover:text-purple-500 group`}
     >
       <div className={`p-2 rounded-xl transition-transform group-hover:scale-110 ${colorClasses[color || 'gray']}`}>
         {icon}
@@ -521,13 +555,23 @@ function BlockSettingsPanel({
   block, 
   onUpdate, 
   onClose,
-  inline = false
+  inline = false,
+  isDarkMode
 }: { 
   block: SiteBlock; 
   onUpdate: (settings: any) => void; 
   onClose: () => void;
   inline?: boolean;
+  isDarkMode: boolean;
 }) {
+  const isDark = isDarkMode;
+  const t = {
+    panel: isDark ? 'bg-[#111] border-white/10' : 'bg-white border-slate-200 shadow-2xl',
+    text: isDark ? 'text-white' : 'text-slate-900',
+    textMuted: isDark ? 'text-gray-500' : 'text-slate-500',
+    input: isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900',
+    divider: isDark ? 'border-white/5' : 'border-slate-100',
+  };
   const currentSettings = block.settings || {};
   
   return (
@@ -535,15 +579,15 @@ function BlockSettingsPanel({
       initial={inline ? { opacity: 0 } : { x: 400, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={inline ? { opacity: 0 } : { x: 400, opacity: 0 }}
-      className={inline ? "w-full space-y-8" : "fixed top-0 right-0 w-80 h-full bg-[#111] border-l border-white/10 z-50 shadow-2xl p-8 overflow-y-auto"}
+      className={inline ? "w-full space-y-8" : `fixed top-0 right-0 w-80 h-full ${t.panel} border-l z-50 p-8 overflow-y-auto`}
     >
       {!inline && (
         <div className="flex items-center justify-between mb-8">
-           <h2 className="text-xl font-bold flex items-center gap-2">
+           <h2 className={`text-xl font-bold flex items-center gap-2 ${t.text}`}>
               <Settings2 size={20} className="text-purple-500" />
               블록 설정
            </h2>
-           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+           <button onClick={onClose} className={`p-2 hover:${isDark ? 'bg-white/10' : 'bg-slate-100'} rounded-full transition-colors ${t.textMuted}`}>
               <X size={20} />
            </button>
         </div>
@@ -654,7 +698,8 @@ function SortableBlockItem({
   onUpdate, 
   onOpenSettings,
   isActive = false,
-  compact = false
+  compact = false,
+  isDarkMode
 }: { 
   block: SiteBlock; 
   onDelete: () => void; 
@@ -662,7 +707,17 @@ function SortableBlockItem({
   onOpenSettings: () => void;
   isActive?: boolean;
   compact?: boolean;
+  isDarkMode: boolean;
 }) {
+  const isDark = isDarkMode;
+  const t = {
+    card: isActive 
+        ? (isDark ? 'border-purple-500/50 bg-purple-500/5 shadow-lg' : 'border-purple-500/30 bg-purple-50 shadow-sm')
+        : (isDark ? 'border-white/10 hover:border-white/20 bg-white/5' : 'border-slate-200 hover:border-slate-300 bg-white shadow-xs'),
+    header: isDark ? 'bg-white/2 border-white/5' : 'bg-slate-50 border-slate-100',
+    text: isDark ? 'text-white' : 'text-slate-900',
+    textMuted: isDark ? 'text-gray-500' : 'text-slate-500',
+  };
   const {
     attributes,
     listeners,
@@ -685,41 +740,37 @@ function SortableBlockItem({
     <div 
       ref={setNodeRef} 
       style={style} 
-      className={`group bg-white/5 rounded-3xl border transition-all ${
-        isDragging ? 'shadow-2xl ring-2 ring-purple-500 border-purple-500/50' : 
-        isActive ? 'border-purple-500/50 bg-purple-500/5' : 
-        'hover:border-white/20 border-white/10'
-      }`}
+      className={`group rounded-3xl border transition-all ${t.card} ${isDragging ? 'opacity-50 ring-2 ring-purple-500 z-50 shadow-2xl scale-[1.02]' : ''}`}
     >
-      <div className={`flex items-center justify-between px-6 py-4 bg-white/2 border-b border-white/5 ${compact ? 'py-3 px-4' : ''}`}>
+      <div className={`flex items-center justify-between px-6 py-4 rounded-t-3xl border-b ${t.header} ${compact ? 'py-3 px-4' : ''}`}>
         <div className="flex items-center gap-4">
-          <div {...attributes} {...listeners} className="cursor-grab p-2 hover:bg-white/10 rounded-xl transition-colors">
-            <GripVertical size={18} className="text-gray-600 group-hover:text-purple-500" />
+          <div {...attributes} {...listeners} className={`cursor-grab p-2 hover:${isDark ? 'bg-white/10' : 'bg-slate-200'} rounded-xl transition-colors`}>
+            <GripVertical size={18} className={`${t.textMuted} group-hover:text-purple-500`} />
           </div>
           <div className="flex items-center gap-2">
              <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 bg-purple-400/10 px-2 py-1 rounded-lg">
                 {block.type}
              </span>
-             <h4 className="text-xs font-bold text-gray-500 group-hover:text-white transition-colors">{block.id}</h4>
+             <h4 className={`text-xs font-bold ${t.textMuted} group-hover:${t.text} transition-colors`}>{block.id}</h4>
           </div>
         </div>
         <div className="flex items-center gap-1">
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 hover:bg-white/10 rounded-lg text-gray-500 transition-all"
+            className={`p-2 hover:${isDark ? 'bg-white/10' : 'bg-slate-200'} rounded-lg ${t.textMuted} transition-all`}
           >
             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           <button 
             onClick={onOpenSettings}
-            className="p-2 hover:bg-purple-500/10 rounded-lg text-gray-500 hover:text-purple-400 transition-all"
+            className={`p-2 hover:bg-purple-500/10 rounded-lg ${t.textMuted} hover:text-purple-400 transition-all`}
             title="고급 설정"
           >
             <Settings2 size={16} />
           </button>
           <button 
             onClick={onDelete}
-            className="p-2 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-400 transition-all"
+            className={`p-2 hover:bg-red-500/10 rounded-lg ${t.textMuted} hover:text-red-400 transition-all`}
             title="블록 삭제"
           >
             <Trash2 size={16} />
@@ -729,76 +780,89 @@ function SortableBlockItem({
 
       {isExpanded && !compact && (
         <div className="p-8">
-          <BlockEditorFields block={block} onUpdate={onUpdate} />
+          <BlockEditorFields block={block} onUpdate={onUpdate} isDarkMode={isDark} />
         </div>
       )}
     </div>
   );
 }
 
-function BlockEditorFields({ block, onUpdate }: { block: SiteBlock; onUpdate: (content: any) => void }) {
-  const [activeItem, setActiveItem] = useState<number | null>(null);
+function BlockEditorFields({ block, onUpdate, isDarkMode }: { block: SiteBlock, onUpdate: (content: any) => void, isDarkMode: boolean }) {
+  const isDark = isDarkMode;
+  const t = {
+    inputGroup: (label: string, value: string, onChange: (v: string) => void, type: 'text' | 'textarea' = 'text', placeholder?: string) => (
+        <InputGroup label={label} value={value} onChange={onChange} type={type} placeholder={placeholder} isDarkMode={isDark} />
+    )
+  };
 
   switch (block.type) {
     case 'hero':
       return (
         <div className="space-y-6">
-          <InputGroup label="메인 타이틀" value={block.content.title} onChange={(val) => onUpdate({...block.content, title: val})} />
-          <InputGroup label="서브 설명" type="textarea" value={block.content.description} onChange={(val) => onUpdate({...block.content, description: val})} />
-          <InputGroup label="버튼 문구" value={block.content.buttonText} onChange={(val) => onUpdate({...block.content, buttonText: val})} />
+          {t.inputGroup("메인 타이틀", block.content.title, (val) => onUpdate({...block.content, title: val}))}
+          {t.inputGroup("서브 설명", block.content.description, (val) => onUpdate({...block.content, description: val}), 'textarea')}
+          {t.inputGroup("버튼 문구", block.content.buttonText, (val) => onUpdate({...block.content, buttonText: val}))}
         </div>
       );
     
     case 'text':
       return (
-        <div>
-          <label className="text-xs font-bold text-gray-500 uppercase mb-3 block">리치 텍스트 에디터</label>
-          <TiptapEditor 
-             content={block.content.json} 
-             onChange={(json) => onUpdate({ ...block.content, json })}
-          />
+        <div className="space-y-2">
+          <label className={`text-xs font-bold ${isDark ? 'text-gray-500' : 'text-slate-400'} uppercase mb-1 block`}>리치 텍스트 에디터</label>
+          <div className={`rounded-2xl border ${isDark ? 'border-white/10 bg-black/40' : 'border-slate-200 bg-white shadow-sm'} overflow-hidden`}>
+             <TiptapEditor 
+               content={block.content.json} 
+               onChange={(json) => onUpdate({ ...block.content, json })}
+               isDarkMode={isDark}
+             />
+          </div>
         </div>
       );
 
     case 'image':
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InputGroup label="이미지 URL" value={block.content.url} onChange={(val) => onUpdate({...block.content, url: val})} placeholder="https://..." />
-          <InputGroup label="이미지 설명 (Alt)" value={block.content.alt} onChange={(val) => onUpdate({...block.content, alt: val})} />
+        <div className="space-y-6">
+          {t.inputGroup("이미지 URL", block.content.url, (val) => onUpdate({...block.content, url: val}), 'text', "https://...")}
+          {t.inputGroup("이미지 설명 (Alt)", block.content.alt, (val) => onUpdate({...block.content, alt: val}))}
+          {block.content.url && (
+            <div className={`mt-2 rounded-xl overflow-hidden border ${isDark ? 'border-white/10' : 'border-slate-200 shadow-sm'}`}>
+                <img src={block.content.url} alt="Preview" className="w-full h-32 object-cover" />
+            </div>
+          )}
         </div>
       );
 
     case 'features':
       return (
         <div className="space-y-6">
-          <InputGroup label="섹션 제목" value={block.content.title} onChange={(val) => onUpdate({...block.content, title: val})} />
-          <InputGroup label="섹션 설명" value={block.content.description} onChange={(val) => onUpdate({...block.content, description: val})} />
-          <div className="border border-white/10 rounded-2xl p-6 bg-white/2">
+          {t.inputGroup("섹션 제목", block.content.title, (val) => onUpdate({...block.content, title: val}))}
+          {t.inputGroup("섹션 설명", block.content.description, (val) => onUpdate({...block.content, description: val}))}
+          <div className={`border ${isDark ? 'border-white/10 bg-white/2' : 'border-slate-100 bg-slate-50/50'} rounded-2xl p-6`}>
              <div className="flex items-center justify-between mb-6">
-                <span className="text-xs font-bold text-gray-500 uppercase">특징 리스트</span>
+                <span className={`text-xs font-bold ${isDark ? 'text-gray-500' : 'text-slate-400'} uppercase`}>특징 리스트</span>
                 <button 
                   onClick={() => onUpdate({...block.content, items: [...(block.content.items || []), {title: 'New Feature', description: ''}]})}
-                  className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300"
+                  className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 font-bold"
                 >
                   <Plus size={14} /> 추가하기
                 </button>
              </div>
              <div className="space-y-4">
                 {block.content.items?.map((item: any, idx: number) => (
-                  <div key={idx} className="flex gap-4 items-start">
+                  <div key={idx} className="flex gap-4 items-start pb-4 border-b border-white/5 last:border-0">
                     <div className="flex-1 space-y-2">
                        <input value={item.title} onChange={(e) => {
                          const newItems = [...block.content.items];
                          newItems[idx].title = e.target.value;
                          onUpdate({...block.content, items: newItems});
-                       }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm" placeholder="특징 제목" />
+                       }} className={`w-full ${isDark ? 'bg-black/40 border-white/5' : 'bg-white border-slate-200'} rounded-xl px-4 py-2 text-sm focus:border-purple-500 outline-none`} placeholder="특징 제목" />
                        <input value={item.description} onChange={(e) => {
                          const newItems = [...block.content.items];
                          newItems[idx].description = e.target.value;
                          onUpdate({...block.content, items: newItems});
-                       }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs text-gray-400" placeholder="상세 설명" />
+                       }} className={`w-full ${isDark ? 'bg-black/40 border-white/5' : 'bg-white border-slate-200'} rounded-xl px-4 py-2 text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'} focus:border-purple-500 outline-none`} placeholder="상세 설명" />
                     </div>
-                    <button onClick={() => onUpdate({...block.content, items: block.content.items.filter((_:any, i:number) => i !== idx)})} className="p-2 text-gray-600 hover:text-red-500">
+                    <button onClick={() => onUpdate({...block.content, items: block.content.items.filter((_:any, i:number) => i !== idx)})} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -811,47 +875,52 @@ function BlockEditorFields({ block, onUpdate }: { block: SiteBlock; onUpdate: (c
     case 'pricing':
       return (
         <div className="space-y-6">
-          <InputGroup label="섹션 제목" value={block.content.title} onChange={(val) => onUpdate({...block.content, title: val})} />
+          {t.inputGroup("섹션 제목", block.content.title, (val) => onUpdate({...block.content, title: val}))}
           <div className="space-y-4">
             {block.content.plans?.map((plan: any, idx: number) => (
-              <div key={idx} className="p-6 bg-white/3 border border-white/5 rounded-2xl">
+              <div key={idx} className={`p-6 ${isDark ? 'bg-white/3 border-white/5' : 'bg-white border-slate-100 shadow-sm'} rounded-2xl`}>
                  <div className="flex justify-between items-center mb-4">
                     <span className="text-xs font-bold text-gray-500">플랜 #{idx+1}</span>
-                    <button onClick={() => onUpdate({...block.content, plans: block.content.plans.filter((_:any,i:number)=>i!==idx)})} className="text-xs text-red-500">삭제</button>
+                    <button onClick={() => onUpdate({...block.content, plans: block.content.plans.filter((_:any,i:number)=>i!==idx)})} className="text-xs text-red-500 font-bold">삭제</button>
                  </div>
                  <div className="grid grid-cols-2 gap-4 mb-4">
                     <input value={plan.name} onChange={(e) => {
                        const newPlans = [...block.content.plans];
                        newPlans[idx].name = e.target.value;
                        onUpdate({...block.content, plans: newPlans});
-                    }} className="bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm" placeholder="플랜명" />
+                    }} className={`w-full ${isDark ? 'bg-black/40 border-white/5' : 'bg-slate-50 border-slate-100'} rounded-xl px-4 py-2 text-sm focus:border-purple-500 outline-none`} placeholder="플랜명" />
                     <input value={plan.price} onChange={(e) => {
                        const newPlans = [...block.content.plans];
                        newPlans[idx].price = e.target.value;
                        onUpdate({...block.content, plans: newPlans});
-                    }} className="bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm" placeholder="가격" />
+                    }} className={`w-full ${isDark ? 'bg-black/40 border-white/5' : 'bg-slate-50 border-slate-100'} rounded-xl px-4 py-2 text-sm focus:border-purple-500 outline-none`} placeholder="가격" />
                  </div>
                  <div className="space-y-2 mb-4">
-                   <span className="text-[10px] text-gray-500 font-bold uppercase">상세 혜택 (줄바꿈으로 구분)</span>
+                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">상세 혜택 (줄바꿈 구분)</span>
                     <textarea 
                       value={plan.features?.join('\n')} 
                       onChange={(e) => {
                        const newPlans = [...block.content.plans];
-                       newPlans[idx].features = e.target.value.split('\n');
+                       newPlans[idx].features = e.target.value.split('\n').filter(f => f.trim());
                        onUpdate({...block.content, plans: newPlans});
-                    }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs" rows={3} placeholder="혜택 1&#10;혜택 2" />
+                    }} className={`w-full ${isDark ? 'bg-black/40 border-white/5' : 'bg-slate-50 border-slate-100'} rounded-xl px-4 py-2 text-xs focus:border-purple-500 outline-none`} rows={3} placeholder="혜택 1&#10;혜택 2" />
                  </div>
-                 <label className="flex items-center gap-2 mb-4 cursor-pointer">
+                 <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={plan.popular} onChange={(e) => {
                        const newPlans = [...block.content.plans];
                        newPlans[idx].popular = e.target.checked;
                        onUpdate({...block.content, plans: newPlans});
-                    }} />
-                    <span className="text-xs text-gray-400 italic">추천 플랜 강조 표시</span>
+                    }} className="rounded border-gray-400 text-purple-600 focus:ring-purple-500" />
+                    <span className="text-xs text-gray-500 font-medium">추천 플랜 강조 표시</span>
                  </label>
               </div>
             ))}
-            <button onClick={() => onUpdate({...block.content, plans: [...(block.content.plans || []), {name: 'Pro', price: '₩50,000', features: [], popular: false}]})} className="w-full py-3 border border-dashed border-white/10 rounded-2xl text-xs text-gray-500 hover:border-white/20 hover:text-white transition-all">+ 플랜 추가</button>
+            <button 
+              onClick={() => onUpdate({...block.content, plans: [...(block.content.plans || []), {name: 'New Plan', price: '₩0', features: [], popular: false}]})} 
+              className={`w-full py-4 border-2 border-dashed ${isDark ? 'border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400' : 'border-slate-200 text-slate-400 hover:border-purple-200 hover:text-purple-500'} rounded-2xl text-xs font-bold transition-all`}
+            >
+              + 새로운 요금제 추가
+            </button>
           </div>
         </div>
       );
@@ -859,26 +928,31 @@ function BlockEditorFields({ block, onUpdate }: { block: SiteBlock; onUpdate: (c
     case 'faq':
       return (
         <div className="space-y-6">
-           <InputGroup label="섹션 제목" value={block.content.title} onChange={(val) => onUpdate({...block.content, title: val})} />
+           {t.inputGroup("섹션 제목", block.content.title, (val) => onUpdate({...block.content, title: val}))}
            <div className="space-y-4">
               {block.content.items?.map((item: any, idx: number) => (
-                <div key={idx} className="space-y-2 p-4 border border-white/5 rounded-xl bg-white/1">
+                <div key={idx} className={`space-y-3 p-5 border ${isDark ? 'border-white/5 bg-white/2' : 'border-slate-100 bg-slate-50/50'} rounded-2xl`}>
                    <input value={item.question} onChange={(e) => {
                       const newItems = [...block.content.items];
                       newItems[idx].question = e.target.value;
                       onUpdate({...block.content, items: newItems});
-                   }} className="w-full bg-transparent font-bold text-sm border-b border-white/5 pb-2" placeholder="질문 입력" />
+                   }} className={`w-full bg-transparent font-bold text-sm border-b ${isDark ? 'border-white/5' : 'border-slate-200'} pb-2 focus:border-purple-500 outline-none`} placeholder="질문을 입력하세요" />
                    <textarea value={item.answer} onChange={(e) => {
                       const newItems = [...block.content.items];
                       newItems[idx].answer = e.target.value;
                       onUpdate({...block.content, items: newItems});
-                   }} className="w-full bg-transparent text-xs text-gray-400 py-2 resize-none" placeholder="답변 입력" rows={2} />
+                   }} className={`w-full bg-transparent text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'} py-2 resize-none outline-none`} placeholder="답변을 입력하세요" rows={2} />
                    <div className="flex justify-end">
-                      <button onClick={() => onUpdate({...block.content, items: block.content.items.filter((_:any,i:number)=>i!==idx)})} className="text-[10px] text-red-500">문항 삭제</button>
+                      <button onClick={() => onUpdate({...block.content, items: block.content.items.filter((_:any,i:number)=>i!==idx)})} className="text-[10px] text-red-500 font-bold hover:underline">문항 삭제</button>
                    </div>
                 </div>
               ))}
-              <button onClick={() => onUpdate({...block.content, items: [...(block.content.items || []), {question: '', answer: ''}]})} className="w-full py-2 bg-white/5 rounded-xl text-xs text-gray-500 transition-colors hover:bg-white/10">+ 질문 추가</button>
+              <button 
+                onClick={() => onUpdate({...block.content, items: [...(block.content.items || []), {question: '', answer: ''}]})} 
+                className={`w-full py-3 ${isDark ? 'bg-white/5 text-gray-500 hover:bg-white/10' : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'} rounded-xl text-xs font-bold transition-all`}
+              >
+                + 자주 묻는 질문 추가
+              </button>
            </div>
         </div>
       );
@@ -887,17 +961,17 @@ function BlockEditorFields({ block, onUpdate }: { block: SiteBlock; onUpdate: (c
         return (
           <div className="grid grid-cols-2 gap-4">
              {block.content.items?.map((item: any, idx: number) => (
-                <div key={idx} className="p-4 bg-white/5 rounded-xl border border-white/5">
+                <div key={idx} className={`p-5 ${isDark ? 'bg-white/5 border-white/5' : 'bg-white border-slate-100 shadow-sm'} rounded-2xl border`}>
                    <input value={item.value} onChange={(e) => {
                       const newItems = [...block.content.items];
                       newItems[idx].value = e.target.value;
                       onUpdate({...block.content, items: newItems});
-                   }} className="w-full bg-transparent font-black text-2xl text-purple-500" placeholder="10k+" />
+                   }} className="w-full bg-transparent font-black text-2xl text-purple-500 outline-none" placeholder="10k+" />
                    <input value={item.label} onChange={(e) => {
                       const newItems = [...block.content.items];
                       newItems[idx].label = e.target.value;
                       onUpdate({...block.content, items: newItems});
-                   }} className="w-full bg-transparent text-[10px] font-bold uppercase tracking-widest text-gray-500" placeholder="LABEL" />
+                   }} className={`w-full bg-transparent text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-gray-500' : 'text-slate-400'} outline-none`} placeholder="LABEL" />
                 </div>
              ))}
           </div>
@@ -907,38 +981,47 @@ function BlockEditorFields({ block, onUpdate }: { block: SiteBlock; onUpdate: (c
         return (
           <div className="space-y-4">
              {block.content.items?.map((item: any, idx: number) => (
-                <div key={idx} className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-4">
+                <div key={idx} className={`p-6 ${isDark ? 'bg-white/5 border-white/5' : 'bg-white border-slate-100 shadow-sm'} rounded-2xl border space-y-4`}>
                    <textarea value={item.quote} onChange={(e) => {
                       const newItems = [...block.content.items];
                       newItems[idx].quote = e.target.value;
                       onUpdate({...block.content, items: newItems});
-                   }} className="w-full bg-transparent italic text-gray-300 text-sm resize-none" placeholder="후기 내용" rows={2} />
+                   }} className={`w-full bg-transparent italic ${isDark ? 'text-gray-300' : 'text-slate-600'} text-sm resize-none outline-none`} placeholder="기분 좋은 후기를 입력하세요" rows={2} />
                    <div className="grid grid-cols-2 gap-4">
                       <input value={item.author} onChange={(e) => {
                          const newItems = [...block.content.items];
                          newItems[idx].author = e.target.value;
                          onUpdate({...block.content, items: newItems});
-                      }} className="bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-xs" placeholder="이름" />
+                      }} className={`w-full ${isDark ? 'bg-black/40 border-white/5' : 'bg-slate-50 border-slate-100'} rounded-lg px-3 py-2 text-xs focus:border-purple-500 outline-none`} placeholder="이름" />
                       <input value={item.role} onChange={(e) => {
                          const newItems = [...block.content.items];
                          newItems[idx].role = e.target.value;
                          onUpdate({...block.content, items: newItems});
-                      }} className="bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-xs" placeholder="직책" />
+                      }} className={`w-full ${isDark ? 'bg-black/40 border-white/5' : 'bg-slate-50 border-slate-100'} rounded-lg px-3 py-2 text-xs focus:border-purple-500 outline-none`} placeholder="직책/역할" />
                    </div>
                 </div>
              ))}
-             <button onClick={() => onUpdate({...block.content, items: [...(block.content.items || []), {quote: '', author: '', role: ''}]})} className="w-full py-2 bg-white/5 rounded-xl text-xs text-gray-500">+ 후기 추가</button>
+             <button 
+               onClick={() => onUpdate({...block.content, items: [...(block.content.items || []), {quote: '', author: '', role: ''}]})} 
+               className={`w-full py-3 ${isDark ? 'bg-white/5 text-gray-500 hover:bg-white/10' : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'} rounded-xl text-xs font-bold transition-all`}
+             >
+               + 신규 후기 등록
+             </button>
           </div>
         );
 
     case 'form':
       return (
-        <div className="space-y-4">
-          <InputGroup label="문의폼 제목" value={block.content.title} onChange={(val) => onUpdate({...block.content, title: val})} />
-          <InputGroup label="문의폼 설명" value={block.content.description} onChange={(val) => onUpdate({...block.content, description: val})} />
+        <div className="space-y-6">
+          {t.inputGroup("문의폼 제목", block.content.title, (val) => onUpdate({...block.content, title: val}))}
+          {t.inputGroup("문의폼 설명", block.content.description, (val) => onUpdate({...block.content, description: val}), 'textarea')}
           <div>
-             <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">디자인 유형 (Theme)</label>
-             <select value={block.content.variant} onChange={(e) => onUpdate({...block.content, variant: e.target.value})} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm">
+             <label className={`text-[10px] font-black ${isDark ? 'text-gray-500' : 'text-slate-400'} uppercase tracking-widest mb-3 block`}>디자인 유형 (Theme)</label>
+             <select 
+                value={block.content.variant} 
+                onChange={(e) => onUpdate({...block.content, variant: e.target.value})} 
+                className={`w-full ${isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'} rounded-xl px-4 py-3 text-sm focus:border-purple-500 outline-none transition-all`}
+             >
                 <option value="default">Default (Standard)</option>
                 <option value="bold">Bold (Vibrant Purple)</option>
                 <option value="clean">Clean (Minimalist)</option>
@@ -949,31 +1032,37 @@ function BlockEditorFields({ block, onUpdate }: { block: SiteBlock; onUpdate: (c
       );
 
     case 'spacer':
-        return <InputGroup label="높이 조절 (e.g. 100px)" value={block.content.height} onChange={(val) => onUpdate({...block.content, height: val})} />;
+        return t.inputGroup("높이 조절 (e.g. 100px)", block.content.height, (val) => onUpdate({...block.content, height: val}));
 
     default:
       return <div className="text-gray-500 text-xs italic">이 블록 유형은 기본적인 속성만 편집 가능합니다.</div>;
   }
 }
 
-function InputGroup({ label, value, onChange, type = 'text', placeholder }: { label: string; value: string; onChange: (v: string) => void; type?: 'text' | 'textarea'; placeholder?: string }) {
+function InputGroup({ label, value, onChange, type = 'text', placeholder, isDarkMode }: { label: string; value: string; onChange: (v: string) => void; type?: 'text' | 'textarea'; placeholder?: string; isDarkMode: boolean }) {
+  const isDark = isDarkMode;
+  const t = {
+    label: `text-[10px] font-black ${isDark ? 'text-gray-500' : 'text-slate-400'} uppercase tracking-widest mb-2 block`,
+    input: `w-full ${isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'} rounded-xl px-4 py-3 focus:border-purple-500 outline-none transition-all text-sm`
+  };
+
   return (
     <div>
-      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 block">{label}</label>
+      <label className={t.label}>{label}</label>
       {type === 'text' ? (
         <input 
           type="text" 
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500 outline-none transition-all text-sm"
+          className={t.input}
         />
       ) : (
         <textarea 
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500 outline-none resize-none transition-all text-sm leading-relaxed"
+          className={`${t.input} resize-none leading-relaxed`}
           rows={3}
         />
       )}
@@ -996,9 +1085,18 @@ function getInitialContent(type: BlockType) {
     default: return {};
   }
 }
-function HistoryModal({ subdomain, onClose, onRestore }: { subdomain: string; onClose: () => void; onRestore: (blocks: SiteBlock[]) => void }) {
+function HistoryModal({ subdomain, onClose, onRestore, isDarkMode }: { subdomain: string; onClose: () => void; onRestore: (blocks: SiteBlock[]) => void; isDarkMode: boolean }) {
+    const isDark = isDarkMode;
     const [versions, setVersions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const theme = {
+        panel: isDark ? 'bg-zinc-950 border-white/10' : 'bg-white border-slate-200 shadow-2xl',
+        header: isDark ? 'border-white/10' : 'border-slate-100',
+        item: isDark ? 'bg-white/5 border-white/5 hover:border-white/20' : 'bg-slate-50 border-slate-100 hover:border-purple-200',
+        text: isDark ? 'text-white' : 'text-slate-900',
+        textMuted: isDark ? 'text-gray-500' : 'text-slate-500',
+        btnAction: isDark ? 'bg-white/10 hover:bg-purple-600' : 'bg-white border border-slate-200 hover:bg-purple-50',
+    };
   
     useEffect(() => {
       const loadHistory = async () => {
@@ -1024,49 +1122,51 @@ function HistoryModal({ subdomain, onClose, onRestore }: { subdomain: string; on
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
       >
-        <div className="bg-[#111] border border-white/10 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
-          <div className="p-6 border-b border-white/10 flex items-center justify-between">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <History className="text-purple-500" />
-              버전 히스토리
+        <div className={`${theme.panel} border w-full max-w-2xl rounded-[40px] overflow-hidden shadow-2xl`}>
+          <div className={`p-8 border-b ${theme.header} flex items-center justify-between`}>
+            <h2 className={`${theme.text} text-2xl font-black flex items-center gap-3`}>
+              <History className="text-purple-500" size={24} />
+              편집 기록
             </h2>
-            <button onClick={onClose}><X className="text-gray-500 hover:text-white" /></button>
+            <button onClick={onClose} className={`p-2 rounded-full hover:${isDark ? 'bg-white/10' : 'bg-slate-100'} transition-colors`}>
+              <X className={theme.textMuted} />
+            </button>
           </div>
           
-          <div className="p-6 max-h-[60vh] overflow-y-auto space-y-4">
+          <div className="p-8 max-h-[60vh] overflow-y-auto space-y-4">
              {loading ? (
-                 <div className="text-center text-gray-500 py-12">기록을 불러오는 중...</div>
+                 <div className={`text-center ${theme.textMuted} py-12 font-bold`}>기록을 불러오는 중...</div>
              ) : versions.length === 0 ? (
-                 <div className="text-center text-gray-500 py-12">저장된 기록이 없습니다.</div>
+                 <div className={`text-center ${theme.textMuted} py-12`}>사용 가능한 편집 기록이 없습니다.</div>
              ) : (
                  versions.map((v) => (
-                    <div key={v.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/20 transition-all group">
+                    <div key={v.id} className={`flex items-center justify-between p-5 ${theme.item} rounded-3xl border transition-all group`}>
                         <div>
-                            <div className="font-bold text-sm mb-1">
-                                {v.createdAt?.toDate().toLocaleString()}
+                            <div className={`font-black text-sm mb-1 ${theme.text}`}>
+                                {v.createdAt?.toDate ? v.createdAt.toDate().toLocaleString() : new Date(v.createdAt).toLocaleString()}
                             </div>
-                            <div className="text-xs text-gray-500">
-                                {v.description || 'Manual Save'} • {v.blocks?.length || 0} Blocks
+                            <div className={`text-xs ${theme.textMuted} font-bold`}>
+                                {v.description || '수동 저장'} • {v.blocks?.length || 0}개 블록
                             </div>
                         </div>
                         <button 
                           onClick={() => onRestore(v.blocks)}
-                          className="px-4 py-2 bg-white/10 hover:bg-purple-600 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+                          className={`px-5 py-2.5 ${theme.btnAction} rounded-2xl text-xs font-black transition-all flex items-center gap-2 ${theme.text}`}
                         >
-                            <RotateCcw className="h-3 w-3" />
-                            복구하기
+                            <RotateCcw className="h-4 w-4" />
+                            복약하기
                         </button>
                     </div>
                  ))
              )}
           </div>
   
-          <div className="p-6 bg-white/5 border-t border-white/10 text-xs text-gray-500 text-center">
-              최근 20개의 저장 기록만 표시됩니다.
+          <div className={`p-6 ${isDark ? 'bg-white/5' : 'bg-slate-50/50'} border-t ${theme.header} text-[10px] ${theme.textMuted} text-center font-black uppercase tracking-widest`}>
+              자동 저장된 최근 20개의 버전만 표시됩니다.
           </div>
         </div>
       </motion.div>
     );
-  }
+}

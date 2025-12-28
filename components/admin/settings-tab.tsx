@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Globe, Save, Palette, Code, Loader2, User as UserIcon, Lock } from 'lucide-react';
+import { Globe, Save, Palette, Code, Loader2, User as UserIcon, Lock, Plus, Image as ImageIcon } from 'lucide-react';
 import { db } from '@/lib/firebaseClient';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useAuthStore } from '@/lib/store';
@@ -392,12 +392,13 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
                aspectRatio="video"
                isDarkMode={isDarkMode}
              />
-             <p className={`text-[11px] mt-2 ${t.textMuted}`}>
+            <p className={`text-[11px] mt-2 ${t.textMuted}`}>
                 * 카카오톡, 페이스북 등 SNS에 사이트 링크를 공유할 때 표시되는 이미지입니다. (추천: 1200x630)
              </p>
           </div>
         </div>
       </div>
+
 
       {/* 5. Domain Management */}
       <div className={`rounded-3xl border p-8 transition-colors ${t.card}`}>

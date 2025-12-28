@@ -10,7 +10,8 @@ import {
   AreaChart,
   Area,
   BarChart,
-  Bar
+  Bar,
+  ComposedChart
 } from 'recharts';
 import { TrendingUp, Users, Globe } from 'lucide-react';
 
@@ -90,7 +91,7 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode, chartDa
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Primary Trend Chart (Visitors/Inquiries or Growth) */}
+      {/* Primary Trend Chart (Hybrid Area + Bar) */}
       <div className={`p-6 rounded-3xl border ${theme.card}`}>
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -99,7 +100,7 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode, chartDa
               {chartData ? '방문 및 문의 현황' : '네트워크 성장 추이'}
             </h3>
             <p className={`text-xs mt-1 ${theme.textMuted}`}>
-                {chartData ? '최근 7일간의 방문자 및 문의 접수 현황입니다.' : '최근 7일간의 신규 팬 가입 현황입니다.'}
+                {chartData ? '최근 7일간의 방문자(선형) 및 문의(막대) 현황입니다.' : '최근 7일간의 신규 팬 가입 현황입니다.'}
             </p>
           </div>
           <div className={`px-3 py-1 rounded-full text-[10px] font-bold border ${isDark ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' : 'bg-purple-50 border-purple-100 text-purple-600'}`}>
@@ -109,7 +110,7 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode, chartDa
 
         <div className="h-[300px] w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={displayData}>
+            <ComposedChart data={displayData}>
               <defs>
                 <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={theme.accent} stopOpacity={0.3}/>
@@ -156,14 +157,12 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode, chartDa
                     fillOpacity={1} 
                     fill="url(#colorSecond)" 
                   />
-                  <Area 
-                    type="monotone" 
+                  <Bar 
                     dataKey="inquiries" 
                     name="문의"
-                    stroke={theme.accent} 
-                    strokeWidth={3}
-                    fillOpacity={1} 
-                    fill="url(#colorValue)" 
+                    fill={theme.accent} 
+                    radius={[4, 4, 0, 0]}
+                    barSize={20}
                   />
                 </>
               ) : (
@@ -177,7 +176,7 @@ export default function AnalyticsCharts({ users, sites = [], isDarkMode, chartDa
                   fill="url(#colorValue)" 
                 />
               )}
-            </AreaChart>
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
