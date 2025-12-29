@@ -312,7 +312,7 @@ export default function BizonMarketing({ site }: { site: string }) {
 
           {/* Middle: Main Message */}
           <div className="text-center mb-16 font-sans" data-aos="fade-up" data-aos-delay="400">
-            <h2 className="text-3xl md:text-5xl font-bold mb-8 leading-tight tracking-tight">
+            <h2 className="text-2xl md:text-5xl font-bold mb-8 leading-tight tracking-tight">
               우리는 지역장악 마케팅을 합니다.<br />
               사장님 업체를 <span className="text-orange-600">지역 1등 업체</span>로<br className="md:hidden" /> 만들어 드리겠습니다.
             </h2>
@@ -413,8 +413,8 @@ export default function BizonMarketing({ site }: { site: string }) {
           </div>
 
           {/* Certificates Section (Full Width Showcase - 8 Unique Items) */}
-          <div className="mt-24 relative w-screen left-1/2 -translate-x-1/2 overflow-hidden bg-white/50 border-y border-gray-100/50">
-            <div className="flex animate-scroll-left py-20 w-fit">
+          <div className="mt-12 relative w-screen left-1/2 -translate-x-1/2 overflow-hidden bg-white/50 border-y border-gray-100/50">
+            <div className="flex animate-scroll-left py-8 w-fit">
               {[...Array(4)].map((_, setIdx) => (
                 <div key={setIdx} className="flex gap-4 md:gap-6 px-2 md:px-3">
                   {[...Array(8)].map((_, i) => {
