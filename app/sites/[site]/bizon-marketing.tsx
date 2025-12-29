@@ -225,10 +225,10 @@ export default function BizonMarketing({ site }: { site: string }) {
       <div className="fixed bottom-6 left-4 md:left-1/2 md:-translate-x-1/2 z-50 w-[calc(100%-84px)] md:w-[calc(100%-48px)] max-w-2xl md:px-0">
         <a 
           href="#contact-form"
-          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-center text-sm md:text-xl font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,88,12,0.5)] hover:scale-[1.02] hover:shadow-orange-600/50 transition-all flex items-center justify-center gap-2 md:gap-3 pr-8 md:pr-4 border border-white/20"
+          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-center text-[13px] tracking-tight md:text-xl font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,88,12,0.5)] hover:scale-[1.02] hover:shadow-orange-600/50 transition-all flex items-center justify-center gap-1 md:gap-3 pr-8 md:pr-4 border border-white/20"
         >
           매장에서 새는 구멍 3개 찾기(상담문의)
-          <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
+          <ArrowRight className="h-4 w-4 md:h-6 md:w-6" />
         </a>
       </div>
 
@@ -1096,7 +1096,7 @@ export default function BizonMarketing({ site }: { site: string }) {
           <p className="text-gray-400 text-sm leading-relaxed">
             주소: 경기도 수원시 장안구 화산로 213번길 15, 2층 201-B66
           </p>
-          <p className="text-orange-700/50 mt-10 text-xl font-bold">우리는 '대행'이 아니라 매출 실험을 설계합니다.</p>
+          <p className="text-orange-700/50 mt-10 text-xl font-bold">우리는 '대행'이 아니라 <br className="md:hidden" />매출 실험을 설계합니다.</p>
         </div>
       </footer>
     </div>
