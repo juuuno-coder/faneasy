@@ -38,9 +38,20 @@ export async function generateMetadata(
   if (siteSlug === 'bizon') {
     title = '비즈온마케팅 공식 홈페이지';
     description = '우리는 대행이 아니라 매출 실험을 설계합니다. 프렌차이즈 지점 최적화 마케팅.';
-    // Note: To reduce logo size in OG image, a new image file with smaller logo padding is needed.
-    // Assuming user uploads/has '/uploads/bizon-og-v2.png' or similar. 
-    // For now keeping default or existing data, but Title is updated.
+    return {
+      title,
+      description,
+      icons: {
+        icon: '/bizon.ico',
+        shortcut: '/bizon.ico',
+        apple: '/bizon.ico',
+      },
+      openGraph: {
+        title,
+        description,
+        images: [ogImage],
+      },
+    };
   }
 
   try {
