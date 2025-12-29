@@ -163,7 +163,7 @@ export default function BizonMarketing({ site }: { site: string }) {
               className="relative flex items-center cursor-pointer transition-all hover:scale-105 active:scale-95"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
-              <div className="relative w-[220px] h-[60px] md:w-[380px] md:h-[100px]">
+              <div className="relative w-[260px] h-[80px] md:w-[460px] md:h-[120px]">
                 <Image 
                   src={isScrolled ? `/bizon-logo.png?v=10` : `/bizon-logo-dark.png?v=10`} 
                   alt="비즈온" 
