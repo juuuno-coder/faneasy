@@ -278,9 +278,9 @@ export default function BizonMarketing({ site }: { site: string }) {
             className="text-center p-12 rounded-3xl bg-linear-to-r from-orange-700 to-red-500 text-white"
             data-aos="zoom-in"
           >
-            <p className="text-xl md:text-3xl font-bold leading-tight">
+            <p className="text-lg md:text-3xl font-bold leading-tight">
               지점 별로 <span className="underline decoration-2 underline-offset-8">플레이스 마케팅</span> 관리를<br />
-              <span className="text-2xl md:text-5xl mt-6 block px-4">제대로 해주는 본사는 <span className="text-yellow-300">'없습니다'</span></span>
+              <span className="text-xl md:text-5xl mt-6 block px-4">제대로 해주는 본사는 <span className="text-yellow-300">'없습니다'</span></span>
             </p>
           </div>
         </div>
