@@ -222,13 +222,13 @@ export default function BizonMarketing({ site }: { site: string }) {
       </section>
 
       {/* Sticky Bottom Button - Single & Balanced */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-48px)] max-w-2xl px-4 md:px-0">
+      <div className="fixed bottom-6 left-4 md:left-1/2 md:-translate-x-1/2 z-50 w-[calc(100%-84px)] md:w-[calc(100%-48px)] max-w-2xl md:px-0">
         <a 
           href="#contact-form"
-          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-center text-lg md:text-xl font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,88,12,0.5)] hover:scale-[1.02] hover:shadow-orange-600/50 transition-all flex items-center justify-center gap-3 border border-white/20"
+          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-center text-sm md:text-xl font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,88,12,0.5)] hover:scale-[1.02] hover:shadow-orange-600/50 transition-all flex items-center justify-center gap-2 md:gap-3 pr-8 md:pr-4 border border-white/20"
         >
           매장에서 새는 구멍 3개 찾기(상담문의)
-          <ArrowRight className="h-6 w-6" />
+          <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
         </a>
       </div>
 
@@ -237,7 +237,7 @@ export default function BizonMarketing({ site }: { site: string }) {
         href="https://pf.kakao.com/_xxxx"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-28 md:bottom-6 right-6 z-50 w-16 h-16 bg-[#FAE100] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all"
+        className="fixed bottom-6 right-4 z-50 w-14 h-14 md:w-16 md:h-16 bg-[#FAE100] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all"
         title="카카오톡 상담"
       >
         <svg className="w-8 h-8" viewBox="0 0 24 24" fill="#371717">
@@ -250,7 +250,7 @@ export default function BizonMarketing({ site }: { site: string }) {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16" data-aos="fade-up">
             <h2 className="text-2xl md:text-5xl font-black mb-4">
-              프랜차이즈도 <span className="text-orange-700">꼭 마케팅을 해야 하는 이유</span>
+              프랜차이즈도 <br className="md:hidden" /><span className="text-orange-700">꼭 마케팅을 해야 하는 이유</span>
             </h2>
           </div>
 
