@@ -464,130 +464,154 @@ export default function BizonMarketing({ site }: { site: string }) {
             {/* Background Accent Gradients */}
             <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-radial-at-tr from-orange-50/50 to-transparent pointer-events-none" />
             
-            {/* 1. The 3 Strategic Pillars - Unifying the top part */}
-            <div className="relative z-10 text-center mb-16 font-sans">
-              
-              <div className="mb-12">
-                <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">핵심 서비스</h2>
-                <p className="text-gray-500 text-lg md:text-xl font-medium leading-tight">
-                  프랜차이즈 지점에 최적화된 <br className="md:hidden" />
-                  <span className="text-orange-600 font-bold">토탈 마케팅 시스템</span>
-                </p>
-              </div>
-              
-              <div className="grid md:grid-cols-3 gap-10">
+            {/* 1. The Logic Grid (Moved Up) - Establishing Authority */}
+            <div className="relative z-10 text-center font-sans mb-24">
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
+                로직이 다르면 <br className="md:hidden" />
+                <span className="text-orange-600 underline decoration-orange-200 underline-offset-8">본질</span>이 달라집니다.
+              </h2>
+              <p className="text-gray-500 text-lg md:text-xl font-medium mb-12">
+                보이지 않는 곳까지 챙기는 <span className="text-orange-600 font-bold">비즈온의 디테일</span>
+              </p>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 text-left">
                 {[
-                  { title: '플레이스 주력', desc: '노출 구조 + 전환 동선 (전화/길찾기/예약) 설계', icon: Target },
-                  { title: '디자인물 제작', desc: '메뉴/배너/이벤트/리뷰 유도물 (매장 실사용)', icon: Palette },
-                  { title: '프랜차이즈 컨설팅', desc: '지점별 KPI 기준 우선순위 실행', icon: BarChart3 }
-                ].map((pillar, i) => (
-                  <div key={i} className="flex flex-col items-center text-center p-8 rounded-[40px] bg-orange-50/30 border border-orange-100/50">
-                    <div className="h-16 w-16 rounded-3xl bg-white shadow-lg flex items-center justify-center mb-6 text-orange-600">
-                      <pillar.icon className="h-8 w-8" />
-                    </div>
-                    <h4 className="text-2xl font-bold mb-4">{pillar.title}</h4>
-                    <p className="text-gray-500 leading-relaxed font-medium">{pillar.desc}</p>
+                  { title: '심층 고객 페르소나 설계', desc: '상권 내 실질 방문 고객의 행동 패턴 분석' },
+                  { title: '고감도 미디어 고도화', desc: '매장의 무드를 압도적으로 표현하는 촬영/보정' },
+                  { title: '트래픽 선순환 최적화', desc: '검색부터 유입까지 정교한 로직 알고리즘 적용' },
+                  { title: '체류 시간 극대화 로직', desc: '정보 전달을 넘어 머물게 만드는 정보 설계' },
+                  { title: '문의/예약 전환 장치', desc: '톡톡/예약으로 이어지는 버튼 동선 정밀화' },
+                  { title: '브랜드 팬덤 리뷰 관리', desc: '단순 평점이 아닌 팬을 만드는 리뷰 솔루션' }
+                ].map((item, i) => (
+                  <div key={i} className="group p-6 md:p-8 rounded-[32px] bg-gray-50 border border-transparent hover:border-orange-100 hover:bg-orange-50/30 transition-all duration-300">
+                     <div className="flex items-start gap-4">
+                       <div className="h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-gray-100 group-hover:border-orange-200 transition-colors">
+                         <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />
+                       </div>
+                       <div>
+                         <h4 className="text-lg md:text-xl font-bold mb-2 text-gray-900">{item.title}</h4>
+                         <p className="text-sm md:text-base text-gray-500 font-medium leading-relaxed">{item.desc}</p>
+                       </div>
+                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* 2. Detailed Execution Logic */}
-            <div className="relative z-10 text-center font-sans">
-              
-              <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-16">
-                로직이 다르면 <br className="md:hidden" />
-                <span className="text-orange-600 underline decoration-orange-200 underline-offset-10">본질</span>이 달라집니다.
-              </h3>
+            {/* 2. Key Message Quote (The "Efficiency" Bridge) */}
+            <div className="relative z-10 text-center mb-20 md:mb-28" data-aos="zoom-in">
+              <div className="inline-block relative">
+                 <div className="absolute -inset-6 bg-orange-100/50 rounded-full blur-2xl opacity-50" />
+                 <h3 className="relative text-2xl md:text-5xl font-black leading-tight tracking-tighter text-gray-900">
+                  <span className="text-orange-600">'플레이스 노출 순위'</span> 물론 중요합니다.<br />
+                  다만! <span className="underline decoration-orange-400 decoration-4 underline-offset-8">효율적인 마케팅</span>을 해야합니다.
+                 </h3>
+              </div>
+            </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
-                {[
-                  { title: '심층 고객 페르소나 설계', desc: '상권 내 실질 방문 고객의 행동 패턴 분석' },
-                  { title: '고감도 미디어 고도화', icon: '📸', desc: '매장의 무드를 압도적으로 표현하는 촬영/보정' },
-                  { title: '트래픽 선순환 최적화', desc: '검색부터 유입까지 정교한 로직 알고리즘 적용' },
-                  { title: '체류 시간 극대화 로직', desc: '정보 전달을 넘어 머물게 만드는 정보 설계' },
-                  { title: '문의/예약 전환 장치', icon: '📱', desc: '톡톡/예약으로 이어지는 버튼 동선 정밀화' },
-                  { title: '브랜드 팬덤 리뷰 관리', desc: '단순 평점이 아닌 팬을 만드는 리뷰 솔루션' }
-                ].map((item, i) => (
-                  <div key={i} className="group p-10 rounded-[48px] bg-gray-50 border border-transparent hover:border-orange-200 hover:bg-white hover:shadow-2xl transition-all duration-500 text-left">
-                     <div className="h-14 w-14 rounded-2xl bg-white shadow-lg flex items-center justify-center mb-8 border border-gray-100 group-hover:bg-orange-600 transition-colors duration-500">
-                       <CheckCircle className="h-6 w-6 text-orange-600 group-hover:text-white" />
-                     </div>
-                     <h4 className="text-2xl font-bold mb-4 group-hover:text-orange-600 transition-colors tracking-tight">{item.title}</h4>
-                     <p className="text-gray-500 font-medium leading-relaxed">{item.desc}</p>
+            {/* 3. The 3 Efficiency Pillars (Refined) */}
+            <div className="relative z-10 text-center mb-32">
+              <div className="grid md:grid-cols-3 gap-8 md:gap-10">
+                {/* Pillar 1 */}
+                <div className="flex flex-col items-center p-8 md:p-10 rounded-[40px] bg-white border border-gray-100 shadow-xl shadow-gray-100 hover:shadow-2xl hover:shadow-orange-100/50 transition-all transform hover:-translate-y-2">
+                  <div className="h-20 w-20 rounded-full bg-orange-50 flex items-center justify-center mb-8 ring-8 ring-orange-50/50">
+                    <Target className="h-10 w-10 text-orange-600" />
                   </div>
-                ))}
-              </div>
-
-              {/* Messaging */}
-              <div className="space-y-16 mb-32">
-                <div className="h-px w-32 bg-orange-600 mx-auto" />
-                <h4 className="text-2xl md:text-5xl font-black leading-tight tracking-tighter text-gray-900">
-                  "<span className="text-orange-600 font-bold">플레이스 노출 순위</span> 물론 중요하지만,<br className="hidden md:block" />
-                  다만 <span className="underline decoration-orange-200 decoration-4 underline-offset-4">효율적인 마케팅</span>을 해야합니다!"
-                </h4>
-              </div>
-
-              {/* 3. Re-designed Stats Comparison */}
-              <div className="max-w-6xl mx-auto">
-                <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
-                   <div className="space-y-8 md:space-y-10" data-aos="fade-up">
-                     <div className="text-left space-y-3 md:space-y-4">
-                       <h5 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight italic">비즈온 도입 전</h5>
-                       <p className="text-gray-400 text-sm md:text-lg font-medium">마케팅의 부재로 인해 새고 있던 잠재 고객들</p>
-                     </div>
-                     <div className="p-6 md:p-10 rounded-[30px] md:rounded-[48px] bg-gray-100/50 border border-gray-200">
-                       <div className="space-y-6 md:space-y-8">
-                         <div className="flex justify-between items-center bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100">
-                           <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px] md:text-xs">월간 유입량</span>
-                           <span className="text-xl md:text-2xl font-black text-gray-400 italic">412 회</span>
-                         </div>
-                         <div className="flex justify-between items-center bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100">
-                           <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px] md:text-xs">방문 전환율</span>
-                           <span className="text-xl md:text-2xl font-black text-gray-400 italic">2.41%</span>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-
-                   <div className="relative group" data-aos="fade-up">
-                     <div className="absolute -inset-4 bg-orange-600/30 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                     <div className="relative p-8 md:p-12 rounded-[40px] md:rounded-[60px] bg-orange-600 text-white shadow-[0_30px_60px_rgba(234,88,12,0.3)] md:shadow-[0_50px_100px_rgba(234,88,12,0.4)] border border-orange-500 overflow-hidden">
-                       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-                       <div className="relative z-10 space-y-8 md:space-y-12 text-left">
-                         <div className="flex justify-between items-start">
-                           <div>
-                             <div className="px-3 py-1 bg-white text-orange-600 text-[8px] md:text-[10px] font-black rounded-md mb-2 md:mb-4 inline-block">성과 분석 리포트</div>
-                             <h5 className="text-2xl md:text-4xl font-black italic">비즈온 도입 후</h5>
-                           </div>
-                           <div className="text-right">
-                             <div className="text-2xl md:text-4xl font-black text-yellow-100">↑ 842%</div>
-                             <div className="text-[8px] md:text-xs font-bold text-orange-100 tracking-widest">핵심 지표 성장</div>
-                           </div>
-                         </div>
-                         <div className="space-y-4 md:space-y-6">
-                           <div className="space-y-1 md:space-y-2">
-                             <div className="flex justify-between text-[10px] md:text-xs font-black text-orange-100 uppercase tracking-widest">유입 트래픽</div>
-                             <div className="text-4xl md:text-6xl font-black tracking-tighter">3,892 <span className="text-lg md:text-2xl font-medium opacity-60">회</span></div>
-                           </div>
-                           <div className="h-2 md:h-3 w-full bg-black/20 rounded-full overflow-hidden">
-                             <div className="h-full bg-white w-full shadow-[0_0_20px_rgba(255,255,255,1)]" />
-                           </div>
-                         </div>
-                         <div className="grid grid-cols-2 gap-4 md:gap-8 pt-6 md:pt-8 border-t border-white/20">
-                            <div>
-                              <div className="text-[8px] md:text-[10px] font-bold text-orange-200 mb-1">전화 연결 수</div>
-                              <div className="text-xl md:text-3xl font-black">112 <span className="text-sm opacity-60">+</span></div>
-                            </div>
-                            <div>
-                              <div className="text-[8px] md:text-[10px] font-bold text-orange-200 mb-1">예약 요청 수</div>
-                              <div className="text-xl md:text-3xl font-black">165 <span className="text-sm opacity-60">+</span></div>
-                            </div>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
+                  <h4 className="text-2xl font-bold mb-4 text-gray-900">네이버 플레이스 최적화</h4>
+                  <p className="text-gray-500 font-medium leading-relaxed">
+                    단순 노출을 넘어<br />
+                    <span className="text-orange-600 font-bold">잠재적 고객의 방문</span>을<br />
+                    이끌어내는 플레이스 완성
+                  </p>
                 </div>
+
+                {/* Pillar 2 */}
+                <div className="flex flex-col items-center p-8 md:p-10 rounded-[40px] bg-white border border-gray-100 shadow-xl shadow-gray-100 hover:shadow-2xl hover:shadow-orange-100/50 transition-all transform hover:-translate-y-2">
+                  <div className="h-20 w-20 rounded-full bg-blue-50 flex items-center justify-center mb-8 ring-8 ring-blue-50/50">
+                    <Palette className="h-10 w-10 text-blue-600" />
+                  </div>
+                  <h4 className="text-2xl font-bold mb-4 text-gray-900">딱 맞는 디자인물 제작</h4>
+                  <p className="text-gray-500 font-medium leading-relaxed">
+                    보기 좋은 것을 넘어<br />
+                    <span className="text-blue-600 font-bold">매장 무드와 실제 사용</span>에<br />
+                    딱 끼워 맞춘 결과물
+                  </p>
+                </div>
+
+                {/* Pillar 3 */}
+                <div className="flex flex-col items-center p-8 md:p-10 rounded-[40px] bg-white border border-gray-100 shadow-xl shadow-gray-100 hover:shadow-2xl hover:shadow-orange-100/50 transition-all transform hover:-translate-y-2">
+                  <div className="h-20 w-20 rounded-full bg-green-50 flex items-center justify-center mb-8 ring-8 ring-green-50/50">
+                    <BarChart3 className="h-10 w-10 text-green-600" />
+                  </div>
+                  <h4 className="text-2xl font-bold mb-4 text-gray-900">우선순위를 찾는 컨설팅</h4>
+                  <p className="text-gray-500 font-medium leading-relaxed">
+                    다 하는 것이 아니라<br />
+                    <span className="text-green-600 font-bold">불필요한 비용은 빼고</span><br />
+                    핵심 KPI에 집중
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Stats Comparison (Kept as proof) */}
+            <div className="max-w-6xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+                 <div className="space-y-8 md:space-y-10" data-aos="fade-up">
+                   <div className="text-left space-y-3 md:space-y-4">
+                     <h5 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight italic">비즈온 도입 전</h5>
+                     <p className="text-gray-400 text-sm md:text-lg font-medium">마케팅의 부재로 인해 새고 있던 잠재 고객들</p>
+                   </div>
+                   <div className="p-6 md:p-10 rounded-[30px] md:rounded-[48px] bg-gray-100/50 border border-gray-200">
+                     <div className="space-y-6 md:space-y-8">
+                       <div className="flex justify-between items-center bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100">
+                         <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px] md:text-xs">월간 유입량</span>
+                         <span className="text-xl md:text-2xl font-black text-gray-400 italic">412 회</span>
+                       </div>
+                       <div className="flex justify-between items-center bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100">
+                         <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px] md:text-xs">방문 전환율</span>
+                         <span className="text-xl md:text-2xl font-black text-gray-400 italic">2.41%</span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+
+                 <div className="relative group" data-aos="fade-up">
+                   <div className="absolute -inset-4 bg-orange-600/30 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                   <div className="relative p-8 md:p-12 rounded-[40px] md:rounded-[60px] bg-orange-600 text-white shadow-[0_30px_60px_rgba(234,88,12,0.3)] md:shadow-[0_50px_100px_rgba(234,88,12,0.4)] border border-orange-500 overflow-hidden">
+                     <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+                     <div className="relative z-10 space-y-8 md:space-y-12 text-left">
+                       <div className="flex justify-between items-start">
+                         <div>
+                           <div className="px-3 py-1 bg-white text-orange-600 text-[8px] md:text-[10px] font-black rounded-md mb-2 md:mb-4 inline-block">성과 분석 리포트</div>
+                           <h5 className="text-2xl md:text-4xl font-black italic">비즈온 도입 후</h5>
+                         </div>
+                         <div className="text-right">
+                           <div className="text-2xl md:text-4xl font-black text-yellow-100">↑ 842%</div>
+                           <div className="text-[8px] md:text-xs font-bold text-orange-100 tracking-widest">핵심 지표 성장</div>
+                         </div>
+                       </div>
+                       <div className="space-y-4 md:space-y-6">
+                         <div className="space-y-1 md:space-y-2">
+                           <div className="flex justify-between text-[10px] md:text-xs font-black text-orange-100 uppercase tracking-widest">유입 트래픽</div>
+                           <div className="text-4xl md:text-6xl font-black tracking-tighter">3,892 <span className="text-lg md:text-2xl font-medium opacity-60">회</span></div>
+                         </div>
+                         <div className="h-2 md:h-3 w-full bg-black/20 rounded-full overflow-hidden">
+                           <div className="h-full bg-white w-full shadow-[0_0_20px_rgba(255,255,255,1)]" />
+                         </div>
+                       </div>
+                       <div className="grid grid-cols-2 gap-4 md:gap-8 pt-6 md:pt-8 border-t border-white/20">
+                          <div>
+                            <div className="text-[8px] md:text-[10px] font-bold text-orange-200 mb-1">전화 연결 수</div>
+                            <div className="text-xl md:text-3xl font-black">112 <span className="text-sm opacity-60">+</span></div>
+                          </div>
+                          <div>
+                            <div className="text-[8px] md:text-[10px] font-bold text-orange-200 mb-1">예약 요청 수</div>
+                            <div className="text-xl md:text-3xl font-black">165 <span className="text-sm opacity-60">+</span></div>
+                          </div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
               </div>
             </div>
           </div>
