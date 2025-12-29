@@ -314,7 +314,7 @@ export default function BizonMarketing({ site }: { site: string }) {
           <div className="text-center mb-16 font-sans" data-aos="fade-up" data-aos-delay="400">
             <h2 className="text-3xl md:text-5xl font-bold mb-8 leading-tight tracking-tight">
               우리는 지역장악 마케팅을 합니다.<br />
-              사장님 업체를 <span className="text-orange-600">지역 1등 업체</span>로<br className="hidden md:block" /> 만들어 드리겠습니다.
+              사장님 업체를 <span className="text-orange-600">지역 1등 업체</span>로<br className="md:hidden" /> 만들어 드리겠습니다.
             </h2>
           </div>
 
@@ -354,9 +354,10 @@ export default function BizonMarketing({ site }: { site: string }) {
             <div className="inline-block px-6 py-2 bg-orange-100 text-orange-600 rounded-full text-sm font-bold mb-4">
               Why BIZON
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold leading-tight tracking-tight">
+            <h2 className="text-2xl md:text-5xl font-bold leading-tight tracking-tight">
               가짜 비전공 마케팅 전문가가 판치는 <br />
-              자영업 마케팅 시장, 진짜 전문가인지 확인해 보세요.
+              자영업 마케팅 시장, <br className="md:hidden" />
+              진짜 전문가인지 확인해 보세요.
             </h2>
           </div>
 
