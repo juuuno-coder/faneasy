@@ -492,6 +492,48 @@ export default function BizonMarketing({ site }: { site: string }) {
               </div>
             </div>
 
+            {/* 1.5. A to Z Details - Competitor Comparison Upgrade */}
+            <div className="mt-20 mb-32 max-w-5xl mx-auto px-4 md:px-0" data-aos="fade-up">
+              <div className="text-center mb-10">
+                <span className="text-orange-600 font-bold bg-orange-50 px-4 py-1 rounded-full text-xs md:text-sm tracking-wider">PREMIUM ALL-IN-ONE</span>
+                <h3 className="text-2xl md:text-3xl font-bold mt-4 tracking-tight">
+                  최적화의 <span className="underline decoration-4 decoration-orange-200 underline-offset-4">A to Z</span>, 무엇 하나 빠짐없이 챙겨드립니다
+                </h3>
+              </div>
+              
+              <div className="bg-gray-50 rounded-[32px] md:rounded-[40px] p-6 md:p-12 border border-gray-100 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-orange-100/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-orange-200/50 transition-colors duration-700" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-100/50 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 group-hover:bg-blue-200/50 transition-colors duration-700" />
+                
+                <div className="relative z-10 flex flex-wrap justify-center gap-2 md:gap-3">
+                  {[
+                    '전문 포토그래퍼 촬영', '상세페이지형 원고 작가', '대표 키워드 분석/선점', '플레이스 SEO 최적화',
+                    '네이버 예약/주문 연동', '스마트콜/톡톡 세팅', '매장 소식지 정기 발행', '방문자 리뷰 답글 관리',
+                    '메뉴판 디자인 리뉴얼', '이벤트 배너 제작', '움직이는 GIF 썸네일', '숏폼 홍보 영상 촬영',
+                    '매장 홍보 포스터', 'X배너/현수막 시안', '인스타그램 콘텐츠', '블로그 체험단 운영',
+                    '플레이스 광고 운영', '지역 소상공인 광고', '경쟁사 모니터링', '월간 성과 보고서'
+                  ].map((item, i) => (
+                    <span 
+                      key={i} 
+                      className={`px-3 py-2 md:px-5 md:py-3 rounded-xl text-[11px] md:text-base font-bold shadow-sm transition-all duration-300 hover:scale-105 cursor-default ${
+                        [0, 1, 2, 3, 11, 19].includes(i) // Key differentiators
+                          ? 'bg-linear-to-r from-orange-600 to-orange-500 text-white shadow-orange-500/30' 
+                          : 'bg-white text-gray-600 border border-gray-200 hover:border-orange-200 hover:text-orange-600'
+                      }`}
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-8 md:mt-10 text-center">
+                  <p className="text-gray-500 text-sm md:text-base font-medium flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-orange-600" />
+                    이 모든 것이 <span className="text-gray-900 font-bold border-b-2 border-orange-200">월 관리비</span>에 포함되어 있습니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* 2. Detailed Execution Logic */}
             <div className="relative z-10 text-center font-sans">
               
