@@ -477,9 +477,9 @@ export default function BizonMarketing({ site }: { site: string }) {
               
               <div className="grid md:grid-cols-3 gap-10">
                 {[
-                  { title: '플레이스 주력', desc: '검색 노출을 넘어 방문 전환까지 설계된 압도적인 플레이스 구축', icon: Target },
-                  { title: '고감도 브랜딩', desc: '고객의 무의식을 자극해 첫인상에서 승기를 잡는 고퀄리티 디자인', icon: Palette },
-                  { title: '매출 최적화 컨설팅', desc: '데이터 기반 상권 분석을 통한 지점별 맞춤형 성장 로드맵 제시', icon: BarChart3 }
+                  { title: '플레이스 주력', desc: '노출 구조 + 전환 동선 (전화/길찾기/예약) 설계', icon: Target },
+                  { title: '디자인물 제작', desc: '메뉴/배너/이벤트/리뷰 유도물 (매장 실사용)', icon: Palette },
+                  { title: '프랜차이즈 컨설팅', desc: '지점별 KPI 기준 우선순위 실행', icon: BarChart3 }
                 ].map((pillar, i) => (
                   <div key={i} className="flex flex-col items-center text-center p-8 rounded-[40px] bg-orange-50/30 border border-orange-100/50">
                     <div className="h-16 w-16 rounded-3xl bg-white shadow-lg flex items-center justify-center mb-6 text-orange-600">
@@ -522,9 +522,9 @@ export default function BizonMarketing({ site }: { site: string }) {
               {/* Messaging */}
               <div className="space-y-16 mb-32">
                 <div className="h-px w-32 bg-orange-600 mx-auto" />
-                <h4 className="text-3xl md:text-6xl font-black leading-tight tracking-tighter">
-                  <span className="text-orange-600 font-bold">1등은 당연한 수치</span>일 뿐, <br />
-                  비즈온은 그 너머의 <br className="md:hidden" /><span className="bg-orange-600 text-white px-4 py-1 inline-block mt-2 md:mt-0">압도적 매출</span>을 만듭니다.
+                <h4 className="text-2xl md:text-5xl font-black leading-tight tracking-tighter text-gray-900">
+                  "<span className="text-orange-600 font-bold">플레이스 노출 순위</span> 물론 중요하지만,<br className="hidden md:block" />
+                  다만 <span className="underline decoration-orange-200 decoration-4 underline-offset-4">효율적인 마케팅</span>을 해야합니다!"
                 </h4>
               </div>
 
