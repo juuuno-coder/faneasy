@@ -79,7 +79,7 @@ export default function BizonMarketing({ site }: { site: string }) {
       const newInquiry = {
         ownerId: 'bizon-admin', // Default owner for Bizon
         siteDomain: site || 'bizon',
-        name: formData.brandName, // Map brandName to name
+        name: formData.name, // Correctly map User Name
         email: '', // Not collected in this form
         phone: formData.contact,
         company: formData.brandName,
@@ -837,7 +837,7 @@ export default function BizonMarketing({ site }: { site: string }) {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { 
-                name: '이영진 대표님', 
+                name: '이OO 대표님', 
                 business: '프랜차이즈 가맹점주',
                 quote: '피드백과 자영업 맞춤 케어 해주셔서 비즈온과 함께할 생각입니다. 매출이 실제로 30% 이상 상승했습니다.',
                 rating: 5
