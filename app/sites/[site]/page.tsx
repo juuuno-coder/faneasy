@@ -34,6 +34,15 @@ export async function generateMetadata(
   let description = site === 'kkang' ? '빠르게 사업을 시작하는 프리미엄 랜딩페이지' : (creator?.bio || 'FanEasy 공식 사이트');
   let ogImage = site === 'kkang' ? '/og-kkang.png' : (creator?.image || '');
 
+  // Bizon Special Overrides
+  if (siteSlug === 'bizon') {
+    title = '비즈온마케팅 공식 홈페이지';
+    description = '우리는 대행이 아니라 매출 실험을 설계합니다. 프렌차이즈 지점 최적화 마케팅.';
+    // Note: To reduce logo size in OG image, a new image file with smaller logo padding is needed.
+    // Assuming user uploads/has '/uploads/bizon-og-v2.png' or similar. 
+    // For now keeping default or existing data, but Title is updated.
+  }
+
   try {
     const settingsSnap = await getDoc(doc(db, 'site_settings', siteSlug));
     if (settingsSnap.exists()) {
