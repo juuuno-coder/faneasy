@@ -222,10 +222,10 @@ export default function BizonMarketing({ site }: { site: string }) {
       </section>
 
       {/* Sticky Bottom Button - Single & Balanced */}
-      <div className="fixed bottom-6 left-4 md:left-1/2 md:-translate-x-1/2 z-50 w-[calc(100%-84px)] md:w-[calc(100%-48px)] max-w-2xl md:px-0">
+      <div className="fixed bottom-6 left-4 md:left-1/2 md:-translate-x-1/2 z-50 w-[calc(100%-105px)] md:w-[calc(100%-48px)] max-w-2xl md:px-0">
         <a 
           href="#contact-form"
-          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-center text-[13px] tracking-tight md:text-xl font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,88,12,0.5)] hover:scale-[1.02] hover:shadow-orange-600/50 transition-all flex items-center justify-center gap-1 md:gap-3 pr-8 md:pr-4 border border-white/20"
+          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-center text-[13px] tracking-tight md:text-xl font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,88,12,0.5)] hover:scale-[1.02] hover:shadow-orange-600/50 transition-all flex items-center justify-center gap-1 md:gap-3 pr-2 md:pr-4 border border-white/20"
         >
           매장에서 새는 구멍 3개 찾기(상담문의)
           <ArrowRight className="h-4 w-4 md:h-6 md:w-6" />
