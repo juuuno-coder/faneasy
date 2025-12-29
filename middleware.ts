@@ -13,15 +13,24 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Handle Subdomain access (e.g. iu.faneasy.kr)
+  // 2. Handle Subdomain access (e.g. iu.faneasy.kr) and Custom Domains
   // Skip this if on main domains or localhost (unless it's a sub-localhost like test.localhost)
   const mainDomains = ["faneasy.kr", "panpage.kr", "designd.co.kr", "www.faneasy.kr", "www.designd.co.kr", "localhost:3000", "localhost:3100", "localhost:3600"];
   
   if (!mainDomains.includes(hostname)) {
+    // A. Custom Domain Mapping
+    if (hostname.includes('bizonmarketing.co.kr')) {
+       console.log(`Custom Domain Rewrite: ${hostname} -> /sites/bizon`);
+       url.pathname = `/sites/bizon${url.pathname}`;
+       return NextResponse.rewrite(url);
+    }
+
+    // B. Subdomain Mapping
     let subdomain = "";
     if (hostname.includes("faneasy.kr")) subdomain = hostname.replace(".faneasy.kr", "");
     else if (hostname.includes("designd.co.kr")) subdomain = hostname.replace(".designd.co.kr", "");
     else if (hostname.includes(".localhost")) subdomain = hostname.split(".")[0];
+    // Fallback for unknown subdomains or other custom domains (if not explicitly handled above)
     else if (!hostname.includes("localhost")) subdomain = hostname.split(".")[0];
 
     if (subdomain && subdomain !== "www" && subdomain !== "localhost") {
