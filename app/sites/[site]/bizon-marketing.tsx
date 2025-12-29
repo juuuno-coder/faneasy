@@ -866,7 +866,7 @@ export default function BizonMarketing({ site }: { site: string }) {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-black mb-4">
               비즈온과 함께한<br />
-              수 많은 사장님들과의 <span className="text-orange-700">소통 메세지</span>
+              수 많은 사장님들과의 <br className="md:hidden" /><span className="text-orange-700">소통 메세지</span>
             </h2>
             <p className="text-gray-600">비즈온마케팅은 소통을 가장 중요하게 생각합니다</p>
           </div>
@@ -1072,7 +1072,7 @@ export default function BizonMarketing({ site }: { site: string }) {
               </div>
 
               <p className="text-center text-sm text-gray-500">
-                가능/불가능을 먼저 말씀드립니다. 불필요한 비용을 권하지 않습니다.
+                가능/불가능을 먼저 말씀드립니다. <br className="md:hidden" />불필요한 비용을 권하지 않습니다.
               </p>
             </form>
           )}
