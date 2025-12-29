@@ -150,7 +150,7 @@ export default function BizonMarketing({ site }: { site: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
       {/* Fixed Header - Scroll-based styling */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
@@ -199,7 +199,7 @@ export default function BizonMarketing({ site }: { site: string }) {
       </header>
 
       {/* VIDEO HERO Section - Full Screen */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
+      <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden bg-black">
         {/* Video Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/80 z-10" /> {/* Dark Overlay for Readability */}
