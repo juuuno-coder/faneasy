@@ -458,7 +458,7 @@ export default function BizonMarketing({ site }: { site: string }) {
       </section>
 
       {/* Unified Core Services & Bizon Logic Section */}
-      <section className="py-24 px-6 bg-gray-50 overflow-hidden">
+      <section className="py-32 md:py-40 px-6 bg-gray-50 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="relative bg-white rounded-[60px] md:rounded-[100px] p-8 md:p-24 shadow-[0_50px_150px_rgba(0,0,0,0.06)] border border-gray-50 overflow-hidden" data-aos="fade-up">
             {/* Background Accent Gradients */}
