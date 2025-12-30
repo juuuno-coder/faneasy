@@ -10,20 +10,20 @@ export function HeroTextSequence() {
   const [showScroll, setShowScroll] = useState(false);
 
   useEffect(() => {
-    // Phase 1: Speed improved by 1.5x (4 seconds instead of 6)
+    // Phase 1: Speed improved by 1.25x
     const timer1 = setTimeout(() => {
       setPhase(2);
-    }, 4000);
+    }, 2500); // 4000 -> 2500 for faster transitions
 
-    // Footer: Show after roughly 10 seconds total (delayed by user request)
+    // Footer: Show faster
     const timer2 = setTimeout(() => {
       setShowFooter(true);
-    }, 10000);
+    }, 6500); // 10000 -> 6500
 
-    // Scroll: Show after roughly 11 seconds total
+    // Scroll: Show faster
     const timer3 = setTimeout(() => {
       setShowScroll(true);
-    }, 11000);
+    }, 7000); // 11000 -> 7000
 
     return () => {
       clearTimeout(timer1);
@@ -54,23 +54,16 @@ export function HeroTextSequence() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.6 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
                 >
-                  <span className="text-gray-400">혹시 프랜차이즈라서</span>
+                  <span className="text-gray-400">프랜차이즈라서</span>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.8, duration: 0.6 }}
+                  transition={{ delay: 1.0, duration: 0.5 }}
                 >
-                  마케팅이 필요없다고 생각하시나요?
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 4.3, duration: 0.6 }}
-                >
-                  
+                  마케팅이 <span className="text-orange-600">의미 없다</span>고 생각하시나요?
                 </motion.div>
               </h1>
             </motion.div>
@@ -88,7 +81,7 @@ export function HeroTextSequence() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.4 }}
+                  transition={{ delay: 0.2, duration: 0.4 }}
                   className="text-gray-300"
                 >
                   브랜드는 같아도,
@@ -96,7 +89,7 @@ export function HeroTextSequence() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.6, duration: 0.4 }}
+                  transition={{ delay: 1.2, duration: 0.4 }}
                   className="text-white"
                 >
                   성과는 지점마다 다릅니다.
@@ -104,7 +97,7 @@ export function HeroTextSequence() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 3.7, duration: 0.4 }}
+                  transition={{ delay: 2.2, duration: 0.4 }}
                   className="text-gray-300"
                 >
                   우리는{' '}

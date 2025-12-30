@@ -164,7 +164,7 @@ export default function BizonMarketing({ site }: { site: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden select-none">
       {/* Fixed Header - Scroll-based styling */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
