@@ -108,6 +108,20 @@ export default function BizonMarketing({ site }: { site: string }) {
         subdomain: site || 'bizon'
       });
 
+      // Send Email Notification
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.contact,
+          brandName: formData.brandName,
+          address: formData.address,
+          concern: formData.concern,
+          // userEmail is not collected, so we omit it or pass empty
+        }),
+      });
+
       // Local store update for UI
       addInquiry({
         ...newInquiry,
