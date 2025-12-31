@@ -24,25 +24,25 @@ import {
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
 import AccessDeniedScreen from '@/components/admin/access-denied-screen';
-
-interface Inquiry {
-  id: string;
-  [key: string]: any;
-}
-
-interface SiteNode {
-  id: string;
-  [key: string]: any;
-}
+import toast from 'react-hot-toast';
+import AnalyticsCharts from '@/components/admin/analytics-charts';
+import SiteTreeView from '@/components/admin/site-tree-view';
+import PageBuilder from '@/components/admin/page-builder';
+import UsersTab from '@/components/admin/users-tab';
+import InquiriesTab from '@/components/admin/inquiries-tab';
+import ActivityTab from '@/components/admin/activity-tab';
+import SettingsTab from '@/components/admin/settings-tab';
+import InquiryManagementModal from '@/components/admin/inquiry-management-modal';
+import { Inquiry, SiteNode } from '@/lib/types';
 
 export default function AdminPage({ params }: { params: Promise<{ site: string }> }) {
   const { site } = use(params);
   const siteSlug = site;
   const router = useRouter();
-  const { user, login } = useAuthStore();
+  const { user, login, logout } = useAuthStore();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mainly
+  const [isDarkMode, setIsDarkMode] = useState(true);
   
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [totalFans, setTotalFans] = useState(0);
@@ -53,6 +53,9 @@ export default function AdminPage({ params }: { params: Promise<{ site: string }
   const [todayVisits, setTodayVisits] = useState(0);
   const [chartData, setChartData] = useState<any[]>([]);
   const [siteTitle, setSiteTitle] = useState('');
+  
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   // Hydration fix & Theme Init
   useEffect(() => {
@@ -63,18 +66,7 @@ export default function AdminPage({ params }: { params: Promise<{ site: string }
     }
   }, []);
 
-  const theme = {
-    bg: isDarkMode ? 'bg-[#111111]' : 'bg-gray-50',
-    text: isDarkMode ? 'text-white' : 'text-gray-900',
-    sidebar: isDarkMode ? 'bg-[#111111]/80 border-white/10' : 'bg-white/80 border-gray-200',
-    card: isDarkMode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200',
-    cardHover: isDarkMode ? 'hover:bg-[#222]' : 'hover:bg-gray-50',
-    mutedText: isDarkMode ? 'text-gray-400' : 'text-gray-500',
-    divider: isDarkMode ? 'border-white/10' : 'border-gray-200',
-    navActive: isDarkMode ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-900',
-    navInactive: isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100',
-    input: isDarkMode ? 'bg-[#222] border-white/10 text-white focus:border-purple-500' : 'bg-white border-gray-200 text-gray-900 focus:border-purple-500'
-  };
+
 
   // Auth & RBAC Protection
   useEffect(() => {
