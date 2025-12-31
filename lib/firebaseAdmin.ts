@@ -45,6 +45,9 @@ export const adminFirestore = new Proxy({} as admin.firestore.Firestore, {
   }
 });
 
+// Alias for convenience
+export const adminDb = adminFirestore;
+
 export async function verifyIdToken(idToken: string) {
   return adminAuth.verifyIdToken(idToken);
 }

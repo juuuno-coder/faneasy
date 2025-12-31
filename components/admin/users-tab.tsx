@@ -229,6 +229,30 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
     }
   };
 
+  const handleSyncAuthUsers = async () => {
+    setSaving(true);
+    try {
+      const response = await fetch('/api/sync-auth-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetSite: 'kkang.designd.co.kr' })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.error || '동기화 실패');
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      toast.error('동기화 중 오류가 발생했습니다.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSingleDelete = async () => {
     if (!userToDelete) return;
     setSaving(true);
@@ -281,6 +305,21 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
                 </button>
                 <button className="p-1 hover:text-blue-500 transition-colors" title="메일 발송"><Mail size={14} /></button>
             </div>
+          )}
+          
+          {isSuperAdmin && (
+            <button
+              onClick={handleSyncAuthUsers}
+              disabled={saving}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${
+                isDark
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30'
+                  : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100'
+              } ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
+              Auth 동기화
+            </button>
           )}
           
           <button 
