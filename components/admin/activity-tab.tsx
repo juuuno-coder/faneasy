@@ -57,8 +57,7 @@ export default function ActivityTab({ isDarkMode }: ActivityTabProps) {
 
     let q = query(
       collection(db, 'activity_logs'),
-      orderBy('timestamp', 'desc'),
-      limit(20)
+      limit(50) // Increased limit since we sort locally
     );
 
     // If not super_admin, only see logs for their subdomain
@@ -66,8 +65,7 @@ export default function ActivityTab({ isDarkMode }: ActivityTabProps) {
       q = query(
         collection(db, 'activity_logs'),
         where('subdomain', '==', user.subdomain),
-        orderBy('timestamp', 'desc'),
-        limit(20)
+        limit(50)
       );
     }
 
@@ -76,7 +74,18 @@ export default function ActivityTab({ isDarkMode }: ActivityTabProps) {
         id: doc.id,
         ...doc.data()
       })) as ActivityLog[];
+      
+      // Client-side Sort
+      logs.sort((a, b) => {
+        const timeA = new Date(a.timestamp).getTime();
+        const timeB = new Date(b.timestamp).getTime();
+        return timeB - timeA;
+      });
+
       setActivities(logs);
+      setLoading(false);
+    }, (error) => {
+      console.error("Activity Log Listen Error:", error);
       setLoading(false);
     });
 
