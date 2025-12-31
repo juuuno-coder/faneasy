@@ -91,9 +91,7 @@ export default function AdminPage({ params }: { params: Promise<{ site: string }
   
   const canAccess = isSuperAdmin || isSiteOwner;
 
-  if (mounted && user && !canAccess) {
-      return <AccessDeniedScreen isDarkMode={isDarkMode} siteSlug={siteSlug} />;
-  }
+
 
   // Fetch Site specific data
   useEffect(() => {
@@ -252,6 +250,10 @@ export default function AdminPage({ params }: { params: Promise<{ site: string }
     divider: isDarkMode ? 'border-white/5' : 'border-slate-200',
     mutedText: isDarkMode ? 'text-gray-300' : 'text-slate-500'
   };
+
+  if (mounted && user && !canAccess) {
+      return <AccessDeniedScreen isDarkMode={isDarkMode} siteSlug={siteSlug} />;
+  }
 
   return (
     <div className={`flex min-h-screen transition-colors duration-300 ${theme.bg} ${theme.text}`}>
