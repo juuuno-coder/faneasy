@@ -4,57 +4,107 @@ import nodemailer from 'nodemailer';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, phone, brandName, address, concern, site, id } = body;
+    
+    // Destructure correct fields from UnifiedInquiryForm
+    const { 
+      name, 
+      email, 
+      phone, 
+      company, 
+      desiredDomain, 
+      message, 
+      plan, 
+      siteDomain = 'kkang.designd.co.kr',
+      id
+    } = body;
 
-    // Determine recipient based on site slug
-    const siteSlug = site?.toLowerCase() || '';
-    let targetEmail = 'juuuno1116@gmail.com'; // Default admin
+    // Target Email (Site Owner)
+    // TODO: Dynamically fetch owner email based on siteDomain if needed.
+    // For now, hardcode to the main admin.
+    const targetEmails = ['kgw2642@gmail.com', 'designd@designd.co.kr']; 
 
-    if (siteSlug === 'kkang' || siteSlug === 'bizon' || siteSlug === 'bizonmarketing') {
-      targetEmail = 'juuuno@naver.com';
-    }
-
-    // TODO: Replace with actual SMTP credentials via Environment Variables
+    // SMTP Configuration
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER, // Set this in Vercel env
+        pass: process.env.EMAIL_PASS, // Set this in Vercel env (App Password)
       },
     });
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: targetEmail,
-      subject: `[비즈온] 새로운 문의가 접수되었습니다 (${brandName})`,
+      to: targetEmails.join(', '),
+      subject: `[문의접수] ${name}님 - ${plan?.toUpperCase()} 플랜 문의 (${siteDomain})`,
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-          <h2 style="color: #ea580c; border-bottom: 2px solid #f97316; padding-bottom: 10px;">새로운 마케팅 진단/문의 요청</h2>
-          <p><strong>DB 문서 ID:</strong> <span style="font-family: monospace; color: #666;">${id || 'N/A'}</span></p>
-          <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>상호명:</strong> ${brandName}</p>
-            <p style="margin: 5px 0;"><strong>담당자:</strong> ${name}</p>
-            <p style="margin: 5px 0;"><strong>연락처:</strong> ${phone}</p>
-            <p style="margin: 5px 0;"><strong>지역:</strong> ${address}</p>
+        <div style="font-family: 'Apple SD Gothic Neo', sans-serif; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+          <div style="background-color: #000; padding: 20px; text-align: center;">
+            <h2 style="color: #fff; margin: 0; font-size: 18px;">새로운 프로젝트 문의 도착</h2>
           </div>
-          <h3 style="color: #334155;">문의 내용</h3>
-          <div style="background: #fff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; white-space: pre-wrap; color: #475569;">
-            ${concern}
+          
+          <div style="padding: 24px;">
+            <div style="margin-bottom: 24px;">
+              <p style="color: #64748b; font-size: 14px; margin-bottom: 8px;">문의 정보</p>
+              <h1 style="color: #0f172a; font-size: 24px; margin: 0;">${plan?.toUpperCase() || '일반'} 플랜 신청</h1>
+              <p style="color: #334155; margin-top: 4px;">접수일시: ${new Date().toLocaleString('ko-KR')}</p>
+            </div>
+
+            <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 14px; width: 80px;">지원자</td>
+                  <td style="padding: 8px 0; color: #0f172a; font-weight: bold;">${name}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 14px;">연락처</td>
+                  <td style="padding: 8px 0; color: #0f172a; font-weight: bold;">
+                    <a href="tel:${phone}" style="color: #0f172a; text-decoration: none;">${phone}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 14px;">이메일</td>
+                  <td style="padding: 8px 0; color: #0f172a; font-weight: bold;">
+                    <a href="mailto:${email}" style="color: #2563eb; text-decoration: none;">${email}</a>
+                  </td>
+                </tr>
+                ${company ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 14px;">업체명</td>
+                  <td style="padding: 8px 0; color: #0f172a;">${company}</td>
+                </tr>` : ''}
+                ${desiredDomain ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 14px;">희망도메인</td>
+                  <td style="padding: 8px 0; color: #0f172a;">${desiredDomain}</td>
+                </tr>` : ''}
+              </table>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <p style="color: #64748b; font-size: 14px; margin-bottom: 8px;">문의 상세 내용</p>
+              <div style="background-color: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; color: #334155; line-height: 1.6; white-space: pre-wrap;">${message}</div>
+            </div>
+
+            <div style="margin-top: 32px; text-align: center;">
+              <a href="https://${siteDomain}/admin" style="display: inline-block; background-color: #000; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 14px;">관리자 페이지 바로가기</a>
+            </div>
           </div>
-          <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
-          <p style="font-size: 12px; color: #94a3b8; text-align: center;">어드민 대시보드에서 처리 상태를 업데이트할 수 있습니다.</p>
         </div>
       `,
     };
 
-    // Only attempt to send if credentials exist, otherwise mock success for dev
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      await transporter.sendMail(mailOptions);
-      return NextResponse.json({ success: true, message: 'Email sent successfully' });
-    } else {
-      console.log('Skipping email send: No credentials provided in .env');
-      return NextResponse.json({ success: true, message: 'Mock success: Add EMAIL_USER/PASS to env to enable.' });
+    // Check environment variables
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('⚠️ EMAIL_USER or EMAIL_PASS is missing in environment variables. Email will NOT be sent.');
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Mock Success (ENV missing)', 
+        warning: 'Configure EMAIL_USER and EMAIL_PASS to send real emails.' 
+      });
     }
+
+    await transporter.sendMail(mailOptions);
+    return NextResponse.json({ success: true, message: 'Email sent successfully' });
 
   } catch (error) {
     console.error('Email send failed:', error);
