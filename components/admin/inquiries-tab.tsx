@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, MessageSquare, Clock, CheckCircle2, XCircle, Download, Copy } from 'lucide-react';
+import { Search, Filter, MessageSquare, Clock, CheckCircle2, XCircle, Download, Copy, Trash2 } from 'lucide-react';
 import type { Inquiry } from '@/lib/types';
 import { useAuthStore } from '@/lib/store';
 import { toast } from 'react-hot-toast';
+import { db } from '@/lib/firebaseClient';
+import { doc, deleteDoc } from 'firebase/firestore';
+import ConfirmationModal from '@/components/shared/confirmation-modal';
 
 interface InquiriesTabProps {
   inquiries: Inquiry[];
@@ -13,9 +16,14 @@ interface InquiriesTabProps {
 }
 
 export default function InquiriesTab({ inquiries, onSelectInquiry, isDarkMode }: InquiriesTabProps) {
+  const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'contacted' | 'completed'>('all');
+  const [selectedInquiries, setSelectedInquiries] = useState<Set<string>>(new Set());
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   
+  const isSuperAdmin = user?.role === 'super_admin';
   const isDark = isDarkMode;
 
   const theme = {
@@ -61,6 +69,38 @@ export default function InquiriesTab({ inquiries, onSelectInquiry, isDarkMode }:
     toast.success(`${label} 복사되었습니다.`);
   };
 
+  const toggleSelectAll = () => {
+    if (selectedInquiries.size === filteredInquiries.length) {
+      setSelectedInquiries(new Set());
+    } else {
+      setSelectedInquiries(new Set(filteredInquiries.map(i => i.id)));
+    }
+  };
+
+  const toggleSelectOne = (id: string) => {
+    const next = new Set(selectedInquiries);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedInquiries(next);
+  };
+
+  const handleBatchDelete = async () => {
+    setDeleting(true);
+    try {
+      const ids = Array.from(selectedInquiries);
+      await Promise.all(ids.map(id => deleteDoc(doc(db, 'inquiries', id))));
+      
+      setSelectedInquiries(new Set());
+      toast.success(`${ids.length}건의 문의가 삭제되었습니다.`);
+    } catch (error) {
+      console.error("Batch delete error:", error);
+      toast.error("일부 문의 삭제 중 오류가 발생했습니다.");
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
   const exportToCSV = () => {
     const listToExport = filteredInquiries;
     const headers = ["Name", "Email", "Phone", "Status", "Plan", "Site", "Created At"];
@@ -102,6 +142,20 @@ export default function InquiriesTab({ inquiries, onSelectInquiry, isDarkMode }:
           />
         </div>
         <div className="flex gap-2">
+            {isSuperAdmin && selectedInquiries.size > 0 && (
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                disabled={deleting}
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${
+                  isDark 
+                    ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30' 
+                    : 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
+                }`}
+              >
+                <Trash2 className="h-4 w-4" />
+                {selectedInquiries.size}건 삭제
+              </button>
+            )}
             <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
