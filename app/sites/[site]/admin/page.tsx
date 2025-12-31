@@ -23,90 +23,38 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
-import PageBuilder from '@/components/admin/page-builder';
-import SiteTreeView from '@/components/admin/site-tree-view';
-import InquiriesTab from '@/components/admin/inquiries-tab';
-import UsersTab from '@/components/admin/users-tab';
-import ActivityTab from '@/components/admin/activity-tab';
-import SettingsTab from '@/components/admin/settings-tab';
-import InquiryManagementModal from '@/components/admin/inquiry-management-modal';
-import AnalyticsCharts from '@/components/admin/analytics-charts';
-import { toast } from 'react-hot-toast';
-import type { Inquiry, SiteNode } from '@/lib/types';
+import AccessDeniedScreen from '@/components/admin/access-denied-screen';
 
-export default function SiteAdminPage({
-  params,
-}: {
-  params: Promise<{ site: string }>;
-}) {
-  const { site } = use(params);
-  const siteSlug = site.toLowerCase().trim();
-  const { user, logout } = useAuthStore();
-  const router = useRouter();
+// ... (rest of imports)
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'builder' | 'users' | 'inquiries' | 'activity' | 'settings'>('dashboard');
-  const [mounted, setMounted] = useState(false);
-  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
-  const [users, setUsers] = useState<any[]>([]);
-  const [sites, setSites] = useState<SiteNode[]>([]);
-  const [totalFans, setTotalFans] = useState(0);
-  const [totalSubSites, setTotalSubSites] = useState(0);
-  const [totalVisits, setTotalVisits] = useState(0);
-  const [todayVisits, setTodayVisits] = useState(0);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [siteTitle, setSiteTitle] = useState('');
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted || !siteSlug) return;
-    
-    const fetchSiteTitle = async () => {
-        try {
-            const settingRef = doc(db, 'site_settings', siteSlug);
-            const settingSnap = await getDoc(settingRef);
-            if (settingSnap.exists() && settingSnap.data().siteName) {
-                setSiteTitle(`${settingSnap.data().siteName.toUpperCase()} ADMIN`);
-            } else {
-                setSiteTitle(`${siteSlug.toUpperCase()} ADMIN`);
-            }
-        } catch (e) {
-            setSiteTitle(`${siteSlug.toUpperCase()} ADMIN`);
-        }
-    };
-    fetchSiteTitle();
-  }, [mounted, siteSlug]);
+// ...
 
   // Auth & RBAC Protection
   useEffect(() => {
     if (!mounted) return;
 
     if (!user) {
-      toast.error('로그인이 필요합니다.');
+      // toast.error('로그인이 필요합니다.'); // Optional: AccessDeniedScreen handles null user too if we want, but keeping redirect for completely logged out users is standard.
+      // But user wants "opportunity to log in". 
+      // Current behavior: Redirect to /login.
+      // Let's keep /login redirect for guests, but AccessDeniedScreen for unauthorized LOGGED IN users.
       router.push('/login');
       return;
     }
+  }, [mounted, user, router]);
 
-    // RBAC: Allow Super Admin OR Site Owner/Influencer
-    const isSuperAdmin = user.role === 'super_admin' || user.email === 'designd@designd.co.kr';
-    
-    // Site Owner/Influencer Check: Match by subdomain or ID
-    const isSiteOwner = 
-        user.subdomain === siteSlug || 
-        user.id === siteSlug || 
-        (user.role === 'owner' && user.subdomain === siteSlug);
+  // RBAC permissions check (Moved from useEffect to render scope)
+  const isSuperAdmin = user?.role === 'super_admin' || user?.email === 'designd@designd.co.kr';
+  const isSiteOwner = 
+      user?.subdomain === siteSlug || 
+      user?.id === siteSlug || 
+      (user?.role === 'owner' && user?.subdomain === siteSlug);
+  
+  const canAccess = isSuperAdmin || isSiteOwner;
 
-    if (!isSuperAdmin && !isSiteOwner) {
-       console.log('Permission Denied:', { userSubdomain: user.subdomain, siteSlug, role: user.role });
-       toast.error('접근 권한이 없습니다.');
-       router.push('/');
-    }
-  }, [mounted, user, router, siteSlug]);
+  if (mounted && user && !canAccess) {
+      return <AccessDeniedScreen isDarkMode={isDarkMode} siteSlug={siteSlug} />;
+  }
 
   // Fetch Site specific data
   useEffect(() => {
