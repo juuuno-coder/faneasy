@@ -32,6 +32,7 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
   const [searchTerm, setSearchTerm] = useState('');
   
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingNameId, setEditingNameId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ role: UserRole; subdomain: string }>({ role: 'user', subdomain: '' });
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
@@ -162,6 +163,25 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
     if (next.has(id)) next.delete(id);
     else next.add(id);
     setSelectedUsers(next);
+  };
+
+  const handleNameEdit = async (userId: string, newName: string) => {
+    if (!newName.trim()) {
+      toast.error('이름을 입력해주세요.');
+      return;
+    }
+
+    try {
+      const userRef = doc(db, 'users', userId);
+      await updateDoc(userRef, {
+        name: newName.trim(),
+        updatedAt: new Date()
+      });
+      toast.success('이름이 수정되었습니다.');
+    } catch (error) {
+      console.error('Name update error:', error);
+      toast.error('이름 수정 중 오류가 발생했습니다.');
+    }
   };
 
   const exportToCSV = () => {
