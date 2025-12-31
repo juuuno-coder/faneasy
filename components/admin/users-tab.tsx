@@ -62,8 +62,8 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
   useEffect(() => {
     if (!currentUser) return;
 
-    // SIMPLIFIED: Show ALL users for now to verify Firebase connection
-    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+    // SIMPLIFIED: Show ALL users - no orderBy to avoid index issues
+    const q = query(collection(db, 'users'));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedUsers = snapshot.docs.map(doc => ({
@@ -72,6 +72,14 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
         name: doc.data().name || doc.data().email?.split('@')[0] || 'Unknown'
       })) as UserData[];
       
+      // Sort client-side
+      fetchedUsers.sort((a, b) => {
+        const timeA = a.createdAt?.seconds || (a.createdAt instanceof Date ? a.createdAt.getTime()/1000 : 0);
+        const timeB = b.createdAt?.seconds || (b.createdAt instanceof Date ? b.createdAt.getTime()/1000 : 0);
+        return timeB - timeA;
+      });
+      
+      console.log('Loaded users:', fetchedUsers.length);
       setUsers(fetchedUsers);
       setLoading(false);
     }, (error) => {

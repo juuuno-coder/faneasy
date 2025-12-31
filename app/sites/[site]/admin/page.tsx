@@ -121,8 +121,8 @@ export default function SiteAdminPage({
         `www.${siteSlug}.designd.co.kr`
     ];
 
-    // SIMPLIFIED: Show ALL inquiries for now to verify Firebase connection
-    const qAllInquiries = query(collection(db, 'inquiries'), orderBy('createdAt', 'desc'));
+    // SIMPLIFIED: Show ALL inquiries - no orderBy to avoid index issues
+    const qAllInquiries = query(collection(db, 'inquiries'));
     
     const unsubInquiries = onSnapshot(qAllInquiries, (snapshot) => {
       const fetchedInquiries = snapshot.docs.map(doc => ({
@@ -131,6 +131,14 @@ export default function SiteAdminPage({
         createdAt: doc.data().createdAt || (doc.data().serverCreatedAt?.toDate ? doc.data().serverCreatedAt.toDate().toISOString() : new Date().toISOString())
       })) as Inquiry[];
       
+      // Sort client-side
+      fetchedInquiries.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
+      });
+      
+      console.log('Loaded inquiries:', fetchedInquiries.length);
       setInquiries(fetchedInquiries);
     }, (error) => {
       console.error("Firestore Inquiry Error:", error);
@@ -240,7 +248,7 @@ export default function SiteAdminPage({
   const tabs = [
     { id: 'dashboard', label: '대시보드', icon: LayoutDashboard },
     { id: 'builder', label: '디자인 편집', icon: Palette },
-    { id: 'users', label: '팬 관리', icon: Users },
+    { id: 'users', label: '회원 관리', icon: Users },
     { id: 'inquiries', label: '문의 내역', icon: MessageSquare },
     { id: 'activity', label: '활동 로그', icon: Clock },
     { id: 'settings', label: '설정', icon: Settings },
