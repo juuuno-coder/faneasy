@@ -83,7 +83,7 @@ export default function AdminPage({ params }: { params: Promise<{ site: string }
   }, [mounted, user, router]);
 
   // RBAC permissions check (Moved from useEffect to render scope)
-  const isSuperAdmin = user?.role === 'super_admin' || user?.email === 'designd@designd.co.kr';
+  const isSuperAdmin = user?.role === 'super_admin' || user?.email === 'designd@designd.co.kr' || user?.email === 'kgw2642@gmail.com';
   const isSiteOwner = 
       user?.subdomain === siteSlug || 
       user?.id === siteSlug || 
