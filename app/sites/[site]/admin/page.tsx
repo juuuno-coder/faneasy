@@ -25,9 +25,56 @@ import Link from 'next/link';
 import ProfileModal from '@/components/profile-modal';
 import AccessDeniedScreen from '@/components/admin/access-denied-screen';
 
-// ... (rest of imports)
+interface Inquiry {
+  id: string;
+  [key: string]: any;
+}
 
-// ...
+interface SiteNode {
+  id: string;
+  [key: string]: any;
+}
+
+export default function AdminPage({ params }: { params: Promise<{ site: string }> }) {
+  const { site } = use(params);
+  const siteSlug = site;
+  const router = useRouter();
+  const { user, login } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mainly
+  
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [totalFans, setTotalFans] = useState(0);
+  const [sites, setSites] = useState<SiteNode[]>([]);
+  const [totalSubSites, setTotalSubSites] = useState(0);
+  const [users, setUsers] = useState<any[]>([]);
+  const [totalVisits, setTotalVisits] = useState(0);
+  const [todayVisits, setTodayVisits] = useState(0);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [siteTitle, setSiteTitle] = useState('');
+
+  // Hydration fix & Theme Init
+  useEffect(() => {
+    setMounted(true);
+    // Optional: Check system preference
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+       setIsDarkMode(false);
+    }
+  }, []);
+
+  const theme = {
+    bg: isDarkMode ? 'bg-[#111111]' : 'bg-gray-50',
+    text: isDarkMode ? 'text-white' : 'text-gray-900',
+    sidebar: isDarkMode ? 'bg-[#111111]/80 border-white/10' : 'bg-white/80 border-gray-200',
+    card: isDarkMode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200',
+    cardHover: isDarkMode ? 'hover:bg-[#222]' : 'hover:bg-gray-50',
+    mutedText: isDarkMode ? 'text-gray-400' : 'text-gray-500',
+    divider: isDarkMode ? 'border-white/10' : 'border-gray-200',
+    navActive: isDarkMode ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-900',
+    navInactive: isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100',
+    input: isDarkMode ? 'bg-[#222] border-white/10 text-white focus:border-purple-500' : 'bg-white border-gray-200 text-gray-900 focus:border-purple-500'
+  };
 
   // Auth & RBAC Protection
   useEffect(() => {
