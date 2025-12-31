@@ -39,7 +39,7 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
-  const isSuperAdmin = currentUser?.role === 'super_admin';
+  const isSuperAdmin = currentUser?.role === 'super_admin' || currentUser?.email === 'kgw2642@gmail.com' || currentUser?.email === 'designd@designd.co.kr';
   const isOwner = currentUser?.role === 'owner';
   const isDark = isDarkMode; 
 
@@ -307,9 +307,13 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
             </div>
           )}
           
-          {isSuperAdmin && (
+          {/* DEBUG: Temporarily show button for everyone and log user info */}
+          {/* {isSuperAdmin && ( */}
             <button
-              onClick={handleSyncAuthUsers}
+              onClick={() => {
+                  console.log('Current User:', currentUser);
+                  handleSyncAuthUsers();
+              }}
               disabled={saving}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                 isDark
@@ -318,9 +322,9 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
               } ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
-              Auth 동기화
+              Auth 동기화 (Debug)
             </button>
-          )}
+          {/* )} */}
           
           <button 
             onClick={exportToCSV}
