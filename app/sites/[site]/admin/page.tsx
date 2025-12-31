@@ -92,11 +92,17 @@ export default function SiteAdminPage({
       return;
     }
 
-    // RBAC: Allow Super Admin OR Site Owner
-    const isSuperAdmin = user.role === 'super_admin' || user.email === 'designd@designd.co.kr'; // fallback check
-    const isSiteOwner = user.subdomain === siteSlug || user.id === siteSlug || (user.role === 'owner' && user.subdomain === siteSlug);
+    // RBAC: Allow Super Admin OR Site Owner/Influencer
+    const isSuperAdmin = user.role === 'super_admin' || user.email === 'designd@designd.co.kr';
+    
+    // Site Owner/Influencer Check: Match by subdomain or ID
+    const isSiteOwner = 
+        user.subdomain === siteSlug || 
+        user.id === siteSlug || 
+        (user.role === 'owner' && user.subdomain === siteSlug);
 
     if (!isSuperAdmin && !isSiteOwner) {
+       console.log('Permission Denied:', { userSubdomain: user.subdomain, siteSlug, role: user.role });
        toast.error('접근 권한이 없습니다.');
        router.push('/');
     }
@@ -106,17 +112,40 @@ export default function SiteAdminPage({
   useEffect(() => {
     if (!mounted || !siteSlug) return;
 
-    // 1. Inquiries for this site (Fixed: siteDomain & remove orderBy)
-    const qInq = query(
-        collection(db, 'inquiries'),
-        where('siteDomain', '==', siteSlug)
-    );
-    const unsubInq = onSnapshot(qInq, (snap) => {
-        const fetched = snap.docs.map(d => ({ 
-            id: d.id, 
-            ...d.data(),
-            createdAt: d.data().createdAt || new Date().toISOString()
-        } as Inquiry));
+    // 1. Inquiries for this site (Multi-field check for legacy compatibility)
+    const domainsToCheck = [
+        siteSlug, 
+        `${siteSlug}.designd.co.kr`, 
+        `https://${siteSlug}.designd.co.kr`,
+        `${siteSlug}.faneasy.kr`,
+        `www.${siteSlug}.designd.co.kr`
+    ];
+
+    // Query both siteDomain, subdomain fields, and ownerId (for legacy Bizon inquiries)
+    const qInq1 = query(collection(db, 'inquiries'), where('siteDomain', 'in', domainsToCheck));
+    const qInq2 = query(collection(db, 'inquiries'), where('subdomain', 'in', domainsToCheck));
+    const qInq3 = query(collection(db, 'inquiries'), where('ownerId', '==', 'bizon-admin'));
+
+    const handleInquirySnapshot = (snap1: any, snap2: any, snap3: any) => {
+        const allDocs = new Map();
+        
+        [snap1, snap2, snap3].forEach(snap => {
+            if (!snap) return;
+            snap.forEach((doc: any) => {
+                const data = doc.data();
+                // For qInq3, we only want to include it if it's the 'kkang' or 'bizon' admin, 
+                // or if it matches the current site variations (though q1, q2 handle that)
+                const isBizonContext = siteSlug === 'kkang' || siteSlug === 'bizon';
+                
+                allDocs.set(doc.id, { 
+                    id: doc.id, 
+                    ...data,
+                    createdAt: data.createdAt || new Date().toISOString()
+                });
+            });
+        });
+
+        const fetched = Array.from(allDocs.values()) as Inquiry[];
         
         // Client-side Sort
         fetched.sort((a, b) => {
@@ -125,6 +154,25 @@ export default function SiteAdminPage({
              return dateB.getTime() - dateA.getTime();
         });
         setInquiries(fetched);
+    };
+
+    let snap1: any = null;
+    let snap2: any = null;
+    let snap3: any = null;
+
+    const unsubInq1 = onSnapshot(qInq1, (s) => {
+        snap1 = s;
+        handleInquirySnapshot(snap1, snap2, snap3);
+    });
+
+    const unsubInq2 = onSnapshot(qInq2, (s) => {
+        snap2 = s;
+        handleInquirySnapshot(snap1, snap2, snap3);
+    });
+
+    const unsubInq3 = onSnapshot(qInq3, (s) => {
+        snap3 = s;
+        handleInquirySnapshot(snap1, snap2, snap3);
     });
 
     // 2. Fans who joined this site
@@ -167,7 +215,9 @@ export default function SiteAdminPage({
     fetchStats();
 
     return () => {
-        unsubInq();
+        unsubInq1();
+        unsubInq2();
+        unsubInq3();
         unsubFans();
         unsubSites();
         unsubUsers();
@@ -246,7 +296,7 @@ export default function SiteAdminPage({
     navActive: isDarkMode ? 'bg-white/10 text-white' : 'bg-purple-100 text-purple-700',
     navInactive: isDarkMode ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900',
     divider: isDarkMode ? 'border-white/5' : 'border-slate-200',
-    mutedText: isDarkMode ? 'text-gray-400' : 'text-slate-500'
+    mutedText: isDarkMode ? 'text-gray-300' : 'text-slate-500'
   };
 
   return (

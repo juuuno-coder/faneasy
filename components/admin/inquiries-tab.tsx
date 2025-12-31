@@ -24,8 +24,8 @@ export default function InquiriesTab({ inquiries, onSelectInquiry, isDarkMode }:
     card: isDark ? 'bg-white/2 border-white/5' : 'bg-white border-gray-200 shadow-sm',
     item: isDark ? 'bg-black/20 border-white/5 hover:bg-white/5' : 'bg-white border-gray-100 hover:bg-purple-50/50 hover:border-purple-200',
     text: isDark ? 'text-white' : 'text-gray-900',
-    textSub: isDark ? 'text-gray-500' : 'text-gray-500',
-    textDim: isDark ? 'text-gray-300' : 'text-gray-600',
+    textSub: isDark ? 'text-gray-300' : 'text-gray-500',
+    textDim: isDark ? 'text-gray-200' : 'text-gray-600',
     avatar: isDark ? 'text-black' : 'text-white',
     badge: isDark ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : 'bg-purple-100 text-purple-600 border-purple-200',
   };

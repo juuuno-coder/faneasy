@@ -5,8 +5,7 @@ import Image from 'next/image';
 
 export function RotatingOuterRing() {
   return (
-    <div className="relative w-80 h-80 mx-auto p-4 pointer-events-none">
-      {/* 1. Outer dot-dash ring (Rotating Counter-Clockwise) */}
+    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
       <motion.div
         animate={{ rotate: -360 }}
         transition={{
@@ -14,7 +13,7 @@ export function RotatingOuterRing() {
           repeat: Infinity,
           ease: "linear"
         }}
-        className="absolute inset-0"
+        className="w-full h-full max-w-[500px] max-h-[500px]"
       >
         <svg viewBox="-10 -10 120 120" className="w-full h-full overflow-visible">
           <circle
@@ -41,23 +40,18 @@ export function RotatingOuterRing() {
 
 export function RotatingBizonO() {
   return (
-    <div className="relative w-72 h-72 mx-auto p-4">
-      {/* 2. Main Center Circle & Logo (Rotating Clockwise in Place) */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative w-64 h-64 flex items-center justify-center">
-          {/* Background Glow & Solid Circle - Removed bg-white to enable transparency */}
-          <div className="absolute inset-0 rounded-full shadow-2xl"></div>
-          
-          {/* Main Success Cycle Logo (Clockwise Rotation) */}
-          <motion.div
-            className="relative w-full h-full flex items-center justify-center p-2"
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          >
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="relative w-full h-full max-w-[420px] max-h-[420px] flex items-center justify-center">
+        {/* Main Success Cycle Logo (Clockwise Rotation) */}
+        <motion.div
+          className="relative w-full h-full flex items-center justify-center p-8"
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        >
             <Image
               src="/bizon-cycle.png"
               alt="BizOn Success Cycle"
@@ -70,7 +64,6 @@ export function RotatingBizonO() {
           
           {/* Decorative inner ring (Optional, for extra polish) */}
           <div className="absolute inset-0 rounded-full ring-1 ring-gray-100 ring-inset pointer-events-none"></div>
-        </div>
       </div>
     </div>
   );
