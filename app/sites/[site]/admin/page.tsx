@@ -54,7 +54,7 @@ export default function SiteAdminPage({
   const [totalSubSites, setTotalSubSites] = useState(0);
   const [totalVisits, setTotalVisits] = useState(0);
   const [todayVisits, setTodayVisits] = useState(0);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [chartData, setChartData] = useState<any[]>([]);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [siteTitle, setSiteTitle] = useState('');
@@ -121,58 +121,19 @@ export default function SiteAdminPage({
         `www.${siteSlug}.designd.co.kr`
     ];
 
-    // Query both siteDomain, subdomain fields, and ownerId (for legacy Bizon inquiries)
-    const qInq1 = query(collection(db, 'inquiries'), where('siteDomain', 'in', domainsToCheck));
-    const qInq2 = query(collection(db, 'inquiries'), where('subdomain', 'in', domainsToCheck));
-    const qInq3 = query(collection(db, 'inquiries'), where('ownerId', '==', 'bizon-admin'));
-
-    const handleInquirySnapshot = (snap1: any, snap2: any, snap3: any) => {
-        const allDocs = new Map();
-        
-        [snap1, snap2, snap3].forEach(snap => {
-            if (!snap) return;
-            snap.forEach((doc: any) => {
-                const data = doc.data();
-                // For qInq3, we only want to include it if it's the 'kkang' or 'bizon' admin, 
-                // or if it matches the current site variations (though q1, q2 handle that)
-                const isBizonContext = siteSlug === 'kkang' || siteSlug === 'bizon';
-                
-                allDocs.set(doc.id, { 
-                    id: doc.id, 
-                    ...data,
-                    createdAt: data.createdAt || new Date().toISOString()
-                });
-            });
-        });
-
-        const fetched = Array.from(allDocs.values()) as Inquiry[];
-        
-        // Client-side Sort
-        fetched.sort((a, b) => {
-             const dateA = new Date((a as any).createdAt?.toDate ? (a as any).createdAt.toDate() : a.createdAt);
-             const dateB = new Date((b as any).createdAt?.toDate ? (b as any).createdAt.toDate() : b.createdAt);
-             return dateB.getTime() - dateA.getTime();
-        });
-        setInquiries(fetched);
-    };
-
-    let snap1: any = null;
-    let snap2: any = null;
-    let snap3: any = null;
-
-    const unsubInq1 = onSnapshot(qInq1, (s) => {
-        snap1 = s;
-        handleInquirySnapshot(snap1, snap2, snap3);
-    });
-
-    const unsubInq2 = onSnapshot(qInq2, (s) => {
-        snap2 = s;
-        handleInquirySnapshot(snap1, snap2, snap3);
-    });
-
-    const unsubInq3 = onSnapshot(qInq3, (s) => {
-        snap3 = s;
-        handleInquirySnapshot(snap1, snap2, snap3);
+    // SIMPLIFIED: Show ALL inquiries for now to verify Firebase connection
+    const qAllInquiries = query(collection(db, 'inquiries'), orderBy('createdAt', 'desc'));
+    
+    const unsubInquiries = onSnapshot(qAllInquiries, (snapshot) => {
+      const fetchedInquiries = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt || (doc.data().serverCreatedAt?.toDate ? doc.data().serverCreatedAt.toDate().toISOString() : new Date().toISOString())
+      })) as Inquiry[];
+      
+      setInquiries(fetchedInquiries);
+    }, (error) => {
+      console.error("Firestore Inquiry Error:", error);
     });
 
     // 2. Fans who joined this site
@@ -215,9 +176,7 @@ export default function SiteAdminPage({
     fetchStats();
 
     return () => {
-        unsubInq1();
-        unsubInq2();
-        unsubInq3();
+        unsubInquiries();
         unsubFans();
         unsubSites();
         unsubUsers();

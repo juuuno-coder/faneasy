@@ -116,13 +116,6 @@ export default function AdminDashboard() {
   // Theme State
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Set initial theme based on role (Owner defaults to Dark)
-  useEffect(() => {
-    if (user?.role === 'owner') {
-        setIsDarkMode(true);
-    }
-  }, [user]);
-
   // Fetch Visit Stats & Calculate Chart Data
   useEffect(() => {
     const fetchAndCalculate = async () => {

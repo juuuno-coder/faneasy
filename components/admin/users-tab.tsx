@@ -62,78 +62,25 @@ export default function UsersTab({ isDarkMode, influencerId }: UsersTabProps) {
   useEffect(() => {
     if (!currentUser) return;
 
-    let rawSlug = (influencerId || currentUser.subdomain || '').toLowerCase().trim();
-    // Extract base slug if it's a full domain (e.g., 'kkang.designd.co.kr' -> 'kkang')
-    let siteSlug = rawSlug.split('.')[0];
-
-    if (!siteSlug && !isSuperAdmin) {
-       setUsers([]);
-       setLoading(false);
-       return;
-    }
-
-    const domainsToCheck = [
-        siteSlug, 
-        `${siteSlug}.designd.co.kr`, 
-        `https://${siteSlug}.designd.co.kr`,
-        `${siteSlug}.faneasy.kr`,
-        `www.${siteSlug}.designd.co.kr`
-    ];
-
-    let unsubscribe = () => {};
-
-    if (isSuperAdmin) {
-       const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
-       unsubscribe = onSnapshot(q, (snapshot) => {
-         setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as UserData[]);
-         setLoading(false);
-       });
-    } else {
-       // Parallel queries for robust matching
-       // 1. Users who joined this site
-       const q1 = query(collection(db, 'users'), where('joinedInfluencerId', 'in', domainsToCheck));
-       // 2. Users tagged with this site
-       const q2 = query(collection(db, 'users'), where('joinedSite', 'in', domainsToCheck));
-       // 3. Owners/Admins of this site (using the subdomain field)
-       const q3 = query(collection(db, 'users'), where('subdomain', 'in', domainsToCheck));
-
-       const handleSnapshot = (snap1: any, snap2: any, snap3: any) => {
-           const allUsers = new Map();
-           [snap1, snap2, snap3].forEach(snap => {
-               if (snap) snap.forEach((doc: any) => {
-                   const data = doc.data();
-                   allUsers.set(doc.id, { 
-                       id: doc.id, 
-                       ...data,
-                       // Ensure name exists for display
-                       name: data.name || data.email?.split('@')[0] || 'Unknown'
-                   });
-               });
-           });
-           
-           const fetched = Array.from(allUsers.values()) as UserData[];
-           fetched.sort((a, b) => {
-               const timeA = a.createdAt?.seconds || (a.createdAt instanceof Date ? a.createdAt.getTime()/1000 : 0);
-               const timeB = b.createdAt?.seconds || (b.createdAt instanceof Date ? b.createdAt.getTime()/1000 : 0);
-               return timeB - timeA;
-           });
-           setUsers(fetched);
-           setLoading(false);
-       };
-
-       let s1: any = null;
-       let s2: any = null;
-       let s3: any = null;
-
-       const unsub1 = onSnapshot(q1, (s) => { s1 = s; handleSnapshot(s1, s2, s3); });
-       const unsub2 = onSnapshot(q2, (s) => { s2 = s; handleSnapshot(s1, s2, s3); });
-       const unsub3 = onSnapshot(q3, (s) => { s3 = s; handleSnapshot(s1, s2, s3); });
-       
-       unsubscribe = () => { unsub1(); unsub2(); unsub3(); };
-    }
+    // SIMPLIFIED: Show ALL users for now to verify Firebase connection
+    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedUsers = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        name: doc.data().name || doc.data().email?.split('@')[0] || 'Unknown'
+      })) as UserData[];
+      
+      setUsers(fetchedUsers);
+      setLoading(false);
+    }, (error) => {
+      console.error("Firestore Listen Error:", error);
+      setLoading(false);
+    });
 
     return () => unsubscribe();
-  }, [currentUser, isSuperAdmin, isOwner, influencerId]);
+  }, [currentUser]);
 
   const canEdit = (targetUser: UserData) => {
     if (isSuperAdmin) return true;
