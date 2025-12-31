@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER, // Set this in Vercel env
-        pass: process.env.EMAIL_PASS, // Set this in Vercel env (App Password)
+        pass: process.env.EMAIL_APP_PASSWORD, // Set this in Vercel env (App Password)
       },
     });
 
@@ -94,12 +94,12 @@ export async function POST(req: Request) {
     };
 
     // Check environment variables
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('⚠️ EMAIL_USER or EMAIL_PASS is missing in environment variables. Email will NOT be sent.');
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_APP_PASSWORD) {
+      console.warn('⚠️ EMAIL_USER or EMAIL_APP_PASSWORD is missing in environment variables. Email will NOT be sent.');
       return NextResponse.json({ 
         success: true, 
         message: 'Mock Success (ENV missing)', 
-        warning: 'Configure EMAIL_USER and EMAIL_PASS to send real emails.' 
+        warning: 'Configure EMAIL_USER and EMAIL_APP_PASSWORD to send real emails.' 
       });
     }
 
