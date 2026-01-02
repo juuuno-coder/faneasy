@@ -279,7 +279,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
           <div className="flex flex-col items-center gap-2 md:gap-4">
              {/* Before Card - Wider, No Shadow */}
-             <div className="relative rounded-2xl overflow-hidden bg-white w-full max-w-[480px]">
+             <div className="relative rounded-2xl overflow-hidden bg-white w-full max-w-[600px]">
                 <div className="absolute top-2 left-4 z-20">
                   <span className="px-2.5 py-0.5 bg-gray-900 text-white rounded-full text-[10px] md:text-xs font-black opacity-90">비즈온 도입 전</span>
                 </div>
@@ -314,7 +314,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                    
                    <div className="absolute right-6 md:right-10 bottom-3 md:bottom-6 z-20 text-right bg-white/90 backdrop-blur-sm p-3 rounded-2xl md:bg-transparent md:p-0 md:backdrop-blur-none border border-orange-100/50 md:border-none shadow-sm md:shadow-none">
                       <p className="text-base md:text-lg font-bold text-orange-600 mb-0 md:mb-1 shadow-sm">핵심 지표 폭발적 성장</p>
-                      <h3 className="text-3xl md:text-6xl font-black tracking-tighter leading-none text-gray-900">842% <span className="text-xl md:text-3xl text-orange-600">성장</span></h3>
+                      <h3 className="text-3xl md:text-6xl font-black tracking-tighter leading-none text-gray-900">321% <span className="text-xl md:text-3xl text-orange-600">성장</span></h3>
                    </div>
                 </div>
              </div>
