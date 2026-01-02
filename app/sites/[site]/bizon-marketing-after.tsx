@@ -168,7 +168,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
               className="relative flex items-center cursor-pointer"
               onClick={() => mainContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
             >
-              <div className="relative w-[180px] h-[50px] md:w-[240px] md:h-[60px]">
+              <div className="relative w-[260px] h-[80px] md:w-[460px] md:h-[120px]">
                 <Image 
                   src={isScrolled ? `/bizon-logo.png?v=12` : `/bizon-logo-dark.png?v=12`} 
                   alt="비즈온" 
@@ -341,7 +341,17 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                <div key={i} className="relative w-[180px] md:w-[280px] aspect-[3/4] mx-2 md:mx-4 bg-white shadow-md rounded-2xl overflow-hidden">
                   <Image src={`/uploads/certificates/cert${(i % 8) + 1}.png`} alt="cert" fill className="object-cover p-2" unoptimized 
                   onError={(e) => (e.currentTarget.style.opacity='0.2')}/>
-                  <div className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-300 pointer-events-none">CERTIFICATE</div>
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="relative w-2/3 h-1/3 opacity-[0.08] grayscale">
+                      <Image 
+                        src="/bizon-logo.png" 
+                        alt="watermark" 
+                        fill 
+                        className="object-contain" 
+                        unoptimized 
+                      />
+                    </div>
+                  </div>
                </div>
              ))}
            </div>
@@ -381,47 +391,114 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 7. Process */}
-      <section id="process" className="h-screen snap-start flex flex-col justify-center bg-white px-6">
-        <div className="max-w-5xl mx-auto w-full">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-2">마케팅 성공방식</h2>
-            <p className="text-gray-500 font-bold text-lg">성공의 <span className="text-orange-600 text-xl">수레바퀴</span></p>
+      {/* 7. Process - Success Cycle Redesign */}
+      <section id="process" className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden px-6 relative">
+        <div className="max-w-6xl mx-auto w-full relative">
+          
+          <div className="text-center mb-12 relative z-20">
+            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4 tracking-tight">
+              마케팅 성공방식
+            </h2>
+            <p className="text-xl md:text-2xl text-gray-500 font-bold uppercase tracking-widest">
+              멈추지 않는 성공의 <span className="text-orange-600">수레바퀴</span>
+            </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-4">
-              {[
-                  { id: '01', t: '매장 점검 및 진단' },
-                  { id: '02', t: '맞춤형 마케팅 설계' },
-                  { id: '03', t: '마케팅 상품 실행' },
-                  { id: '04', t: '성과 분석 및 조정' },
-              ].map((item, i) => (
-                <div key={i} className="bg-gray-50 p-8 rounded-3xl border border-gray-100 flex items-center gap-6">
-                  <div className="text-3xl font-black text-orange-600/30">{item.id}</div>
-                  <h3 className="text-xl md:text-2xl font-black text-gray-900">{item.t}</h3>
-                </div>
-              ))}
+
+          <div className="relative flex items-center justify-center min-h-[500px] md:min-h-[600px]">
+            {/* Background Rotating Logo */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+               <div className="relative w-[320px] h-[320px] md:w-[580px] md:h-[580px] opacity-[0.35]">
+                 <RotatingOuterRing />
+                 <RotatingBizonO />
+               </div>
+            </div>
+
+            {/* Staggered Grid of Success Steps */}
+            <div className="relative z-10 w-full grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-56 gap-y-12 md:gap-y-20">
+                {[
+                  { id: '01', t: '매장 점검 및 진단', desc: '현재 상태를 철저히 분석하여\n근본적인 문제점을 파악합니다.', color: 'from-blue-500/20 to-blue-600/20' },
+                  { id: '02', t: '맞춤형 마케팅 설계', desc: '전담 기획팀이 상권과 업종에\n최적화된 전략을 수립합니다.', color: 'from-amber-500/20 to-amber-600/20' },
+                  { id: '03', t: '마케팅 상품 실행', desc: '검색 노출부터 브랜딩까지\n즉각적인 실행에 착수합니다.', color: 'from-purple-500/20 to-purple-600/20' },
+                  { id: '04', t: '성과 분석 및 조정', desc: '실데이터 기반 분석을 통해\n성과를 끊임없이 최적화합니다.', color: 'from-orange-500/20 to-orange-600/20' },
+                ].map((item, i) => (
+                  <div 
+                    key={i} 
+                    className="group bg-white/95 backdrop-blur-xl p-8 md:p-12 rounded-[40px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.12)] border border-gray-100 flex flex-col justify-center hover:scale-105 transition-all duration-500"
+                  >
+                    <div className="flex items-center gap-6 mb-4">
+                      <div className={`text-4xl md:text-5xl font-black bg-linear-to-r ${item.color} bg-clip-text text-transparent opacity-40`}>
+                        {item.id}
+                      </div>
+                      <h3 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight">
+                        {item.t}
+                      </h3>
+                    </div>
+                    <p className="text-gray-500 text-lg md:text-xl font-medium whitespace-pre-line leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 8. Review */}
-      <section id="review" className="h-screen snap-start flex flex-col justify-center bg-gray-900 px-6 text-white text-center">
-        <div className="max-w-5xl mx-auto w-full">
-          <h2 className="text-3xl md:text-5xl font-black mb-12">사장님들의 <span className="text-orange-600">진짜 후기</span></h2>
-          <div className="grid md:grid-cols-3 gap-6">
+      {/* 8. Review - Premium Design */}
+      <section id="review" className="h-screen snap-start flex flex-col justify-center bg-gray-900 px-6 text-white overflow-hidden relative">
+        <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/40 pointer-events-none" />
+        <div className="max-w-7xl mx-auto w-full relative z-10">
+          <div className="text-center mb-16 md:mb-20">
+            <span className="inline-block px-5 py-2 bg-orange-700/20 text-orange-600 rounded-full text-sm font-black mb-6 border border-orange-700/30 tracking-widest uppercase">
+              Real Review
+            </span>
+            <h2 className="text-4xl md:text-6xl font-black">
+              사장님들의 <span className="text-orange-600">진짜 이야기</span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
             {[
-              { n: '이OO 대표님', b: '가맹점주', q: '매출이 30% 이상 상승했습니다.' },
-              { n: '김사장님', b: '음식점 운영', q: '플레이스 장악이 이렇게 중요한지 처음 알았어요.' },
-              { n: '박대표님', b: '카페 운영', q: '역시 전문가는 다릅니다. 방향키를 잡았어요.' },
-            ].map((r, i) => (
-              <div key={i} className="bg-white/5 p-8 rounded-3xl border border-white/10 flex flex-col items-center">
-                <p className="text-lg italic mb-6 flex-1">"{r.q}"</p>
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 text-yellow-500 fill-yellow-500" />)}
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">{r.n}</span>
-                  <span className="text-gray-500 ml-2">{r.b}</span>
+              { 
+                name: '이OO 대표님', 
+                business: '프랜차이즈 가맹점주',
+                quote: '피드백과 자영업 맞춤 케어 해주셔서 비즈온과 함께할 생각입니다. 매출이 실제로 30% 이상 상승했습니다.',
+                rating: 5
+              },
+              { 
+                name: '김사장님', 
+                business: '음식점 운영 12년차',
+                quote: '대표님! 매달 신경쓸수록 방문 고객이 늘었어요. 플레이스 장악이 이렇게 중요한지 이제야 알았습니다.',
+                rating: 5
+              },
+              { 
+                name: '박대표님', 
+                business: '수도권 카페 브랜딩',
+                quote: '막연했던 어려움을 잘 이끌어주셔서 이제야 방향키를 제대로 잡아갑니다! 역시 전문가는 다릅니다.',
+                rating: 5
+              },
+            ].map((review, i) => (
+              <div key={i} className="group">
+                <div className="bg-white/5 backdrop-blur-md rounded-[40px] p-10 md:p-12 border border-white/10 hover:border-orange-600/50 transition-all h-full flex flex-col hover:translate-y-[-10px] duration-500">
+                  <span className="inline-block px-4 py-1 bg-orange-600 text-white text-[10px] font-black rounded mb-8 w-fit tracking-tighter">
+                    BIZON SUCCESS
+                  </span>
+                  <p className="text-gray-200 text-xl md:text-2xl font-bold leading-relaxed mb-10 flex-1 break-keep">
+                    "{review.quote}"
+                  </p>
+                  <div className="flex gap-1.5 mb-10">
+                    {[...Array(review.rating)].map((_, j) => (
+                      <Star key={j} className="h-6 w-6 text-yellow-500 fill-yellow-500" />
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-5">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-600/20 flex items-center justify-center border border-orange-600/30">
+                      <Users className="h-7 w-7 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="font-black text-white text-xl">{review.name}</p>
+                      <p className="text-gray-500 font-bold">{review.business}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -429,42 +506,151 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 9. Contact */}
+      {/* 9. Chat Gallery - Scrolling Owner Messages */}
+      <section className="h-screen snap-start flex flex-col justify-center bg-gray-50 overflow-hidden px-6 relative">
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="text-center mb-16 md:mb-20">
+             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
+               수많은 사장님들과의<br />
+               진한 <span className="text-orange-600">소통 기록</span>
+             </h2>
+             <p className="text-xl md:text-2xl text-gray-500 font-bold">비즈온마케팅은 '결과'만큼 '과정'에서의 소통을 중요시합니다</p>
+          </div>
+
+          <div className="relative h-[450px] md:h-[550px] overflow-hidden rounded-[50px] border border-gray-100 bg-white/50 backdrop-blur-sm p-4">
+             <div className="absolute top-0 left-0 right-0 h-24 bg-linear-to-b from-gray-50 to-transparent z-10 pointer-events-none" />
+             <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-gray-50 to-transparent z-10 pointer-events-none" />
+
+             <div className="flex gap-4 md:gap-8 h-full px-4 overflow-hidden">
+                {[...Array(4)].map((_, colIdx) => (
+                  <div 
+                    key={colIdx} 
+                    className={`flex-1 flex flex-col gap-4 md:gap-6 animate-scroll-up ${colIdx % 2 === 0 ? '' : 'mt-20'}`}
+                    style={{ animationDuration: `${20 + colIdx * 2}s` }}
+                  >
+                    {[...Array(2)].map((_, setIdx) => (
+                      <div key={setIdx} className="flex flex-col gap-4 md:gap-6">
+                        {[
+                          { msg: '대표님! 네이버 순위가 눈에 띄게 올랐어요 대박!!', initial: '박', color: 'bg-orange-100 text-orange-600' },
+                          { msg: '이번 주 매출 최고 찍었습니다 고생하셨어요', initial: '김', color: 'bg-blue-100 text-blue-600' },
+                          { msg: '리뷰 답글 달아주신거 보고 단골분이 칭찬하시네요 ㅎㅎ', initial: '최', color: 'bg-green-100 text-green-600' },
+                          { msg: '믿고 맡기길 잘했네요 다음 달도 고고!', initial: '이', color: 'bg-purple-100 text-purple-600' },
+                          { msg: '전화 문의가 지난주보다 2배는 많아진거 같아요', initial: '정', color: 'bg-indigo-100 text-indigo-600' },
+                          { msg: '상권분석 해주신게 진짜 신의 한수였네요', initial: '강', color: 'bg-rose-100 text-rose-600' },
+                        ].map((item, i) => (
+                          <div key={`${setIdx}-${i}-${colIdx}`} className="bg-white rounded-3xl p-5 shadow-xl border border-gray-50/50 hover:scale-105 transition-transform">
+                            <div className="flex items-start gap-4">
+                              <div className={`h-10 w-10 rounded-full ${item.color} flex items-center justify-center text-sm font-black shrink-0 shadow-inner`}>{item.initial}</div>
+                              <div className="flex-1">
+                                <p className="text-sm md:text-base text-gray-800 font-medium leading-relaxed break-keep">{item.msg}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. Contact - High Visibility Form */}
       <section id="contact-form" className="h-screen snap-start flex flex-col md:flex-row bg-white overflow-hidden">
-        <div className="w-full md:w-5/12 bg-black text-white p-10 flex flex-col justify-center relative">
+        <div className="w-full md:w-5/12 bg-black text-white p-12 md:p-20 flex flex-col justify-center relative">
           <Image src="/uploads/meeting-1.png" alt="bg" fill className="object-cover opacity-20 grayscale" unoptimized />
-          <div className="relative z-10 space-y-4">
-            <h2 className="text-4xl md:text-6xl font-black leading-tight text-orange-600">진짜 전문가에게<br />맡기세요.</h2>
-            <div className="pt-6">
-               <p className="text-gray-400 font-bold mb-1">문의 전화</p>
-               <p className="text-4xl md:text-5xl font-black">1666-0865</p>
+          <div className="relative z-10 space-y-6">
+            <h3 className="text-orange-600 font-bold tracking-widest text-lg">CONTACT US</h3>
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight text-white mb-8">
+              진짜 전문가에게<br />
+              <span className="text-orange-600">맡기세요.</span>
+            </h2>
+            <div className="pt-10 border-t border-white/10">
+               <p className="text-gray-400 font-bold mb-2">문의 전화</p>
+               <p className="text-4xl md:text-6xl font-black text-white">1666-0865</p>
             </div>
           </div>
         </div>
-        <div className="w-full md:w-7/12 p-10 flex flex-col justify-center overflow-y-auto">
+        
+        <div className="w-full md:w-7/12 p-8 md:p-20 flex flex-col justify-center bg-gray-50/30 overflow-y-auto">
             {!submitted ? (
-              <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto w-full">
-                <h3 className="text-2xl font-black">무료 진단 신청</h3>
-                <input type="text" required placeholder="상호명" value={formData.brandName} onChange={(e) => setFormData({...formData, brandName: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600" />
-                <input type="text" required placeholder="지역" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600" />
-                <input type="text" required placeholder="이름" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600" />
-                <input type="tel" required placeholder="연락처" value={formData.contact} onChange={(e) => setFormData({...formData, contact: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600" />
-                <textarea required placeholder="상세 문의" value={formData.concern} onChange={(e) => setFormData({...formData, concern: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600 h-24" />
-                <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-orange-600 text-white rounded-xl font-bold text-lg hover:bg-orange-700 transition-all">신청하기</button>
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 max-w-xl mx-auto w-full">
+                <div className="mb-8">
+                  <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">무료 진단 신청</h3>
+                  <p className="text-gray-600 font-medium">상담을 통해 가능/불가능을 정직하게 말씀드립니다.</p>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-sm font-bold text-gray-900 ml-1">상호명</label>
+                      <input type="text" required placeholder="매장명을 입력해주세요" value={formData.brandName} onChange={(e) => setFormData({...formData, brandName: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-bold text-gray-900 ml-1">지역</label>
+                      <input type="text" required placeholder="예) 서울 강북구" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-sm font-bold text-gray-900 ml-1">신청자 성함</label>
+                      <input type="text" required placeholder="이름을 입력해주세요" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-bold text-gray-900 ml-1">연락처</label>
+                      <input type="tel" required placeholder="휴대폰 번호 입력" value={formData.contact} onChange={(e) => setFormData({...formData, contact: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-bold text-gray-900 ml-1">상세 문의내용</label>
+                    <textarea required placeholder="현재 고민이신 부분을 자유롭게 적어주세요." value={formData.concern} onChange={(e) => setFormData({...formData, concern: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 h-32 md:h-40 resize-none shadow-sm" />
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-xl hover:bg-orange-700 transition-all shadow-xl hover:shadow-orange-600/40 flex items-center justify-center gap-2">
+                    {isSubmitting ? '접수 중...' : '우리 매장 지역장악 플랜 받기'}
+                    {!isSubmitting && <ArrowRight className="h-6 w-6" />}
+                  </button>
+                </div>
               </form>
             ) : (
-                <div className="text-center py-10">
-                  <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-                  <h3 className="text-2xl font-black">신청 완료!</h3>
+                <div className="text-center py-10 md:py-20">
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="w-10 h-10 text-green-600" />
+                  </div>
+                  <h3 className="text-3xl font-black mb-4 text-gray-900">신청이 완료되었습니다!</h3>
+                  <p className="text-gray-500 text-xl">담당자가 확인 후 순차적으로 연락드리겠습니다.</p>
                 </div>
             )}
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="snap-start py-12 px-6 bg-black text-gray-500 text-center text-sm">
-        <p>© 2025 비즈온마케팅. All rights reserved.</p>
-        <p className="mt-2 text-orange-900">우리는 매출 실험을 설계합니다.</p>
+      {/* Footer - Restored Original Content */}
+      <footer className="snap-start py-20 pb-40 px-6 bg-black text-gray-500 text-center text-base border-t border-white/5">
+        <Image 
+          src="/bizon-logo.png" 
+          alt="비즈온" 
+          width={180} 
+          height={60}
+          className="object-contain mx-auto mb-8 brightness-0 invert opacity-20"
+          unoptimized
+        />
+        <div className="max-w-3xl mx-auto space-y-4">
+          <p>© 2025 비즈온마케팅 주식회사. All rights reserved.</p>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-gray-400">
+             <span>대표: 양승협</span>
+             <span className="hidden md:inline opacity-30">|</span>
+             <span>사업자등록번호: 565-81-03594</span>
+          </div>
+          <p className="text-gray-400 text-sm md:text-base">
+            주소: 경기도 수원시 장안구 화산로 213번길 15, 2층 201-B66
+          </p>
+          <p className="text-orange-700/60 mt-16 text-xl md:text-2xl font-black italic tracking-tight">
+            우리는 '대행'이 아니라 매출 실험을 설계합니다.
+          </p>
+        </div>
       </footer>
     </div>
   );
