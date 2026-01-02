@@ -267,56 +267,53 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 3. Stats - Before/After Vertical Comparison */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-16 pb-12">
+      {/* 3. Stats - Before/After Vertical Comparison - Strictly Compact */}
+      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-12 pb-8">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight tracking-tight">
+          <div className="text-center mb-4">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-gray-900 leading-tight tracking-tight">
               마케팅의 부재로 인해 새고 있던 잠재 고객들,<br />
               <span className="text-orange-600">비즈온이 숫자로 증명합니다.</span>
             </h2>
           </div>
 
-          <div className="flex flex-col items-center gap-4 md:gap-6">
-             {/* Before Card - Smaller, No Tilt */}
-             <div className="relative rounded-3xl overflow-hidden shadow-lg border border-gray-200 bg-white w-full max-w-sm">
-                <div className="absolute top-3 left-5 z-20">
-                  <span className="px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-black">비즈온 도입 전</span>
+          <div className="flex flex-col items-center gap-2 md:gap-4">
+             {/* Before Card - Much Smaller */}
+             <div className="relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-white w-full max-w-sm">
+                <div className="absolute top-2 left-4 z-20">
+                  <span className="px-2.5 py-0.5 bg-gray-900 text-white rounded-full text-[10px] md:text-xs font-black">비즈온 도입 전</span>
                 </div>
-                <div className="relative h-[200px] md:h-[220px]">
+                <div className="relative h-[140px] md:h-[180px]">
                    <Image src="/assets/bizon/b3.jpg" alt="Before Background" fill className="object-cover opacity-20" unoptimized />
                    <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover mix-blend-multiply opacity-80" unoptimized />
-                   <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-black/70 to-transparent z-10" />
-                   <div className="absolute inset-x-5 bottom-4 z-20 text-white">
-                      <p className="text-sm font-bold opacity-90">관리가 절실했던 상태</p>
+                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/80 to-transparent z-10" />
+                   <div className="absolute inset-x-5 bottom-3 z-20 text-white">
+                      <p className="text-xs md:text-sm font-bold opacity-90">관리가 절실했던 상태</p>
                    </div>
                 </div>
              </div>
 
-             {/* Decorative Arrow - Compact */}
-             <div className="flex items-center justify-center -my-2 z-10">
+             {/* Decorative Arrow - Tiny */}
+             <div className="flex items-center justify-center -my-3 z-30">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-linear-to-b from-orange-500 to-red-600 rounded-full blur-xl opacity-40 animate-pulse" />
-                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-3 shadow-2xl">
-                    <ArrowDown className="w-6 h-6 text-white" strokeWidth={3} />
+                  <div className="absolute inset-0 bg-linear-to-b from-orange-500 to-red-600 rounded-full blur-lg opacity-40 animate-pulse" />
+                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-2 shadow-xl border-2 border-white">
+                    <ArrowDown className="w-4 h-4 md:w-5 md:h-5 text-white" strokeWidth={3} />
                   </div>
                 </div>
              </div>
 
-             {/* After Card - Wide, No Rotation, Clear Contain Image, Right Text */}
-             <div className="relative rounded-[40px] overflow-hidden shadow-[0_20px_80px_-20px_rgba(234,88,12,0.3)] bg-white w-full max-w-5xl border border-gray-100">
-                <div className="absolute top-5 left-7 z-20">
-                  <span className="px-5 py-2 bg-orange-600 text-white rounded-full text-sm font-black shadow-xl">비즈온 도입 후</span>
+             {/* After Card - Compact & Wide */}
+             <div className="relative rounded-[32px] overflow-hidden shadow-[0_15px_60px_-15px_rgba(234,88,12,0.3)] bg-white w-full max-w-4xl border border-gray-100">
+                <div className="absolute top-4 left-6 z-20">
+                  <span className="px-4 py-1.5 bg-orange-600 text-white rounded-full text-xs font-black shadow-lg">비즈온 도입 후</span>
                 </div>
-                <div className="relative h-[250px] md:h-[400px]">
-                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-contain" unoptimized />
+                <div className="relative h-[200px] md:h-[280px]">
+                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-contain p-2" unoptimized />
                    
-                   {/* Text overlay - Right Aligned with minimal gradient */}
-                   <div className="absolute inset-y-0 right-0 w-1/2 bg-linear-to-l from-black/50 to-transparent z-10 md:hidden" />
-                   
-                   <div className="absolute right-6 md:right-12 bottom-6 md:bottom-10 z-20 text-right">
-                      <p className="text-xl md:text-2xl font-bold text-orange-600 mb-1 md:mb-2 shadow-sm drop-shadow-md">핵심 지표 폭발적 성장</p>
-                      <h3 className="text-5xl md:text-8xl font-black tracking-tighter leading-none text-gray-900 drop-shadow-sm">842% <span className="text-3xl md:text-5xl text-orange-600">성장</span></h3>
+                   <div className="absolute right-6 md:right-10 bottom-4 md:bottom-8 z-20 text-right bg-white/80 backdrop-blur-sm p-3 rounded-2xl md:bg-transparent md:p-0 md:backdrop-blur-none border border-orange-100/50 md:border-none shadow-sm md:shadow-none">
+                      <p className="text-lg md:text-xl font-bold text-orange-600 mb-0 md:mb-1 shadow-sm">핵심 지표 폭발적 성장</p>
+                      <h3 className="text-4xl md:text-7xl font-black tracking-tighter leading-none text-gray-900">842% <span className="text-2xl md:text-4xl text-orange-600">성장</span></h3>
                    </div>
                 </div>
              </div>
