@@ -6,7 +6,7 @@ import { db } from '@/lib/firebaseClient';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useAuthStore } from '@/lib/store';
 import type { SiteSettings } from '@/lib/types';
-import ImageUpload from '@/components/ui/image-upload';
+import { ImageUpload } from '@/components/admin/image-upload';
 import { toast } from 'react-hot-toast';
 import { logActivity } from '@/lib/activity-logger';
 import { ExternalLink, ShieldCheck, AlertTriangle, Trash2 } from 'lucide-react';
@@ -316,18 +316,22 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
              <ImageUpload 
                label="사이트 로고"
-               value={settings.logoUrl || ''}
-               onChange={(url) => setSettings({ ...settings, logoUrl: url })}
+               currentImageUrl={settings.logoUrl || ''}
+               onUpload={(url) => setSettings({ ...settings, logoUrl: url })}
+               onRemove={() => setSettings({ ...settings, logoUrl: '' })}
+               platform="faneasy"
+               category="banners"
                aspectRatio="square"
-               isDarkMode={isDarkMode}
              />
 
              <ImageUpload 
                label="메인 배너 이미지"
-               value={settings.bannerUrl || ''}
-               onChange={(url) => setSettings({ ...settings, bannerUrl: url })}
+               currentImageUrl={settings.bannerUrl || ''}
+               onUpload={(url) => setSettings({ ...settings, bannerUrl: url })}
+               onRemove={() => setSettings({ ...settings, bannerUrl: '' })}
+               platform="faneasy"
+               category="banners"
                aspectRatio="video"
-               isDarkMode={isDarkMode}
              />
           </div>
 
@@ -387,10 +391,12 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
           <div className="pt-4 border-t border-dashed border-white/10">
              <ImageUpload 
                label="오픈그래프(OG) 이미지"
-               value={settings.ogImageUrl || ''}
-               onChange={(url) => setSettings({ ...settings, ogImageUrl: url })}
+               currentImageUrl={settings.ogImageUrl || ''}
+               onUpload={(url) => setSettings({ ...settings, ogImageUrl: url })}
+               onRemove={() => setSettings({ ...settings, ogImageUrl: '' })}
+               platform="faneasy"
+               category="banners"
                aspectRatio="video"
-               isDarkMode={isDarkMode}
              />
             <p className={`text-[11px] mt-2 ${t.textMuted}`}>
                 * 카카오톡, 페이스북 등 SNS에 사이트 링크를 공유할 때 표시되는 이미지입니다. (추천: 1200x630)
@@ -439,13 +445,18 @@ export default function SettingsTab({ isDarkMode }: SettingsTabProps) {
               
               <ImageUpload 
                 label={`이미지 ${index + 1}`}
-                value={banner.url}
-                onChange={(url) => setSettings(prev => ({
+                currentImageUrl={banner.url}
+                onUpload={(url) => setSettings(prev => ({
                   ...prev,
                   portfolioBanners: prev.portfolioBanners?.map(b => b.id === banner.id ? { ...b, url } : b)
                 }))}
+                onRemove={() => setSettings(prev => ({
+                  ...prev,
+                  portfolioBanners: prev.portfolioBanners?.map(b => b.id === banner.id ? { ...b, url: '' } : b)
+                }))}
+                platform="faneasy"
+                category="banners"
                 aspectRatio="portrait"
-                isDarkMode={isDarkMode}
               />
               
               <div className="mt-4 space-y-2">

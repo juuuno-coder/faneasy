@@ -13,7 +13,7 @@ interface ImageUploadProps {
   category: StorageCategory;
   label?: string;
   className?: string;
-  aspectRatio?: 'square' | 'video' | 'wide' | 'auto'; // default: video (16:9)
+  aspectRatio?: 'square' | 'video' | 'wide' | 'auto' | 'portrait'; // default: video (16:9)
   helperText?: string;
 }
 
@@ -36,6 +36,7 @@ export function ImageUpload({
     square: 'aspect-square',
     video: 'aspect-video',
     wide: 'aspect-[21/9]',
+    portrait: 'aspect-[2/3]',
     auto: 'h-auto min-h-[200px]'
   }[aspectRatio];
 
