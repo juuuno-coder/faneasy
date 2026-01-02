@@ -5,6 +5,8 @@ export type UserRole =
   | "admin"        // 관리자 (소유자가 지정한 운영진)
   | "user";        // 일반 회원
 
+export type PlatformType = 'faneasy' | 'influencer' | 'dearz';
+
 // 사이트별 권한 매핑
 export interface SitePermission {
   siteId: string;      // subdomain (e.g., 'kkang')

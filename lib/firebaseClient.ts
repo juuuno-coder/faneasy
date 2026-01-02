@@ -2,6 +2,7 @@ import { getApp, initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getMessaging } from "firebase/messaging";
 
 
 const firebaseConfig = {
@@ -22,6 +23,16 @@ export const firebaseApp = getApp();
 export const firebaseAuth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);
+
+export const messaging = async () => {
+    if (typeof window !== "undefined") {
+      const { isSupported } = await import("firebase/messaging");
+      if (await isSupported()) {
+        return getMessaging(firebaseApp);
+      }
+    }
+    return null;
+};
 
 export async function initFirebaseAnalytics() {
   if (typeof window === "undefined") return;
