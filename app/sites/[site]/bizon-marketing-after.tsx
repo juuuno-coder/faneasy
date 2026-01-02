@@ -733,7 +733,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
           }}
           className="flex-1 py-4 bg-orange-600 text-white rounded-2xl font-black text-base shadow-[0_10px_30px_-5px_rgba(234,88,12,0.4)] flex items-center justify-center gap-2 active:scale-95 transition-all"
         >
-          무료 진단 받기
+          우리 가게 무료 진단 받기
           <ArrowRight className="w-5 h-5" />
         </button>
       </div>
