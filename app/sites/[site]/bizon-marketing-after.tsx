@@ -232,7 +232,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       <section id="reason" className="min-h-screen snap-start flex flex-col justify-center bg-white px-5 md:px-6 pt-16 md:pt-24 pb-12 md:pb-16">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-6 md:mb-10">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black leading-tight text-gray-900 tracking-tight break-keep">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight text-gray-900 tracking-tight break-keep">
               프랜차이즈라서<br className="sm:hidden" />
               <span className="text-orange-600"> 마케팅이 의미 없다고 생각하시나요?</span>
             </h2>
@@ -272,7 +272,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-5 md:px-6 pt-12 md:pt-16 pb-8 md:pb-12">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-4 md:mb-6">
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black text-gray-900 leading-tight tracking-tight break-keep">
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-black text-gray-900 leading-tight tracking-tight break-keep">
               마케팅의 부재로 인해 새고 있던 잠재 고객들,<br />
               <span className="text-orange-600">비즈온이 숫자로 증명합니다.</span>
             </h2>
@@ -289,7 +289,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                    <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover mix-blend-multiply opacity-80" unoptimized />
                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-gray-900/60 to-transparent z-10" />
                    <div className="absolute right-5 bottom-3 z-20 text-white text-right">
-                      <p className="text-xs md:text-sm font-bold opacity-90">관리가 절실했던 상태</p>
+                      <p className="text-xl md:text-sm font-bold opacity-90">관리가 절실했던 상태</p>
                    </div>
                 </div>
              </div>
@@ -298,8 +298,8 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
              <div className="flex items-center justify-center -my-3 z-30">
                 <div className="relative">
                   <div className="absolute inset-0 bg-linear-to-b from-orange-500 to-red-600 rounded-full blur-lg opacity-40 animate-pulse" />
-                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-2 shadow-xl border-2 border-white">
-                    <ArrowDown className="w-4 h-4 md:w-5 md:h-5 text-white" strokeWidth={3} />
+                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-1 shadow-xl border-2 border-white">
+                    <ArrowDown className="w-5 h-5 md:w-6 md:h-6 text-white" strokeWidth={2} />
                   </div>
                 </div>
              </div>
@@ -343,8 +343,8 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
            <div className="grid md:grid-cols-2 gap-5 px-2 mb-12">
               {[
-                { txt: '우리의 목표는 단순히\n순위를 올리는 게 아닙니다.', bg: '/uploads/meeting-1.png' },
-                { txt: '고객이 올 수밖에 없는\n구조를 만들고\n\n그 경험을 매출로 전환하는 것.', bg: '/uploads/meeting-2.png' }
+                { txt: '우리의 목표는 단순히\n순위를 올리는 게 아닙니다.', bg: '/assets/bizon/strategy-bg.png' },
+                { txt: '고객이 올 수밖에 없는\n구조를 만들고\n\n그 경험을 매출로 전환하는 것.', bg: '/assets/bizon/success-bg.png' }
               ].map((b, i) => (
                 <div key={i} className={`relative h-[200px] md:h-[240px] rounded-3xl overflow-hidden border border-white/10 group ${i === 1 ? 'md:translate-y-6' : ''}`}>
                   <Image src={b.bg} alt="bg" fill className="object-cover opacity-20 group-hover:opacity-35 transition-all duration-500" unoptimized />
@@ -442,7 +442,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                     { t: '영업광고 전화는 일절 안 합니다.', d: '저희와 함께 해주는 광고주님 관리에 더 집중합니다.' },
                     { t: '불법/트래픽은 절대 사용하지 않습니다.', d: '잠깐의 노출보다 더 값진 건강한 플레이스를 만들어 지속되는 성과를 만듭니다.' },
                     { t: '가게에 꼭 필요한 마케팅만 집중적으로 진행합니다.', d: '지역상권과 업종에 맞춘 고효율의 마케팅만 진행합니다.' },
-                    { t: '온라인 마케팅이 다가 아닙니다.', d: '오프라인 매장에 도움이 되는 마케팅까지 함께 도와드립니다. (단골관리팁, 포스터 디자인 등 매장 컨디션 관리를 함께 합니다)' },
+                    { t: '온라인 마케팅이 다가 아닙니다.', d: '오프라인 매장에 도움이 되는 마케팅까지 함께 도와드립니다. (단골 관리 팁, 포스터 디자인 등 매장 컨디션 관리를 함께 합니다)' },
                   ].map((p, i) => (
                     <div key={i} className="p-4 md:p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                        <h4 className="font-black text-base md:text-xl text-gray-900 mb-1">{p.t}</h4>
