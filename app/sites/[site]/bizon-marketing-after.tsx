@@ -25,7 +25,8 @@ import {
   ShieldAlert,
   Shield,
   Smartphone,
-  Play
+  Play,
+  ShieldCheck
 } from 'lucide-react';
 import { useDataStore } from '@/lib/data-store';
 import { HeroTextSequence } from '@/components/hero-text-sequence';
@@ -432,10 +433,15 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                 다만! <span className="text-orange-600 underline">효율적인 마케팅</span>을 해야합니다.
                </h3>
             </div>
-            <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-center">
-               <div className="md:col-span-5 flex flex-col justify-center">
-                  <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
-                    그래서<br />비즈온은<br /><span className="text-orange-600">4가지 약속</span>을<br />만들었습니다.
+             <div className="grid md:grid-cols-12 gap-10 md:gap-12 items-center">
+               <div className="md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left">
+                  <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6 md:mb-8 shadow-inner">
+                    <ShieldCheck className="w-10 h-10 text-orange-600" />
+                  </div>
+                  <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight break-keep">
+                    그래서 비즈온은<br className="hidden md:block" /> 
+                    <span className="text-orange-600"> 4가지 약속</span>을<br />
+                    만들었습니다.
                   </h2>
                </div>
                <div className="md:col-span-7 grid grid-cols-1 gap-3 md:gap-4">
@@ -444,9 +450,9 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                     { t: '불법/트래픽은 절대 사용하지 않습니다.', d: '잠깐의 노출보다 더 값진 건강한 플레이스를 만들어 지속되는 성과를 만듭니다.' },
                     { t: '가게에 꼭 필요한 마케팅만 집중적으로 진행합니다.', d: '지역상권과 업종에 맞춘 고효율의 마케팅만 진행합니다.' },
                     { t: '온라인 마케팅이 다가 아닙니다.', d: '오프라인 매장에 도움이 되는 마케팅까지 함께 도와드립니다.\n(단골 관리 팁, 포스터 디자인 등 매장 컨디션 관리를 함께 합니다)' },
-                  ].map((p, i) => (
-                    <div key={i} className="p-4 md:p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                       <h4 className="font-black text-base md:text-xl text-gray-900 mb-1">{p.t}</h4>
+                   ].map((p, i) => (
+                    <div key={i} className="group p-5 md:p-6 rounded-2xl bg-white border-l-4 border-l-orange-500 border-y border-r border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+                       <h4 className="font-black text-base md:text-xl text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">{p.t}</h4>
                        <p className="text-gray-500 text-sm md:text-base font-medium leading-relaxed break-keep whitespace-pre-line">{p.d}</p>
                     </div>
                   ))}
