@@ -344,7 +344,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
            <div className="grid md:grid-cols-2 gap-5 px-2 mb-12">
               {[
-                { txt: '우리의 목표는 단순히\n순위를 올리는 게 아닙니다.', bg: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2670&auto=format&fit=crop' },
+                { txt: '우리의 목표는 단순히\n순위를 올리는 게 아닙니다.', bg: 'https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?q=80&w=2670&auto=format&fit=crop' },
                 { txt: '고객이 올 수밖에 없는\n구조를 만들고\n\n그 경험을 매출로 전환하는 것.', bg: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2670&auto=format&fit=crop' }
               ].map((b, i) => (
                 <div key={i} className={`relative h-[200px] md:h-[240px] rounded-3xl overflow-hidden border border-white/10 group ${i === 1 ? 'md:translate-y-6' : ''}`}>
@@ -435,9 +435,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
             </div>
              <div className="grid md:grid-cols-12 gap-10 md:gap-12 items-center">
                <div className="md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left">
-                  <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6 md:mb-8 shadow-inner">
-                    <ShieldCheck className="w-10 h-10 text-orange-600" />
-                  </div>
+                  {/* Shield Icon Removed */}
                   <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight break-keep">
                     그래서 비즈온은<br className="hidden md:block" /> 
                     <span className="text-orange-600"> 4가지 약속</span>을<br />
