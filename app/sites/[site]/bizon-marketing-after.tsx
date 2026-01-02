@@ -229,12 +229,12 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </div>
 
       {/* 2. Reason - Adjusted Images */}
-      <section id="reason" className="min-h-screen snap-start flex flex-col justify-center bg-white px-6 pt-24 pb-16">
+      <section id="reason" className="min-h-screen snap-start flex flex-col justify-center bg-white px-5 md:px-6 pt-16 md:pt-24 pb-12 md:pb-16">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-5xl font-black leading-tight text-gray-900 tracking-tight">
-              프랜차이즈라서<br />
-              <span className="text-orange-600">마케팅이 의미 없다고 생각하시나요?</span>
+          <div className="text-center mb-6 md:mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black leading-tight text-gray-900 tracking-tight break-keep">
+              프랜차이즈라서<br className="sm:hidden" />
+              <span className="text-orange-600"> 마케팅이 의미 없다고 생각하시나요?</span>
             </h2>
           </div>
 
@@ -258,21 +258,21 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
             </div>
           </div>
 
-          <div className="text-center p-6 md:p-10 rounded-[32px] bg-linear-to-br from-gray-900 to-black text-white shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-orange-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <p className="text-base md:text-xl lg:text-2xl font-black leading-tight relative z-10">
+          <div className="text-center p-5 md:p-10 rounded-[24px] md:rounded-[32px] bg-linear-to-br from-gray-900 to-black text-white shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 md:w-40 h-32 md:h-40 bg-orange-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <p className="text-sm sm:text-base md:text-xl lg:text-2xl font-black leading-tight relative z-10 break-keep">
               지점 별로 <span className="text-orange-500 underline decoration-2 underline-offset-4">플레이스 마케팅</span> 관리를<br />
-              <span className="text-xl md:text-3xl lg:text-4xl mt-4 block font-black">제대로 해주는 본사는 <span className="text-yellow-400">'없습니다'</span></span>
+              <span className="text-lg sm:text-xl md:text-3xl lg:text-4xl mt-3 md:mt-4 block font-black">제대로 해주는 본사는 <span className="text-yellow-400">'없습니다'</span></span>
             </p>
           </div>
         </div>
       </section>
 
       {/* 3. Stats - Before/After Vertical Comparison - Strictly Compact */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-12 pb-8">
+      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-5 md:px-6 pt-12 md:pt-16 pb-8 md:pb-12">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-4">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-gray-900 leading-tight tracking-tight">
+          <div className="text-center mb-4 md:mb-6">
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black text-gray-900 leading-tight tracking-tight break-keep">
               마케팅의 부재로 인해 새고 있던 잠재 고객들,<br />
               <span className="text-orange-600">비즈온이 숫자로 증명합니다.</span>
             </h2>
@@ -305,17 +305,17 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
              </div>
 
              {/* After Card - Compact & Wide */}
-             <div className="relative rounded-[32px] overflow-hidden shadow-[0_15px_60px_-15px_rgba(234,88,12,0.2)] bg-white w-full max-w-4xl border border-gray-100/50">
-                <div className="absolute top-4 left-6 z-20">
-                  <span className="px-4 py-1.5 bg-orange-600 text-white rounded-full text-xs font-black shadow-lg">비즈온 도입 후</span>
+             <div className="relative rounded-[24px] md:rounded-[32px] overflow-hidden shadow-[0_15px_60px_-15px_rgba(234,88,12,0.2)] bg-white w-full max-w-4xl border border-gray-100/50">
+                <div className="absolute top-3 md:top-4 left-5 md:left-6 z-20">
+                  <span className="px-3 md:px-4 py-1.5 bg-orange-600 text-white rounded-full text-[10px] md:text-xs font-black shadow-lg">비즈온 도입 후</span>
                 </div>
-                <div className="relative h-[200px] md:h-[280px]">
+                <div className="relative h-[180px] md:h-[280px]">
                    {/* Increased padding to shrink image and avoid overlap */}
-                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-contain p-4 md:p-8" unoptimized />
+                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-contain p-3 md:p-8" unoptimized />
                    
-                   <div className="absolute right-6 md:right-10 bottom-3 md:bottom-6 z-20 text-right bg-white/90 backdrop-blur-sm p-3 rounded-2xl md:bg-transparent md:p-0 md:backdrop-blur-none border border-orange-100/50 md:border-none shadow-sm md:shadow-none">
-                      <p className="text-base md:text-lg font-bold text-orange-600 mb-0 md:mb-1 shadow-sm">핵심 지표 폭발적 성장</p>
-                      <h3 className="text-3xl md:text-6xl font-black tracking-tighter leading-none text-gray-900">321% <span className="text-xl md:text-3xl text-orange-600">성장</span></h3>
+                   <div className="absolute right-4 md:right-10 bottom-3 md:bottom-6 z-20 text-right bg-white/90 backdrop-blur-sm p-3 rounded-2xl md:bg-transparent md:p-0 md:backdrop-blur-none border border-orange-100/50 md:border-none shadow-sm md:shadow-none">
+                      <p className="text-[10px] sm:text-xs md:text-lg font-bold text-orange-600 mb-0 md:mb-1">핵심 지표 폭발적 성장</p>
+                      <h3 className="text-2xl sm:text-3xl md:text-6xl font-black tracking-tighter leading-none text-gray-900">321% <span className="text-sm sm:text-base md:text-3xl text-orange-600">성장</span></h3>
                    </div>
                 </div>
              </div>
@@ -477,14 +477,14 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
             {/* Center Logo - IN FRONT of everything */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-               <div className="relative w-[200px] h-[200px] md:w-[350px] md:h-[350px] opacity-100 drop-shadow-[0_0_40px_rgba(255,255,255,0.9)]">
+               <div className="relative w-[150px] h-[150px] md:w-[350px] md:h-[350px] opacity-100 drop-shadow-[0_0_30px_rgba(255,255,255,0.7)]">
                  <RotatingBizonO />
                </div>
             </div>
 
             {/* Success Steps - MIDDLE layer */}
             <div className="relative z-20 w-full grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-56 gap-y-12 md:gap-y-20">
-                {[
+                 {[
                   { id: '01', t: '매장 점검 및 진단', color: 'from-blue-500/20 to-blue-600/20' },
                   { id: '02', t: '맞춤형 마케팅 설계', color: 'from-amber-500/20 to-amber-600/20' },
                   { id: '03', t: '마케팅 상품 실행', color: 'from-purple-500/20 to-purple-600/20' },
@@ -492,13 +492,13 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                 ].map((item, i) => (
                   <div 
                     key={i} 
-                    className="group bg-white/95 backdrop-blur-xl p-10 md:p-16 rounded-[40px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-gray-100/50 flex flex-col justify-center hover:scale-105 hover:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.25)] transition-all duration-500 min-h-[180px] md:min-h-[220px]"
+                    className="group bg-white/95 backdrop-blur-xl p-6 md:p-16 rounded-[32px] md:rounded-[40px] shadow-[0_15px_45px_-10px_rgba(0,0,0,0.1)] border border-gray-100/50 flex flex-col justify-center hover:scale-105 hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] transition-all duration-500 min-h-[140px] md:min-h-[220px]"
                   >
-                    <div className="flex items-center gap-6">
-                      <div className={`text-4xl md:text-5xl font-black bg-linear-to-r ${item.color} bg-clip-text text-transparent opacity-40`}>
+                    <div className="flex items-center gap-4 md:gap-6">
+                      <div className={`text-3xl md:text-5xl font-black bg-linear-to-r ${item.color} bg-clip-text text-transparent opacity-40`}>
                         {item.id}
                       </div>
-                      <h3 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">
+                      <h3 className="text-lg md:text-4xl font-black text-gray-900 leading-tight break-keep">
                         {item.t}
                       </h3>
                     </div>
@@ -681,7 +681,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
                 <div className="pt-4">
                   <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-xl hover:bg-orange-700 transition-all shadow-xl hover:shadow-orange-600/40 flex items-center justify-center gap-2">
-                    {isSubmitting ? '진단 요청 중...' : '우리 매장 지역장악 플랜 받기'}
+                    {isSubmitting ? '진단 요청 중...' : '우리 가게 무료 진단 받기'}
                     {!isSubmitting && <ArrowRight className="h-6 w-6" />}
                   </button>
                 </div>
@@ -725,15 +725,15 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </footer>
 
       {/* Sticky Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-3 md:p-4 bg-white/90 backdrop-blur-md border-t border-gray-100 flex gap-2 md:hidden">
         <button 
           onClick={() => {
-            const form = document.getElementById('contact');
+            const form = document.getElementById('contact-form');
             form?.scrollIntoView({ behavior: 'smooth' });
           }}
-          className="w-full py-4 bg-orange-600 text-white rounded-xl font-black text-lg shadow-lg flex items-center justify-center gap-2"
+          className="flex-1 py-4 bg-orange-600 text-white rounded-2xl font-black text-base shadow-[0_10px_30px_-5px_rgba(234,88,12,0.4)] flex items-center justify-center gap-2 active:scale-95 transition-all"
         >
-          우리 가게 무료 진단 받기
+          무료 진단 받기
           <ArrowRight className="w-5 h-5" />
         </button>
       </div>
