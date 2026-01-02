@@ -268,59 +268,60 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* 3. Stats - Before/After Vertical Comparison */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-20 pb-16">
+      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-16 pb-12">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-10">
+          <div className="text-center mb-6">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight tracking-tight">
               마케팅의 부재로 인해 새고 있던 잠재 고객들,<br />
               <span className="text-orange-600">비즈온이 숫자로 증명합니다.</span>
             </h2>
           </div>
 
-          <div className="flex flex-col items-center gap-6">
-             {/* Before Card - Smaller, Tilted Left */}
-             <div className="relative rounded-3xl overflow-hidden shadow-lg border border-gray-200 bg-white w-full max-w-md transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+          <div className="flex flex-col items-center gap-4 md:gap-6">
+             {/* Before Card - Smaller, No Tilt */}
+             <div className="relative rounded-3xl overflow-hidden shadow-lg border border-gray-200 bg-white w-full max-w-sm">
                 <div className="absolute top-3 left-5 z-20">
                   <span className="px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-black">비즈온 도입 전</span>
                 </div>
-                <div className="relative h-[280px]">
+                <div className="relative h-[200px] md:h-[220px]">
                    <Image src="/assets/bizon/b3.jpg" alt="Before Background" fill className="object-cover opacity-20" unoptimized />
                    <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover mix-blend-multiply opacity-80" unoptimized />
                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-black/70 to-transparent z-10" />
-                   <div className="absolute inset-x-5 bottom-5 z-20 text-white">
+                   <div className="absolute inset-x-5 bottom-4 z-20 text-white">
                       <p className="text-sm font-bold opacity-90">관리가 절실했던 상태</p>
                    </div>
                 </div>
              </div>
 
-             {/* Decorative Arrow */}
-             <div className="flex items-center justify-center my-2">
+             {/* Decorative Arrow - Compact */}
+             <div className="flex items-center justify-center -my-2 z-10">
                 <div className="relative">
                   <div className="absolute inset-0 bg-linear-to-b from-orange-500 to-red-600 rounded-full blur-xl opacity-40 animate-pulse" />
-                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-4 shadow-2xl">
-                    <ArrowDown className="w-8 h-8 text-white" strokeWidth={3} />
+                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-3 shadow-2xl">
+                    <ArrowDown className="w-6 h-6 text-white" strokeWidth={3} />
                   </div>
                 </div>
              </div>
 
-             {/* After Card - Wide, No Rotation, Clear Image */}
-             <div className="relative rounded-[40px] overflow-hidden shadow-[0_20px_80px_-20px_rgba(234,88,12,0.3)] bg-white w-full max-w-5xl">
+             {/* After Card - Wide, No Rotation, Clear Contain Image, Right Text */}
+             <div className="relative rounded-[40px] overflow-hidden shadow-[0_20px_80px_-20px_rgba(234,88,12,0.3)] bg-white w-full max-w-5xl border border-gray-100">
                 <div className="absolute top-5 left-7 z-20">
                   <span className="px-5 py-2 bg-orange-600 text-white rounded-full text-sm font-black shadow-xl">비즈온 도입 후</span>
                 </div>
-                <div className="relative h-[300px] md:h-[450px]">
-                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-cover" unoptimized />
+                <div className="relative h-[250px] md:h-[400px]">
+                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-contain" unoptimized />
                    
-                   {/* Gradient overlay for text readability only at bottom */}
-                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-orange-600/90 via-orange-600/40 to-transparent z-10" />
+                   {/* Text overlay - Right Aligned with minimal gradient */}
+                   <div className="absolute inset-y-0 right-0 w-1/2 bg-linear-to-l from-black/50 to-transparent z-10 md:hidden" />
                    
-                   <div className="absolute inset-x-8 bottom-8 md:bottom-12 z-20 text-white">
-                      <p className="text-xl md:text-2xl font-bold opacity-90 mb-2 shadow-sm text-shadow">핵심 지표 폭발적 성장</p>
-                      <h3 className="text-6xl md:text-8xl font-black tracking-tighter leading-none drop-shadow-lg">842% <span className="text-3xl md:text-4xl">UP</span></h3>
+                   <div className="absolute right-6 md:right-12 bottom-6 md:bottom-10 z-20 text-right">
+                      <p className="text-xl md:text-2xl font-bold text-orange-600 mb-1 md:mb-2 shadow-sm drop-shadow-md">핵심 지표 폭발적 성장</p>
+                      <h3 className="text-5xl md:text-8xl font-black tracking-tighter leading-none text-gray-900 drop-shadow-sm">842% <span className="text-3xl md:text-5xl text-orange-600">성장</span></h3>
                    </div>
                 </div>
              </div>
           </div>
+
         </div>
       </section>
 
