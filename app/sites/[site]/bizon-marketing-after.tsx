@@ -25,7 +25,6 @@ import {
   Smartphone,
   Play
 } from 'lucide-react';
-import { useAOS } from '@/hooks/use-aos';
 import { useDataStore } from '@/lib/data-store';
 import { HeroTextSequence } from '@/components/hero-text-sequence';
 import { RotatingBizonO, RotatingOuterRing } from '@/components/rotating-bizon-o';
@@ -34,9 +33,6 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { logActivity } from "@/lib/logger";
 
 export default function BizonMarketingAfter({ site }: { site: string }) {
-  // AOS 스크롤 애니메이션 초기화
-  useAOS();
-
   const { getPageContent } = useDataStore();
   const pageContent = getPageContent(site);
   
@@ -46,19 +42,11 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
   /* Scroll Snap Container Ref */
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
-  // AOS 직접 가져오기 (수동 갱신용)
-  const refreshAOS = () => {
-    try {
-      const AOS = require('aos');
-      AOS.refresh();
-    } catch (e) {}
-  };
-
   // 스크롤 이벤트 리스너 (for Navbar style)
   const handleScroll = () => {
     if (mainContainerRef.current) {
-      setIsScrolled(mainContainerRef.current.scrollTop > 50);
-      refreshAOS();
+      const scrollTop = mainContainerRef.current.scrollTop;
+      setIsScrolled(scrollTop > 50);
     }
   };
 
@@ -155,44 +143,34 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
     }
   };
 
-  const toggleMarketing = (item: string) => {
-    setFormData(prev => ({
-      ...prev,
-      currentMarketing: prev.currentMarketing.includes(item)
-        ? prev.currentMarketing.filter(i => i !== item)
-        : [...prev.currentMarketing, item]
-    }));
-  };
-
-  const toggleGoal = (item: string) => {
-      setFormData(prev => ({
-        ...prev,
-        goal: prev.goal.includes(item)
-          ? prev.goal.filter(i => i !== item)
-          : [...prev.goal, item]
-      }));
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el && mainContainerRef.current) {
+        // Since we are using a custom snap container, we scroll the container
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
     <div 
       ref={mainContainerRef}
       onScroll={handleScroll}
-      className="min-h-screen bg-black overflow-x-hidden snap-y snap-proximity h-screen overflow-y-scroll scroll-smooth select-none">
-      {/* Fixed Header - Scroll-based styling */}
+      className="h-screen bg-black overflow-x-hidden overflow-y-auto snap-y snap-mandatory scroll-smooth select-none">
+      
+      {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-white/95 backdrop-blur-md border-b border-gray-100' 
-          : 'bg-transparent backdrop-blur-sm border-b border-white/10'
+          ? 'bg-white/95 backdrop-blur-md border-b border-gray-100 h-[70px] md:h-[80px]' 
+          : 'bg-transparent h-[80px] md:h-[100px]'
       }`}>
-        <div className="w-full md:w-[80%] max-w-[1500px] mx-auto px-6 md:px-0 h-[80px] md:h-[100px] flex items-center justify-between transition-all duration-300">
-          {/* Logo - Left */}
+        <div className="w-full md:w-[90%] max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between">
             <div 
-              className="relative flex items-center cursor-pointer transition-all hover:scale-105 active:scale-95"
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="relative flex items-center cursor-pointer"
+              onClick={() => mainContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
             >
-              <div className="relative w-[260px] h-[80px] md:w-[460px] md:h-[120px]">
+              <div className="relative w-[180px] h-[50px] md:w-[240px] md:h-[60px]">
                 <Image 
-                  src={isScrolled ? `/bizon-logo.png?v=10` : `/bizon-logo-dark.png?v=10`} 
+                  src={isScrolled ? `/bizon-logo.png?v=12` : `/bizon-logo-dark.png?v=12`} 
                   alt="비즈온" 
                   fill
                   priority
@@ -202,295 +180,200 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
               </div>
             </div>
 
-          {/* Navigation & CTA - Right */}
-          <div className="flex items-center gap-8">
-            <nav className={`hidden lg:flex items-center gap-8 text-base font-bold transition-colors ${
+          <div className="flex items-center gap-6">
+            <nav className={`hidden md:flex items-center gap-8 text-sm md:text-base font-bold transition-colors ${
               isScrolled ? 'text-gray-600' : 'text-white'
             }`}>
-              <a href="#reason" className={isScrolled ? 'hover:text-orange-700' : 'hover:text-orange-600'}>서비스 특징</a>
-              <a href="#process" className={isScrolled ? 'hover:text-orange-700' : 'hover:text-orange-600'}>진행 방식</a>
-              <a href="#review" className={isScrolled ? 'hover:text-orange-700' : 'hover:text-orange-600'}>고객 후기</a>
+              <button onClick={() => scrollToSection('reason')} className="hover:text-orange-600">서비스 특징</button>
+              <button onClick={() => scrollToSection('process')} className="hover:text-orange-600">진행 방식</button>
+              <button onClick={() => scrollToSection('review')} className="hover:text-orange-600">고객 후기</button>
             </nav>
-            <a 
-              href="#contact-form"
-              className={`px-6 py-3 rounded-full text-sm font-bold transition-all ${
+            <button 
+              onClick={() => scrollToSection('contact-form')}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
                 isScrolled 
-                  ? 'bg-linear-to-r from-orange-700 to-red-500 text-white hover:shadow-lg hover:shadow-orange-700/30' 
+                  ? 'bg-orange-600 text-white hover:bg-orange-700' 
                   : 'bg-white text-gray-900 hover:bg-gray-100'
               }`}
             >
               문의하기
-            </a>
+            </button>
           </div>
         </div>
       </header>
 
-      {/* VIDEO HERO Section - Full Screen */}
-      <section className="relative h-screen snap-start flex items-center justify-center overflow-hidden bg-black">
-        {/* Video Background */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/80 z-10" /> {/* Dark Overlay for Readability */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full object-cover scale-110"
-            style={{ opacity: 0.7 }}
-          >
+      {/* 1. Hero */}
+      <section className="relative h-screen snap-start flex items-center justify-center bg-black">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-black/60 z-10" />
+          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
             <source src="/videos/bizon-main.mp4" type="video/mp4" />
           </video>
         </div>
-
-        {/* Hero Content - Animated Text Sequence */}
-        <div className="relative z-20 max-w-7xl mx-auto px-6 text-center">
+        <div className="relative z-20 w-full">
           <HeroTextSequence />
         </div>
       </section>
 
-      {/* Sticky Bottom Button - Single & Balanced */}
-      <div className="fixed bottom-6 left-4 md:left-1/2 md:-translate-x-1/2 z-50 w-[calc(100%-105px)] md:w-[calc(100%-48px)] max-w-2xl md:px-0">
-        <a 
-          href="#contact-form"
-          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-center text-[13px] tracking-tight md:text-xl font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,88,12,0.5)] hover:scale-[1.02] hover:shadow-orange-600/50 transition-all flex items-center justify-center gap-1 md:gap-3 pr-2 md:pr-4 border border-white/20"
+      {/* Sticky Bottom CTA */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-48px)] max-w-lg px-4">
+        <button 
+          onClick={() => scrollToSection('contact-form')}
+          className="w-full py-4 bg-linear-to-r from-orange-600 to-red-600 text-white text-base md:text-xl font-bold rounded-2xl shadow-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 border border-white/20"
         >
-          매장에서 새는 구멍 3개 찾기(상담문의)
-          <ArrowRight className="h-4 w-4 md:h-6 md:w-6" />
-        </a>
+          매장에서 새는 구멍 3개 찾기
+          <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
+        </button>
       </div>
 
-      {/* Section 2: 프랜차이즈도 꼭 마케팅을 해야 하는 이유 */}
-      <section id="reason" className="h-screen snap-start flex flex-col justify-center px-6 bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="text-center mb-16 md:mb-24" data-aos="fade-up">
-            <h2 className="text-4xl md:text-6xl lg:text-8xl font-black mb-4 leading-tight">
-              <span className="text-gray-900">프랜차이즈라서</span><br />
-              <span className="text-orange-700">마케팅이 의미 없다고 생각하시나요?</span>
+      {/* 2. Reason */}
+      <section id="reason" className="h-screen snap-start flex flex-col justify-center bg-white px-6">
+        <div className="max-w-5xl mx-auto w-full">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900">
+              프랜차이즈라서<br />
+              <span className="text-orange-600">마케팅이 의미 없다고 생각하시나요?</span>
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-10 md:gap-20 mb-16 md:mb-24">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 mb-10">
             {[
-              { 
-                text: '검색시 누가봐도 가고 싶은곳', 
-                img: '/uploads/place-example-1.png',
-                fallbackIcon: MapPin
-              },
-              { 
-                text: '리뷰가 많고 후기가 좋은 곳', 
-                img: '/uploads/place-example-2.png',
-                fallbackIcon: Star 
-              },
+              { text: '검색시 누가봐도 가고 싶은곳', img: '/uploads/place-example-1.png' },
+              { text: '리뷰가 많고 후기가 좋은 곳', img: '/uploads/place-example-2.png' },
             ].map((item, i) => (
-              <div 
-                key={i} 
-                className="text-center group"
-                data-aos="fade-up"
-                data-aos-delay={i * 100}
-              >
-                {/* Image Placeholder Area */}
-                <div className="relative aspect-video max-w-2xl mx-auto rounded-[40px] overflow-hidden shadow-2xl border border-gray-100 mb-10">
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-50 text-gray-400">
-                    <div className="text-center p-4">
-                      <item.fallbackIcon className="h-20 w-20 mx-auto mb-4 text-gray-300" />
-                      <p className="text-lg">세팅 잘된 플레이스 사진<br/>(/uploads/place-example-{i+1}.png)</p>
-                    </div>
-                  </div>
-                  <Image 
-                    src={item.img}
-                    alt={item.text}
-                    fill
-                    className="object-cover hover:scale-110 transition-transform duration-700"
-                    unoptimized
-                    onError={(e) => e.currentTarget.style.display = 'none'} 
-                  />
+              <div key={i} className="text-center">
+                <div className="relative aspect-video rounded-3xl overflow-hidden shadow-lg border border-gray-100 mb-4 bg-gray-50">
+                  <Image src={item.img} alt={item.text} fill className="object-cover" unoptimized 
+                  onError={(e) => (e.currentTarget.style.opacity = '0')} />
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 font-bold">플레이스 예시</div>
                 </div>
-                <h3 className="text-3xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight break-keep">
-                  {item.text}
-                </h3>
+                <h3 className="text-xl md:text-3xl font-black text-gray-900">{item.text}</h3>
               </div>
             ))}
           </div>
 
-          <div 
-            className="text-center p-12 md:p-16 lg:p-20 rounded-[50px] bg-linear-to-r from-orange-700 to-red-500 text-white max-w-6xl mx-auto shadow-3xl"
-            data-aos="zoom-in"
-          >
-            <p className="text-2xl md:text-4xl lg:text-5xl font-black leading-tight">
-              지점 별로 <span className="underline decoration-2 underline-offset-8">플레이스 마케팅</span> 관리를<br />
-              <span className="text-3xl md:text-6xl lg:text-8xl mt-10 block px-4 font-black">제대로 해주는 본사는 <span className="text-yellow-300">'없습니다'</span></span>
+          <div className="text-center p-8 md:p-12 rounded-[40px] bg-linear-to-r from-orange-700 to-red-500 text-white shadow-xl">
+            <p className="text-lg md:text-2xl lg:text-3xl font-black leading-tight">
+              지점 별로 <span className="underline decoration-2 underline-offset-4">플레이스 마케팅</span> 관리를<br />
+              <span className="text-2xl md:text-4xl lg:text-5xl mt-6 block font-black">제대로 해주는 본사는 <span className="text-yellow-300">'없습니다'</span></span>
             </p>
           </div>
         </div>
       </section>
 
-      {/* Section 3: Main Message (Success Cycle) */}
-      <section className="h-screen snap-start flex flex-col justify-center bg-slate-950 overflow-hidden px-6 text-white">
-        <div className="max-w-7xl mx-auto w-full">
-          {/* Main Copy */}
-          <div className="text-center mb-16 md:mb-24" data-aos="fade-up">
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-8 break-keep">
+      {/* 3. Stats */}
+      <section className="h-screen snap-start flex flex-col justify-center bg-slate-950 px-6 text-white">
+        <div className="max-w-5xl mx-auto w-full">
+          <div className="text-center mb-12 md:mb-20">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black leading-tight break-keep">
               지역 장악 마케팅으로<br />
               대표님의 프랜차이즈 매장을<br />
               <span className="text-orange-600 underline">지역 1등 업체</span>로 만들겠습니다.
             </h2>
           </div>
 
-          {/* Service Stats (Trust Indicators) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 max-w-6xl mx-auto">
-             <div className="bg-white/5 backdrop-blur-md p-10 md:p-14 rounded-[40px] border border-white/10 flex flex-col items-center justify-center text-center transform hover:scale-105 transition-all hover:bg-white/10" data-aos="fade-up" data-aos-delay="0">
-               <div className="text-4xl md:text-6xl font-black text-orange-600 mb-4 tracking-tighter">300+</div>
-               <div className="text-white font-bold text-xl md:text-2xl mb-2">프랜차이즈 지점</div>
-               <div className="text-gray-400 text-sm md:text-lg">현재 진행 중</div>
-             </div>
-             <div className="bg-white/5 backdrop-blur-md p-10 md:p-14 rounded-[40px] border border-white/10 flex flex-col items-center justify-center text-center transform hover:scale-105 transition-all hover:bg-white/10" data-aos="fade-up" data-aos-delay="100">
-               <div className="text-4xl md:text-6xl font-black text-orange-600 mb-4 tracking-tighter">4.8/5.0</div>
-               <div className="text-white font-bold text-xl md:text-2xl mb-2">고객 만족도</div>
-               <div className="text-gray-400 text-sm md:text-lg">평균 평점</div>
-             </div>
-             <div className="bg-white/5 backdrop-blur-md p-10 md:p-14 rounded-[40px] border border-white/10 flex flex-col items-center justify-center text-center transform hover:scale-105 transition-all hover:bg-white/10" data-aos="fade-up" data-aos-delay="200">
-               <div className="text-4xl md:text-6xl font-black text-orange-600 mb-4 tracking-tighter">평균 2배</div>
-               <div className="text-white font-bold text-xl md:text-2xl mb-2">매출 증가율</div>
-               <div className="text-gray-400 text-sm md:text-lg">6개월 기준</div>
-             </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             {[
+               { val: '300+', label: '프랜차이즈 지점', sub: '현재 진행 중' },
+               { val: '4.8/5.0', label: '고객 만족도', sub: '평균 평점' },
+               { val: '평균 2배', label: '매출 증가율', sub: '6개월 기준' },
+             ].map((s, i) => (
+               <div key={i} className="bg-white/5 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-white/10 text-center">
+                 <div className="text-3xl md:text-5xl font-black text-orange-600 mb-2">{s.val}</div>
+                 <div className="text-white font-bold text-lg">{s.label}</div>
+                 <div className="text-gray-500 text-xs md:text-sm">{s.sub}</div>
+               </div>
+             ))}
           </div>
         </div>
       </section>
 
-      {/* Section 4: Bizon Differentiation - Redesigned One Page Style */}
-      <section className="h-screen snap-start flex flex-col justify-center bg-black overflow-hidden px-6 relative">
-        <div className="absolute inset-0 bg-linear-to-b from-orange-600/5 to-transparent"></div>
-        <div className="max-w-6xl mx-auto w-full relative z-10">
-           
-           <div className="text-center mb-12 md:mb-16">
-              <p className="text-blue-500 font-bold text-xl md:text-2xl mb-4 tracking-tight">마케팅도 똑같습니다</p>
-              <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight break-keep">
+      {/* 4. Differentiation */}
+      <section className="h-screen snap-start flex flex-col justify-center bg-black px-6 relative">
+        <div className="max-w-5xl mx-auto w-full relative z-10">
+           <div className="text-center mb-12">
+              <p className="text-blue-500 font-bold mb-2">마케팅도 똑같습니다</p>
+              <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-white leading-tight">
                 가짜 마케팅 전문가가 판치는<br />
                 자영업 마케팅 시장,<br />
                 진짜 전문가인지 확인해 보세요.
               </h2>
            </div>
 
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-              {/* Box 1 */}
-              <div className="bg-gray-900/40 backdrop-blur-md rounded-[50px] p-12 md:p-16 border border-white/10 relative overflow-hidden flex flex-col justify-center group h-[280px] md:h-[350px]">
-                <Image 
-                  src="/uploads/meeting-1.png" 
-                  alt="Background" 
-                  fill 
-                  className="object-cover opacity-20 group-hover:opacity-10 transition-opacity"
-                />
-                <div className="relative z-10">
-                   <h3 className="text-2xl md:text-4xl font-black text-white leading-tight break-keep text-center">
-                     우리의 목표는 단순히<br />
-                     <span className="text-orange-600">순위를 올리는 게</span> 아닙니다.
-                   </h3>
-                </div>
-              </div>
-
-              {/* Box 2 */}
-              <div className="bg-gray-900/40 backdrop-blur-md rounded-[50px] p-12 md:p-16 border border-white/10 relative overflow-hidden flex flex-col justify-center group h-[280px] md:h-[350px]">
-                 <Image 
-                  src="/uploads/meeting-2.png" 
-                  alt="Background" 
-                  fill 
-                  className="object-cover opacity-20 group-hover:opacity-10 transition-opacity"
-                />
-                <div className="relative z-10 space-y-4">
-                   <h3 className="text-2xl md:text-4xl font-black text-white leading-tight break-keep text-center">
-                     고객이 올 수밖에 없는<br />
-                     <span className="text-orange-600">구조를 만들고</span>
-                   </h3>
-                   <div className="h-px w-20 bg-white/20 mx-auto" />
-                   <h3 className="text-2xl md:text-4xl font-black text-white leading-tight break-keep text-center">
-                     그 경험을 <span className="text-orange-600 font-bold">매출로 전환</span>하는 것.
-                   </h3>
-                </div>
-              </div>
-           </div>
-
-           <div className="mt-16 text-center">
-              <div className="inline-block relative px-14 py-8 bg-orange-600 text-white rounded-[40px] shadow-3xl overflow-hidden transform hover:scale-110 transition-all cursor-pointer">
-                <div className="absolute inset-0 bg-linear-to-r from-orange-700 to-orange-500" />
-                <h3 className="relative z-10 text-2xl md:text-4xl font-black">
-                  진짜 전문가에게 문의하세요.
-                </h3>
-              </div>
-           </div>
-        </div>
-      </section>
-
-      {/* Section 5: Certificates Showcase - Faster Scrolling & Larger Text */}
-      <section className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden py-24">
-        <div className="max-w-screen-2xl mx-auto w-full px-6">
-          <div className="text-center mb-16 md:mb-24">
-            <h2 className="text-4xl md:text-7xl lg:text-9xl font-black text-gray-900 leading-tight mb-4 tracking-tighter">
-              실제 운영 경험과<br />
-              성과로 증명합니다.
-            </h2>
-          </div>
-
-          <div className="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden bg-gray-50/50 py-12 md:py-20 border-y border-gray-100">
-            <div className="flex animate-scroll-left-fast py-10 w-fit">
-              {[...Array(4)].map((_, setIdx) => (
-                <div key={setIdx} className="flex gap-8 md:gap-14 px-4 md:px-7">
-                  {[...Array(8)].map((_, i) => (
-                    <div 
-                      key={`${setIdx}-${i}`} 
-                      className="relative w-[300px] md:w-[500px] aspect-3/4 bg-white border border-gray-200 flex flex-col items-center justify-center overflow-hidden shadow-2xl rounded-[40px] transform hover:scale-105 transition-transform"
-                    >
-                      <Image 
-                        src={`/uploads/certificates/cert${i + 1}.png`}
-                        alt={`인증자료 ${i + 1}`}
-                        fill
-                        className="object-cover md:p-4"
-                        unoptimized
-                        onError={(e) => {
-                          (e.target as any).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23ea580c" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M12 15l-3-3 3-3"/%3E%3Cpath d="M15 12H9"/%3E%3Crect x="3" y="3" width="18" height="18" rx="2"/%3E%3C/svg%3E';
-                        }}
-                      />
-                    </div>
-                  ))}
+           <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { txt: '우리의 목표는 단순히\n순위를 올리는 게 아닙니다.', bg: '/uploads/meeting-1.png' },
+                { txt: '고객이 올 수밖에 없는\n구조를 만들고\n\n그 경험을 매출로 전환하는 것.', bg: '/uploads/meeting-2.png' }
+              ].map((b, i) => (
+                <div key={i} className="relative h-[240px] md:h-[300px] rounded-[40px] overflow-hidden border border-white/10 group">
+                  <Image src={b.bg} alt="bg" fill className="object-cover opacity-20 group-hover:opacity-30 transition-opacity" unoptimized />
+                  <div className="absolute inset-0 flex items-center justify-center p-6 bg-black/40">
+                    <h3 className="text-lg md:text-2xl font-black text-white text-center whitespace-pre-line leading-relaxed">
+                      {b.txt.split('\n').map((l, j) => (
+                        <span key={j} className={l.includes('순위') || l.includes('구조') || l.includes('매출') ? 'text-orange-500' : ''}>
+                          {l}<br/>
+                        </span>
+                      ))}
+                    </h3>
+                  </div>
                 </div>
               ))}
-            </div>
-          </div>
+           </div>
+
+           <div className="mt-12 text-center">
+              <button onClick={() => scrollToSection('contact-form')} className="px-10 py-5 bg-orange-600 text-white rounded-3xl text-xl md:text-2xl font-black shadow-xl hover:scale-105 transition-all">
+                진짜 전문가에게 문의하세요.
+              </button>
+           </div>
         </div>
       </section>
 
-      {/* Section 6: Efficiency & Promises (Unified based on 7page feedback) */}
-      <section className="h-screen snap-start flex flex-col justify-center bg-gray-50 overflow-hidden px-6">
-        <div className="max-w-7xl mx-auto w-full">
-            <div className="text-center mb-16 md:mb-24">
-               <h3 className="text-3xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-gray-900 mb-6">
+      {/* 5. Certificates */}
+      <section className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden">
+        <div className="text-center mb-10 px-6">
+          <h2 className="text-3xl md:text-6xl font-black text-gray-900 tracking-tighter">
+            실제 운영 경험과<br />성과로 증명합니다.
+          </h2>
+        </div>
+        <div className="relative w-full overflow-hidden bg-gray-50 py-10 border-y border-gray-100">
+           <div className="flex animate-scroll-left-fast w-max">
+             {[...Array(24)].map((_, i) => (
+               <div key={i} className="relative w-[180px] md:w-[280px] aspect-[3/4] mx-2 md:mx-4 bg-white shadow-md rounded-2xl overflow-hidden">
+                  <Image src={`/uploads/certificates/cert${(i % 8) + 1}.png`} alt="cert" fill className="object-cover p-2" unoptimized 
+                  onError={(e) => (e.currentTarget.style.opacity='0.2')}/>
+                  <div className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-300 pointer-events-none">CERTIFICATE</div>
+               </div>
+             ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 6. Promises */}
+      <section className="h-screen snap-start flex flex-col justify-center bg-gray-50 px-6">
+        <div className="max-w-5xl mx-auto w-full">
+            <div className="text-center mb-10 md:mb-16">
+               <h3 className="text-2xl md:text-4xl lg:text-5xl font-black text-gray-900 mb-4">
                 '플레이스 노출 순위' 물론 중요합니다.<br />
-                다만! <span className="text-orange-600 underline decoration-orange-300 decoration-8 underline-offset-12">효율적인 마케팅</span>을 해야합니다.
+                다만! <span className="text-orange-600 underline">효율적인 마케팅</span>을 해야합니다.
                </h3>
             </div>
-
-            <div className="flex flex-col md:flex-row gap-12 items-stretch">
-               {/* Left: Headline */}
-               <div className="w-full md:w-5/12 flex flex-col justify-center">
-                  <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-gray-900 mb-8 leading-none tracking-tighter">
-                    그래서<br />
-                    비즈온은<br />
-                    <span className="text-orange-600">5가지 약속</span>을<br />
-                    만들었습니다.
+            <div className="grid md:grid-cols-5 gap-4">
+               <div className="md:col-span-2 flex flex-col justify-center">
+                  <h2 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tighter leading-tight">
+                    그래서<br />비즈온은<br /><span className="text-orange-600">5가지 약속</span>을<br />만들었습니다.
                   </h2>
                </div>
-
-               {/* Right: Promises Grid */}
-               <div className="w-full md:w-7/12 grid grid-cols-1 sm:grid-cols-2 gap-4">
+               <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
-                    { title: '과장·허위 광고 전화 X', desc: '무작정 영업 대신, 기존 광고주 관리에 집중합니다.' },
-                    { title: '가게에 꼭 맞는 견적 제안', desc: '상권과 업종에 딱 맞는 합리적 비용만 제안합니다.' },
-                    { title: '불법·편법 트래픽 X', desc: '지속 가능한 성과를 위해 편법을 절대 쓰지 않습니다.' },
-                    { title: '온라인 넘어 오프라인까지', desc: '매장 컨디션까지 현장 전문가가 함께 고민합니다.' },
-                    { title: '운영 시간 이후에도 책임', desc: '필요할 때 언제든 1:1 전담 소통이 가능합니다.' },
+                    { t: '과장·허위 광고 NO', d: '무작정 영업 대신, 기존 광고주 관리에 집중합니다.' },
+                    { t: '상권 맞춘 견적', d: '상권과 업종에 딱 맞는 합리적 비용만 제안합니다.' },
+                    { t: '불법 트래픽 NO', d: '지속 가능한 성과를 위해 편법을 절대 쓰지 않습니다.' },
+                    { t: '오프라인 케어', d: '매장 컨디션까지 현장 전문가가 함께 고민합니다.' },
+                    { t: '24/7 전담 소통', d: '필요할 때 언제든 1:1 전담 소통이 가능합니다.' },
                   ].map((p, i) => (
-                    <div key={i} className={`p-8 rounded-[32px] bg-white border border-gray-200 shadow-sm hover:shadow-xl transition-all ${i === 4 ? 'sm:col-span-2' : ''}`}>
-                       <h4 className="text-xl md:text-2xl font-black text-gray-900 mb-3">{p.title}</h4>
-                       <p className="text-gray-500 md:text-lg font-medium leading-relaxed">{p.desc}</p>
+                    <div key={i} className={`p-6 rounded-2xl bg-white border border-gray-200 shadow-sm ${i === 4 ? 'sm:col-span-2' : ''}`}>
+                       <h4 className="font-black text-gray-900 mb-1">{p.t}</h4>
+                       <p className="text-gray-500 text-sm leading-snug">{p.d}</p>
                     </div>
                   ))}
                </div>
@@ -498,79 +381,47 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* Section SUCCESS CYCLE (Graphic restored if requested previously, but simplified per feedback flow) */}
-       <section id="process" className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden px-6">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="text-center mb-16 px-4">
-            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 tracking-tight">
-              비즈온의 마케팅 성공방식
-            </h2>
-            <p className="text-xl md:text-2xl text-gray-500 font-bold">
-              멈추지 않고 계속 돌아가는 <span className="text-orange-600">성공의 수레바퀴</span>
-            </p>
+      {/* 7. Process */}
+      <section id="process" className="h-screen snap-start flex flex-col justify-center bg-white px-6">
+        <div className="max-w-5xl mx-auto w-full">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-2">마케팅 성공방식</h2>
+            <p className="text-gray-500 font-bold text-lg">성공의 <span className="text-orange-600 text-xl">수레바퀴</span></p>
           </div>
-
-          <div className="relative py-12 flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 md:opacity-100">
-              <div className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px]">
-                <RotatingOuterRing />
-                <RotatingBizonO />
-              </div>
-            </div>
-
-            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-x-56 md:gap-y-24 max-w-6xl mx-auto w-full px-4">
-                <div className="bg-white/95 backdrop-blur-md p-10 md:p-12 rounded-[40px] shadow-2xl border border-gray-100 flex items-center justify-between hover:scale-105 transition-transform">
-                  <div className="text-4xl font-black text-blue-500/20">01</div>
-                  <h3 className="text-2xl md:text-4xl font-black text-gray-900">매장 점검 및 진단</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+              {[
+                  { id: '01', t: '매장 점검 및 진단' },
+                  { id: '02', t: '맞춤형 마케팅 설계' },
+                  { id: '03', t: '마케팅 상품 실행' },
+                  { id: '04', t: '성과 분석 및 조정' },
+              ].map((item, i) => (
+                <div key={i} className="bg-gray-50 p-8 rounded-3xl border border-gray-100 flex items-center gap-6">
+                  <div className="text-3xl font-black text-orange-600/30">{item.id}</div>
+                  <h3 className="text-xl md:text-2xl font-black text-gray-900">{item.t}</h3>
                 </div>
-                <div className="bg-white/95 backdrop-blur-md p-10 md:p-12 rounded-[40px] shadow-2xl border border-gray-100 flex items-center justify-between hover:scale-105 transition-transform">
-                  <div className="text-4xl font-black text-amber-500/20">02</div>
-                  <h3 className="text-2xl md:text-4xl font-black text-gray-900">맞춤형 마케팅 설계</h3>
-                </div>
-                 <div className="bg-white/95 backdrop-blur-md p-10 md:p-12 rounded-[40px] shadow-2xl border border-gray-100 flex items-center justify-between hover:scale-105 transition-transform">
-                  <div className="text-4xl font-black text-purple-500/20">03</div>
-                  <h3 className="text-2xl md:text-4xl font-black text-gray-900">마케팅 상품 실행</h3>
-                </div>
-                <div className="bg-white/95 backdrop-blur-md p-10 md:p-12 rounded-[40px] shadow-2xl border border-gray-100 flex items-center justify-between hover:scale-105 transition-transform">
-                  <div className="text-4xl font-black text-orange-600/20">04</div>
-                  <h3 className="text-2xl md:text-4xl font-black text-gray-900">성과 분석 및 조정</h3>
-                </div>
-            </div>
+              ))}
           </div>
         </div>
       </section>
 
-      {/* Review & Chat (As Archive from Previous Steps) */}
-      <section id="review" className="min-h-screen snap-start flex flex-col justify-center py-24 px-6 bg-gray-900 text-white overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block px-5 py-2 bg-orange-700/20 text-orange-600 rounded-full text-sm font-bold mb-6 border border-orange-700/30 tracking-widest uppercase">
-              Real Review
-            </span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black">
-              실제 <span className="text-orange-600">사장님들</span>의 이야기
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
+      {/* 8. Review */}
+      <section id="review" className="h-screen snap-start flex flex-col justify-center bg-gray-900 px-6 text-white text-center">
+        <div className="max-w-5xl mx-auto w-full">
+          <h2 className="text-3xl md:text-5xl font-black mb-12">사장님들의 <span className="text-orange-600">진짜 후기</span></h2>
+          <div className="grid md:grid-cols-3 gap-6">
             {[
-              { name: '이OO 대표님', business: '프랜차이즈 가맹점주', quote: '피드백과 자영업 맞춤 케어 해주셔서 비즈온과 함께할 생각입니다. 매출이 실제로 30% 이상 상승했습니다.', rating: 5 },
-              { name: '김사장님', business: '음식점 운영 12년차', quote: '대표님! 매달 신경쓸수록 방문 고객이 늘었어요. 플레이스 장악이 이렇게 중요한지 이제야 알았습니다.', rating: 5 },
-              { name: '박대표님', business: '수도권 카페 브랜딩', quote: '막연했던 어려움을 잘 이끌어주셔서 이제야 방향키를 제대로 잡아갑니다! 역시 전문가는 다릅니다.', rating: 5 },
-            ].map((review, i) => (
-              <div key={i} className="bg-gray-800 rounded-[40px] p-12 border border-gray-700 hover:border-orange-700/50 transition-all h-full flex flex-col">
-                <p className="text-gray-300 text-xl md:text-2xl leading-relaxed mb-10 flex-1 italic italic-quote">"{review.quote}"</p>
-                <div className="flex gap-1 mb-8">
-                  {[...Array(review.rating)].map((_, j) => <Star key={j} className="h-6 w-6 text-yellow-500 fill-yellow-500" />)}
+              { n: '이OO 대표님', b: '가맹점주', q: '매출이 30% 이상 상승했습니다.' },
+              { n: '김사장님', b: '음식점 운영', q: '플레이스 장악이 이렇게 중요한지 처음 알았어요.' },
+              { n: '박대표님', b: '카페 운영', q: '역시 전문가는 다릅니다. 방향키를 잡았어요.' },
+            ].map((r, i) => (
+              <div key={i} className="bg-white/5 p-8 rounded-3xl border border-white/10 flex flex-col items-center">
+                <p className="text-lg italic mb-6 flex-1">"{r.q}"</p>
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 text-yellow-500 fill-yellow-500" />)}
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 rounded-full bg-orange-700/20 flex items-center justify-center">
-                    <Users className="w-8 h-8 text-orange-600" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-white text-xl">{review.name}</p>
-                    <p className="text-lg text-gray-500">{review.business}</p>
-                  </div>
+                <div className="text-sm">
+                  <span className="font-bold">{r.n}</span>
+                  <span className="text-gray-500 ml-2">{r.b}</span>
                 </div>
               </div>
             ))}
@@ -578,91 +429,42 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      <section id="contact-form" className="min-h-screen snap-start flex flex-col md:flex-row">
-        <div className="w-full md:w-5/12 bg-black text-white p-12 md:p-20 flex flex-col justify-center relative overflow-hidden">
-          <div className="absolute inset-0 z-0">
-             <Image src="/uploads/meeting-1.png" alt="Background" fill className="object-cover opacity-20 grayscale" unoptimized />
-             <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-black/80" />
-          </div>
-          <div className="relative z-10 space-y-8">
-            <h3 className="text-orange-500 font-bold tracking-widest text-lg">BIZON MARKETING</h3>
-            <h2 className="text-5xl md:text-7xl font-black leading-tight tracking-tighter">
-              어렵게 느껴지는 마케팅,<br />
-              <span className="text-orange-600">전문가에게<br />맡기세요.</span>
-            </h2>
-            <div className="pt-12">
-               <p className="text-gray-400 font-bold text-xl mb-3 underline decoration-orange-600 decoration-4 underline-offset-8">문의 전화</p>
-               <p className="text-5xl md:text-7xl font-black text-white tracking-tight">1666-0865</p>
+      {/* 9. Contact */}
+      <section id="contact-form" className="h-screen snap-start flex flex-col md:flex-row bg-white overflow-hidden">
+        <div className="w-full md:w-5/12 bg-black text-white p-10 flex flex-col justify-center relative">
+          <Image src="/uploads/meeting-1.png" alt="bg" fill className="object-cover opacity-20 grayscale" unoptimized />
+          <div className="relative z-10 space-y-4">
+            <h2 className="text-4xl md:text-6xl font-black leading-tight text-orange-600">진짜 전문가에게<br />맡기세요.</h2>
+            <div className="pt-6">
+               <p className="text-gray-400 font-bold mb-1">문의 전화</p>
+               <p className="text-4xl md:text-5xl font-black">1666-0865</p>
             </div>
           </div>
         </div>
-
-        <div className="w-full md:w-7/12 bg-white px-8 md:px-24 flex flex-col justify-center relative py-20 md:py-0">
-            <div className="w-full max-w-2xl mx-auto relative z-10">
+        <div className="w-full md:w-7/12 p-10 flex flex-col justify-center overflow-y-auto">
             {!submitted ? (
-              <form onSubmit={handleSubmit} className="space-y-10">
-                <div className="space-y-4">
-                  <h3 className="text-4xl md:text-5xl font-black text-gray-900">무료 진단 신청</h3>
-                  <p className="text-xl text-gray-500 font-medium">
-                    지금 바로, <span className="text-orange-600 font-bold underline">우리 매장의 문제</span>를 진단받으세요.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-lg font-bold text-gray-700">상호명 <span className="text-orange-600">*</span></label>
-                      <input type="text" required placeholder="운영중인 매장명을 입력해주세요" value={formData.brandName} onChange={(e) => setFormData({...formData, brandName: e.target.value})} className="w-full py-5 px-6 bg-gray-50 border-2 border-gray-100 text-gray-900 text-xl placeholder-gray-400 focus:border-orange-600 focus:bg-white outline-none transition-all rounded-[20px]" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-lg font-bold text-gray-700">지역 <span className="text-orange-600">*</span></label>
-                      <input type="text" required placeholder="예) 서울 강남구, 경기 분당 등" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full py-5 px-6 bg-gray-50 border-2 border-gray-100 text-gray-900 text-xl placeholder-gray-400 focus:border-orange-600 focus:bg-white outline-none transition-all rounded-[20px]" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-lg font-bold text-gray-700">신청자 성함 <span className="text-orange-600">*</span></label>
-                      <input type="text" required placeholder="성함을 입력해주세요" value={formData.name || ''} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full py-5 px-6 bg-gray-50 border-2 border-gray-100 text-gray-900 text-xl placeholder-gray-400 focus:border-orange-600 focus:bg-white outline-none transition-all rounded-[20px]" />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-lg font-bold text-gray-700">연락처 <span className="text-orange-600">*</span></label>
-                       <input type="tel" required placeholder="'-' 없이 숫자만 입력해주세요" value={formData.contact} onChange={(e) => setFormData({...formData, contact: e.target.value})} className="w-full py-5 px-6 bg-gray-50 border-2 border-gray-100 text-gray-900 text-xl placeholder-gray-400 focus:border-orange-600 focus:bg-white outline-none transition-all rounded-[20px]" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-lg font-bold text-gray-700">문의내용 <span className="text-orange-600">*</span></label>
-                      <textarea required placeholder="현재 겪고 계신 어려움을 자유롭게 적어주세요." value={formData.concern} onChange={(e) => setFormData({...formData, concern: e.target.value})} className="w-full py-5 px-6 bg-gray-50 border-2 border-gray-100 text-gray-900 text-xl placeholder-gray-400 focus:border-orange-600 focus:bg-white outline-none transition-all resize-none h-44 rounded-[20px]" />
-                    </div>
-                </div>
-
-                <div className="pt-6">
-                  <button type="submit" disabled={isSubmitting} className="w-full py-6 bg-orange-600 text-white rounded-[24px] text-2xl font-black hover:bg-orange-700 transition-all shadow-2xl hover:shadow-orange-600/40 transform hover:-translate-y-2">
-                    {isSubmitting ? '접수 중...' : '무료 진단 신청하기'}
-                  </button>
-                </div>
+              <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto w-full">
+                <h3 className="text-2xl font-black">무료 진단 신청</h3>
+                <input type="text" required placeholder="상호명" value={formData.brandName} onChange={(e) => setFormData({...formData, brandName: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600" />
+                <input type="text" required placeholder="지역" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600" />
+                <input type="text" required placeholder="이름" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600" />
+                <input type="tel" required placeholder="연락처" value={formData.contact} onChange={(e) => setFormData({...formData, contact: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600" />
+                <textarea required placeholder="상세 문의" value={formData.concern} onChange={(e) => setFormData({...formData, concern: e.target.value})} className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-orange-600 h-24" />
+                <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-orange-600 text-white rounded-xl font-bold text-lg hover:bg-orange-700 transition-all">신청하기</button>
               </form>
             ) : (
-                <div className="text-center py-24">
-                  <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
-                    <CheckCircle className="w-12 h-12 text-green-600" />
-                  </div>
-                  <h3 className="text-4xl font-black mb-6 text-gray-900">신청이 완료되었습니다!</h3>
-                  <p className="text-gray-500 text-2xl leading-relaxed">
-                    1영업일 이내에 연락드리겠습니다.
-                  </p>
+                <div className="text-center py-10">
+                  <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+                  <h3 className="text-2xl font-black">신청 완료!</h3>
                 </div>
             )}
-           </div>
         </div>
       </section>
 
-      <footer className="snap-start py-24 px-6 bg-black text-gray-500 text-center border-t border-white/5 relative z-10">
-        <h2 className="text-4xl font-black text-white mb-8 tracking-tighter">BizOn<span className="text-orange-600">.</span></h2>
-        <div className="max-w-3xl mx-auto space-y-6 text-lg">
-          <p>© 2025 비즈온마케팅 주식회사. All rights reserved.</p>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-             <span>대표: 양승협</span>
-             <span>사업자등록번호: 565-81-03594</span>
-          </div>
-          <p className="text-gray-400">주소: 경기도 수원시 장안구 화산로 213번길 15, 2층 201-B66</p>
-          <p className="text-orange-700 font-black text-2xl mt-16 tracking-tight italic">우리는 '대행'이 아니라 매출 실험을 설계합니다.</p>
-        </div>
+      {/* Footer */}
+      <footer className="snap-start py-12 px-6 bg-black text-gray-500 text-center text-sm">
+        <p>© 2025 비즈온마케팅. All rights reserved.</p>
+        <p className="mt-2 text-orange-900">우리는 매출 실험을 설계합니다.</p>
       </footer>
     </div>
   );
