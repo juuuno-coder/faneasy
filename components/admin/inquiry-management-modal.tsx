@@ -52,6 +52,7 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate, isD
   const [completedAt, setCompletedAt] = useState(inquiry.completedAt || '');
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'progress' | 'original'>('progress');
 
   const isDark = isDarkMode;
   const t = {
@@ -326,124 +327,238 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate, isD
           </div>
 
           {/* Right: Status & Notes */}
-          <div className="flex-1 p-6 overflow-y-auto">
-            {/* Workflow Status */}
-            <div className="mb-6">
-              <h4 className={`text-sm font-bold ${t.textDim} mb-3`}>진행 단계 (클릭 시 자동 저장)</h4>
-              <div className="grid grid-cols-3 gap-3">
-                {WORKFLOW_STEPS.map((step, index) => {
-                  const isActive = step.status === currentStatus;
-                  const isPast = index < currentStepIndex;
-                  
-                  return (
-                    <button
-                      key={step.status}
-                      onClick={() => handleStatusChange(step.status)}
-                      className={`p-4 rounded-xl text-xs font-medium transition-all border-2 relative overflow-hidden group ${
-                        isActive 
-                          ? `${step.color} text-white border-transparent shadow-lg scale-[1.02]` 
-                          : isPast
-                          ? `${isDark ? 'bg-white/5 text-gray-500 border-white/5' : 'bg-gray-50 text-gray-500 border-gray-100'}`
-                          : `${isDark ? 'bg-white/2 text-gray-600 border-white/5' : 'bg-white text-gray-600 border-gray-100'} hover:border-purple-300`
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2 relative z-10">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20' : (isDark ? 'bg-white/10' : 'bg-gray-200/50')}`}>
-                            STEP {index + 1}
-                        </span>
-                        {isPast && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                        {isActive && <div className="animate-pulse w-2 h-2 rounded-full bg-white"></div>}
-                      </div>
-                      <div className={`text-sm font-bold relative z-10 ${isActive ? 'text-white' : (isDark ? 'text-gray-400' : 'text-gray-700')}`}>
-                          {step.label}
-                      </div>
-
-                      {/* Progress Bar Effect for Past items */}
-                      {isPast && (
-                          <div className="absolute bottom-0 left-0 w-full h-1 bg-green-500/20"></div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Tabs Header */}
+            <div className={`flex border-b ${t.divider} shrink-0`}>
+              <button
+                onClick={() => setActiveTab('progress')}
+                className={`px-8 py-4 text-sm font-bold transition-all relative ${
+                  activeTab === 'progress' ? 'text-purple-600' : t.textMuted
+                }`}
+              >
+                진행 및 상담 관리
+                {activeTab === 'progress' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-600 rounded-t-full" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('original')}
+                className={`px-8 py-4 text-sm font-bold transition-all relative ${
+                  activeTab === 'original' ? 'text-purple-600' : t.textMuted
+                }`}
+              >
+                원문 및 상세정보
+                {activeTab === 'original' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-600 rounded-t-full" />
+                )}
+              </button>
             </div>
 
-            {/* Completion Date (if status is completed) */}
-            {currentStatus === 'completed' && (
-              <div className={`mb-6 p-4 ${isDark ? 'bg-teal-500/10 border-teal-500/30' : 'bg-teal-50 border-teal-200'} rounded-xl border`}>
-                <label className={`block text-sm font-bold ${isDark ? 'text-teal-400' : 'text-teal-900'} mb-2`}>
-                  <Calendar className="h-4 w-4 inline mr-1" />
-                  완료일 설정
-                </label>
-                <input
-                  type="date"
-                  value={completedAt}
-                  onChange={(e) => setCompletedAt(e.target.value)}
-                  className={`w-full px-3 py-2 ${isDark ? 'bg-black/40 border-teal-500/50 text-white' : 'border-teal-300'} border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none`}
-                />
-                <p className={`text-xs ${isDark ? 'text-teal-500/80' : 'text-teal-700'} mt-2`}>
-                  💡 구독 시작일은 완료일 다음날로 자동 설정됩니다.
-                </p>
-              </div>
-            )}
-
-            {/* Notes Section */}
-            <div className="flex flex-col h-[400px]">
-              <h4 className={`text-sm font-bold ${t.textDim} mb-3 flex items-center gap-2`}>
-                <MessageSquare className="h-4 w-4" />
-                상담 메모
-              </h4>
-              
-              {/* Existing Notes Scrollable */}
-              <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-2 custom-scrollbar">
-                {notes.map((note) => (
-                  <div key={note.id} className={`p-4 ${isDark ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'} rounded-xl border relative group hover:border-purple-200 transition-colors`}>
-                    <div className={`text-sm ${t.textDim} whitespace-pre-wrap leading-relaxed`}>{note.content}</div>
-                    <div className="text-[10px] text-gray-400 mt-2 flex justify-between items-center">
-                      <span>{new Date(note.createdAt).toLocaleString('ko-KR')}</span>
-                      <span>by {note.createdBy}</span>
+            <div className="flex-1 overflow-y-auto p-6">
+              {activeTab === 'progress' ? (
+                <>
+                  {/* Workflow Status */}
+                  <div className="mb-8">
+                    <h4 className={`text-sm font-bold ${t.textDim} mb-4 flex items-center gap-2`}>
+                      <Clock className="h-4 w-4" />
+                      진행 단계 (클릭 시 자동 저장)
+                    </h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      {WORKFLOW_STEPS.map((step, index) => {
+                        const isActive = step.status === currentStatus;
+                        const isPast = index < currentStepIndex;
+                        
+                        return (
+                          <button
+                            key={step.status}
+                            onClick={() => handleStatusChange(step.status)}
+                            className={`p-4 rounded-xl text-xs font-medium transition-all border-2 relative overflow-hidden group ${
+                              isActive 
+                                ? `${step.color} text-white border-transparent shadow-lg scale-[1.02]` 
+                                : isPast
+                                ? `${isDark ? 'bg-white/5 text-gray-500 border-white/5' : 'bg-gray-50 text-gray-500 border-gray-100'}`
+                                : `${isDark ? 'bg-white/2 text-gray-600 border-white/5' : 'bg-white text-gray-600 border-gray-100'} hover:border-purple-300`
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-2 relative z-10">
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20' : (isDark ? 'bg-white/10' : 'bg-gray-200/50')}`}>
+                                  STEP {index + 1}
+                              </span>
+                              {isPast && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                              {isActive && <div className="animate-pulse w-2 h-2 rounded-full bg-white"></div>}
+                            </div>
+                            <div className={`text-sm font-bold relative z-10 ${isActive ? 'text-white' : (isDark ? 'text-gray-400' : 'text-gray-700')}`}>
+                                {step.label}
+                            </div>
+                            {isPast && (
+                                <div className="absolute bottom-0 left-0 w-full h-1 bg-green-500/20"></div>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
-                ))}
-                {notes.length === 0 && (
-                    <div className={`text-center py-10 ${t.textMuted} text-sm ${isDark ? 'bg-white/2' : 'bg-gray-50/50'} rounded-xl border border-dashed ${t.divider}`}>
-                        작성된 메모가 없습니다.
-                    </div>
-                )}
-              </div>
 
-              {/* Add New Note Fixed at Bottom of Section */}
-              <div className={`space-y-2 mt-auto pt-4 border-t ${t.divider}`}>
-                <textarea
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
-                  placeholder="통화 내용, 진행 사항, 특이사항 등을 기록하세요..."
-                  rows={3}
-                  className={`w-full px-4 py-3 border ${t.divider} rounded-xl focus:ring-2 focus:ring-purple-500 outline-none resize-none text-sm transition-shadow ${t.textDim} ${isDark ? 'bg-black/40' : 'bg-white'} placeholder-gray-500`}
-                  onKeyDown={(e) => {
-                      if(e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleAddNote();
-                      }
-                  }}
-                />
-                <button
-                  onClick={handleAddNote}
-                  disabled={!newNote.trim()}
-                  className={`w-full py-2 ${isDark ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-900 hover:bg-black'} text-white rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.99]`}
-                >
-                  <Plus className="h-4 w-4" />
-                  메모 목록에 추가
-                </button>
-              </div>
-            </div>
-            
-             {/* Original Message */}
-             <div className="mt-8 pt-6 border-t border-gray-200">
-              <h4 className={`text-sm font-bold ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase mb-2`}>최초 문의 내용</h4>
-              <div className={`${isDark ? 'bg-black/40 border-white/5' : 'bg-gray-50 border-gray-200'} rounded-xl p-4 text-sm ${t.textDim} whitespace-pre-wrap border`}>
-                {inquiry.message}
-              </div>
+                  {/* Completion Date (if status is completed) */}
+                  {currentStatus === 'completed' && (
+                    <div className={`mb-6 p-4 ${isDark ? 'bg-teal-500/10 border-teal-500/30' : 'bg-teal-50 border-teal-200'} rounded-xl border`}>
+                      <label className={`block text-sm font-bold ${isDark ? 'text-teal-400' : 'text-teal-900'} mb-2`}>
+                        <Calendar className="h-4 w-4 inline mr-1" />
+                        완료일 설정
+                      </label>
+                      <input
+                        type="date"
+                        value={completedAt}
+                        onChange={(e) => setCompletedAt(e.target.value)}
+                        className={`w-full px-3 py-2 ${isDark ? 'bg-black/40 border-teal-500/50 text-white' : 'border-teal-300'} border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none`}
+                      />
+                      <p className={`text-xs ${isDark ? 'text-teal-500/80' : 'text-teal-700'} mt-2`}>
+                        💡 구독 시작일은 완료일 다음날로 자동 설정됩니다.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Notes Section */}
+                  <div className="flex flex-col min-h-[300px]">
+                    <h4 className={`text-sm font-bold ${t.textDim} mb-4 flex items-center gap-2`}>
+                      <MessageSquare className="h-4 w-4" />
+                      상담 메모
+                    </h4>
+                    
+                    <div className="flex-1 space-y-3 mb-6">
+                      {notes.map((note) => (
+                        <div key={note.id} className={`p-4 ${isDark ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'} rounded-xl border relative group hover:border-purple-200 transition-colors`}>
+                          <div className={`text-sm ${t.textDim} whitespace-pre-wrap leading-relaxed`}>{note.content}</div>
+                          <div className="text-[10px] text-gray-400 mt-2 flex justify-between items-center">
+                            <span>{new Date(note.createdAt).toLocaleString('ko-KR')}</span>
+                            <span>by {note.createdBy}</span>
+                          </div>
+                        </div>
+                      ))}
+                      {notes.length === 0 && (
+                          <div className={`text-center py-10 ${t.textMuted} text-sm ${isDark ? 'bg-white/2' : 'bg-gray-50/50'} rounded-xl border border-dashed ${t.divider}`}>
+                              작성된 메모가 없습니다.
+                          </div>
+                      )}
+                    </div>
+
+                    <div className={`space-y-3 pt-6 border-t ${t.divider}`}>
+                      <textarea
+                        value={newNote}
+                        onChange={(e) => setNewNote(e.target.value)}
+                        placeholder="통화 내용, 진행 사항, 특이사항 등을 기록하세요..."
+                        rows={3}
+                        className={`w-full px-4 py-3 border ${t.divider} rounded-xl focus:ring-2 focus:ring-purple-500 outline-none resize-none text-sm transition-shadow ${t.textDim} ${isDark ? 'bg-black/40' : 'bg-white'} placeholder-gray-500`}
+                        onKeyDown={(e) => {
+                            if(e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleAddNote();
+                            }
+                        }}
+                      />
+                      <button
+                        onClick={handleAddNote}
+                        disabled={!newNote.trim()}
+                        className={`w-full py-4 ${isDark ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-900 hover:bg-black'} text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg`}
+                      >
+                        <Plus className="h-4 w-4" />
+                        메모 목록에 추가
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* Tab 2: Original Inquiry Details */
+                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Basic Info */}
+                    <div className={`p-6 ${t.card} rounded-2xl`}>
+                      <h5 className={`text-xs font-bold ${t.textMuted} uppercase mb-4`}>고객 기본 정보</h5>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="text-xs text-gray-400 mb-1">성함 / 상호명</div>
+                          <div className={`text-lg font-bold ${t.text}`}>{inquiry.name} {inquiry.company ? `(${inquiry.company})` : ''}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-400 mb-1">연락처</div>
+                          <div className={`text-sm font-medium ${t.text}`}>{formatPhoneNumber(inquiry.phone)}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-400 mb-1">이메일</div>
+                          <div className={`text-sm font-medium ${t.text}`}>{inquiry.email || '-'}</div>
+                        </div>
+                        {(inquiry as any).address && (
+                          <div>
+                            <div className="text-xs text-gray-400 mb-1">지역 / 주소</div>
+                            <div className={`text-sm font-medium ${t.text}`}>{(inquiry as any).address}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Meta Info */}
+                    <div className={`p-6 ${t.card} rounded-2xl`}>
+                      <h5 className={`text-xs font-bold ${t.textMuted} uppercase mb-4`}>신청 정보</h5>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="text-xs text-gray-400 mb-1">신청 플랜</div>
+                          <div className="text-sm font-bold text-orange-600 uppercase italic">{inquiry.plan} PLAN</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-400 mb-1">접수 시각</div>
+                          <div className={`text-sm font-medium ${t.text}`}>
+                            {new Date(inquiry.createdAt).toLocaleString('ko-KR')}
+                          </div>
+                        </div>
+                        {(inquiry as any).siteDomain && (
+                          <div>
+                            <div className="text-xs text-gray-400 mb-1">유입 도메인</div>
+                            <div className={`text-sm font-medium ${t.text}`}>{(inquiry as any).siteDomain}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Multi-Select Answers (Goals / Current Marketing) */}
+                  {((inquiry as any).goals?.length > 0 || (inquiry as any).currentMarketing?.length > 0) && (
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {(inquiry as any).goals?.length > 0 && (
+                        <div className={`p-6 ${t.card} rounded-2xl`}>
+                          <h5 className={`text-xs font-bold ${t.textMuted} uppercase mb-4`}>마케팅 목표</h5>
+                          <div className="flex flex-wrap gap-2">
+                            {(inquiry as any).goals.map((goal: string, idx: number) => (
+                              <span key={idx} className="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-xs font-bold">
+                                {goal}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {(inquiry as any).currentMarketing?.length > 0 && (
+                        <div className={`p-6 ${t.card} rounded-2xl`}>
+                          <h5 className={`text-xs font-bold ${t.textMuted} uppercase mb-4`}>현재 진행 중인 마케팅</h5>
+                          <div className="flex flex-wrap gap-2">
+                            {(inquiry as any).currentMarketing.map((item: string, idx: number) => (
+                              <span key={idx} className="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full text-xs font-bold">
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Original Content */}
+                  <div className={`p-6 ${t.card} rounded-2xl`}>
+                    <h5 className={`text-xs font-bold ${t.textMuted} uppercase mb-4`}>상세 문의 내용 (원문)</h5>
+                    <div className={`text-base leading-relaxed ${t.textDim} whitespace-pre-wrap`}>
+                      {inquiry.message || '입력된 상세 내용이 없습니다.'}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>
