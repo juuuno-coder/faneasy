@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { 
   Phone, 
   MapPin, 
+  MessageCircle, 
   Star, 
   CheckCircle, 
   ArrowRight,
@@ -722,6 +723,33 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
           </p>
         </div>
       </footer>
+
+      {/* Sticky Bottom CTA */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 md:hidden">
+        <button 
+          onClick={() => {
+            const form = document.getElementById('contact');
+            form?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="w-full py-4 bg-orange-600 text-white rounded-xl font-black text-lg shadow-lg flex items-center justify-center gap-2"
+        >
+          우리 가게 무료 진단 받기
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Kakao Consultation Sticky Button */}
+      <a
+        href="http://pf.kakao.com/_xgMxjUG/chat"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-24 right-6 z-50 w-16 h-16 bg-[#FEE500] rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-300 md:bottom-12 md:right-12 cursor-pointer"
+        aria-label="카카오톡 상담"
+      >
+        <MessageCircle className="w-8 h-8 text-[#3A1D1D] fill-[#3A1D1D]" />
+        <span className="absolute -bottom-8 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">카톡 상담</span>
+      </a>
+
     </div>
   );
 }
