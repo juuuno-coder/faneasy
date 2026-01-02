@@ -269,7 +269,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
       {/* 3. Stats - Before/After Vertical Comparison */}
       <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-20 pb-16">
-        <div className="max-w-4xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight tracking-tight">
               마케팅의 부재로 인해 새고 있던 잠재 고객들,<br />
@@ -303,17 +303,20 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                 </div>
              </div>
 
-             {/* After Card - Larger, Tilted Right */}
-             <div className="relative rounded-[40px] overflow-hidden shadow-[0_40px_120px_-30px_rgba(234,88,12,0.6)] bg-linear-to-br from-orange-500 to-red-600 w-full scale-105 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+             {/* After Card - Wide, No Rotation, Clear Image */}
+             <div className="relative rounded-[40px] overflow-hidden shadow-[0_20px_80px_-20px_rgba(234,88,12,0.3)] bg-white w-full max-w-5xl">
                 <div className="absolute top-5 left-7 z-20">
-                  <span className="px-5 py-2 bg-white text-orange-600 rounded-full text-sm font-black shadow-xl">비즈온 도입 후</span>
+                  <span className="px-5 py-2 bg-orange-600 text-white rounded-full text-sm font-black shadow-xl">비즈온 도입 후</span>
                 </div>
-                <div className="relative h-[420px]">
-                   <Image src="/assets/bizon/b2.jpg" alt="After Background" fill className="object-cover opacity-10" unoptimized />
-                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-cover mix-blend-multiply opacity-50" unoptimized />
-                   <div className="absolute inset-x-8 bottom-10 z-20 text-white">
-                      <p className="text-lg font-bold opacity-90 mb-3">핵심 지표 폭발적 성장</p>
-                      <h3 className="text-7xl md:text-8xl font-black tracking-tighter leading-none">842% <span className="text-3xl">UP</span></h3>
+                <div className="relative h-[300px] md:h-[450px]">
+                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-cover" unoptimized />
+                   
+                   {/* Gradient overlay for text readability only at bottom */}
+                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-orange-600/90 via-orange-600/40 to-transparent z-10" />
+                   
+                   <div className="absolute inset-x-8 bottom-8 md:bottom-12 z-20 text-white">
+                      <p className="text-xl md:text-2xl font-bold opacity-90 mb-2 shadow-sm text-shadow">핵심 지표 폭발적 성장</p>
+                      <h3 className="text-6xl md:text-8xl font-black tracking-tighter leading-none drop-shadow-lg">842% <span className="text-3xl md:text-4xl">UP</span></h3>
                    </div>
                 </div>
              </div>
