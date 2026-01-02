@@ -23,10 +23,13 @@ export function middleware(req: NextRequest) {
        console.log(`Custom Domain Rewrite: ${hostname} -> /sites/bizon`);
        
        if (url.pathname === '/before') {
-          url.pathname = '/sites/bizon-before';
+          // Archive/Previous version
+          url.pathname = '/sites/bizon-before'; 
        } else if (url.pathname === '/after') {
-          url.pathname = '/sites/bizon';
+          // Current working/modified version
+          url.pathname = '/sites/bizon-after';
        } else {
+          // Main live site (Root and others)
           url.pathname = `/sites/bizon${url.pathname}`;
        }
        return NextResponse.rewrite(url);

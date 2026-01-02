@@ -10,20 +10,20 @@ export function HeroTextSequence() {
   const [showScroll, setShowScroll] = useState(false);
 
   useEffect(() => {
-    // Phase 1: Speed improved by 1.25x
+    // Phase 1: Speed improved by ~1.2x (2500 -> 2000)
     const timer1 = setTimeout(() => {
       setPhase(2);
-    }, 2500); // 4000 -> 2500 for faster transitions
+    }, 2000); 
 
     // Footer: Show faster
     const timer2 = setTimeout(() => {
       setShowFooter(true);
-    }, 6500); // 10000 -> 6500
+    }, 5200); 
 
     // Scroll: Show faster
     const timer3 = setTimeout(() => {
       setShowScroll(true);
-    }, 7000); // 11000 -> 7000
+    }, 5600);
 
     return () => {
       clearTimeout(timer1);

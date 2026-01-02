@@ -1,4 +1,4 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 @import "tailwindcss";
 
 /* ============================================= */
@@ -6,11 +6,14 @@
 /* ============================================= */
 @layer base {
   :root {
-    --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont,
+      system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", sans-serif;
     --font-main: var(--font-pretendard);
   }
 
-  html, body {
+  html,
+  body {
     font-family: var(--font-main) !important;
     word-break: keep-all;
     letter-spacing: -0.02em;
@@ -19,7 +22,9 @@
   }
 
   /* Force Pretendard on everything */
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     font-family: var(--font-main) !important;
   }
 }
@@ -27,7 +32,8 @@
 /* ============================================= */
 /* 전용 클래스 (Pretendard 기반) */
 /* ============================================= */
-.font-poppins, .font-number {
+.font-poppins,
+.font-number {
   font-family: var(--font-pretendard) !important;
   letter-spacing: -0.01em;
 }
@@ -37,57 +43,143 @@
 /* ============================================= */
 
 /* 폰트 크기 유틸리티 */
-.f-rem12 { font-size: 0.75rem; }    /* 12px */
-.f-rem13 { font-size: 0.8125rem; }  /* 13px */
-.f-rem14 { font-size: 0.875rem; }   /* 14px */
-.f-rem15 { font-size: 0.9375rem; }  /* 15px */
-.f-rem16 { font-size: 1rem; }       /* 16px */
-.f-rem17 { font-size: 1.0625rem; }  /* 17px */
-.f-rem18 { font-size: 1.125rem; }   /* 18px */
-.f-rem19 { font-size: 1.1875rem; }  /* 19px */
-.f-rem20 { font-size: 1.25rem; }    /* 20px */
-.f-rem22 { font-size: 1.375rem; }   /* 22px */
-.f-rem24 { font-size: 1.5rem; }     /* 24px */
-.f-rem28 { font-size: 1.75rem; }    /* 28px */
-.f-rem32 { font-size: 2rem; }       /* 32px */
-.f-rem36 { font-size: 2.25rem; }    /* 36px */
-.f-rem40 { font-size: 2.5rem; }     /* 40px */
-.f-rem48 { font-size: 3rem; }       /* 48px */
-.f-rem52 { font-size: 3.25rem; }    /* 52px */
-.f-rem58 { font-size: 3.625rem; }   /* 58px */
-.f-rem64 { font-size: 4rem; }       /* 64px */
+.f-rem12 {
+  font-size: 0.75rem;
+} /* 12px */
+.f-rem13 {
+  font-size: 0.8125rem;
+} /* 13px */
+.f-rem14 {
+  font-size: 0.875rem;
+} /* 14px */
+.f-rem15 {
+  font-size: 0.9375rem;
+} /* 15px */
+.f-rem16 {
+  font-size: 1rem;
+} /* 16px */
+.f-rem17 {
+  font-size: 1.0625rem;
+} /* 17px */
+.f-rem18 {
+  font-size: 1.125rem;
+} /* 18px */
+.f-rem19 {
+  font-size: 1.1875rem;
+} /* 19px */
+.f-rem20 {
+  font-size: 1.25rem;
+} /* 20px */
+.f-rem22 {
+  font-size: 1.375rem;
+} /* 22px */
+.f-rem24 {
+  font-size: 1.5rem;
+} /* 24px */
+.f-rem28 {
+  font-size: 1.75rem;
+} /* 28px */
+.f-rem32 {
+  font-size: 2rem;
+} /* 32px */
+.f-rem36 {
+  font-size: 2.25rem;
+} /* 36px */
+.f-rem40 {
+  font-size: 2.5rem;
+} /* 40px */
+.f-rem48 {
+  font-size: 3rem;
+} /* 48px */
+.f-rem52 {
+  font-size: 3.25rem;
+} /* 52px */
+.f-rem58 {
+  font-size: 3.625rem;
+} /* 58px */
+.f-rem64 {
+  font-size: 4rem;
+} /* 64px */
 
 /* 폰트 굵기 유틸리티 */
-.f-thin { font-weight: 100; }
-.f-extralight { font-weight: 200; }
-.f-light { font-weight: 300; }
-.f-regular { font-weight: 400; }
-.f-medium { font-weight: 500; }
-.f-semibold { font-weight: 600; }
-.f-bold { font-weight: 700; }
-.f-extrabold { font-weight: 800; }
-.f-black { font-weight: 900; }
+.f-thin {
+  font-weight: 100;
+}
+.f-extralight {
+  font-weight: 200;
+}
+.f-light {
+  font-weight: 300;
+}
+.f-regular {
+  font-weight: 400;
+}
+.f-medium {
+  font-weight: 500;
+}
+.f-semibold {
+  font-weight: 600;
+}
+.f-bold {
+  font-weight: 700;
+}
+.f-extrabold {
+  font-weight: 800;
+}
+.f-black {
+  font-weight: 900;
+}
 
 /* 단축 클래스 (매듭컴퍼니 스타일) */
-.f-l { font-weight: 300; }
-.f-r { font-weight: 400; }
-.f-m { font-weight: 500; }
-.f-s { font-weight: 600; }
-.f-b { font-weight: 700; }
-.f-e { font-weight: 800; }
+.f-l {
+  font-weight: 300;
+}
+.f-r {
+  font-weight: 400;
+}
+.f-m {
+  font-weight: 500;
+}
+.f-s {
+  font-weight: 600;
+}
+.f-b {
+  font-weight: 700;
+}
+.f-e {
+  font-weight: 800;
+}
 
 /* 자간 유틸리티 */
-.ls-tight { letter-spacing: -0.06em; }
-.ls-normal { letter-spacing: -0.04em; }
-.ls-wide { letter-spacing: 0; }
-.ls-0 { letter-spacing: 0; }
+.ls-tight {
+  letter-spacing: -0.06em;
+}
+.ls-normal {
+  letter-spacing: -0.04em;
+}
+.ls-wide {
+  letter-spacing: 0;
+}
+.ls-0 {
+  letter-spacing: 0;
+}
 
 /* 행간 유틸리티 */
-.lh-tight { line-height: 1.2; }
-.lh-snug { line-height: 1.3; }
-.lh-normal { line-height: 1.5; }
-.lh-relaxed { line-height: 1.6; }
-.lh-loose { line-height: 1.8; }
+.lh-tight {
+  line-height: 1.2;
+}
+.lh-snug {
+  line-height: 1.3;
+}
+.lh-normal {
+  line-height: 1.5;
+}
+.lh-relaxed {
+  line-height: 1.6;
+}
+.lh-loose {
+  line-height: 1.8;
+}
 
 /* ============================================= */
 /* 반응형 유틸리티 (매듭컴퍼니 브레이크포인트) */
@@ -95,32 +187,52 @@
 
 /* 모바일에서 숨김 (max-width: 600px) */
 @media (max-width: 600px) {
-  .mb-hide { display: none !important; }
+  .mb-hide {
+    display: none !important;
+  }
 }
 
 /* 모바일에서만 표시 */
-.mb-show { display: none !important; }
+.mb-show {
+  display: none !important;
+}
 @media (max-width: 600px) {
-  .mb-show { display: block !important; }
-  .mb-show-flex { display: flex !important; }
-  .mb-show-ib { display: inline-block !important; }
+  .mb-show {
+    display: block !important;
+  }
+  .mb-show-flex {
+    display: flex !important;
+  }
+  .mb-show-ib {
+    display: inline-block !important;
+  }
 }
 
 /* 태블릿에서 숨김 (max-width: 900px) */
 @media (max-width: 900px) {
-  .tab-hide { display: none !important; }
+  .tab-hide {
+    display: none !important;
+  }
 }
 
 /* 태블릿에서만 표시 */
-.tab-show { display: none !important; }
+.tab-show {
+  display: none !important;
+}
 @media (max-width: 900px) {
-  .tab-show { display: block !important; }
-  .tab-show-flex { display: flex !important; }
+  .tab-show {
+    display: block !important;
+  }
+  .tab-show-flex {
+    display: flex !important;
+  }
 }
 
 /* 작은 모바일에서 숨김 (max-width: 360px) */
 @media (max-width: 360px) {
-  .sm-hide { display: none !important; }
+  .sm-hide {
+    display: none !important;
+  }
 }
 
 /* ============================================= */
@@ -134,7 +246,9 @@
   line-height: 1.2;
 }
 @media (max-width: 900px) {
-  .main-ttl.lg-ttl { font-size: 2rem; }
+  .main-ttl.lg-ttl {
+    font-size: 2rem;
+  }
 }
 
 /* 대형 타이틀: 58px → 26px */
@@ -144,7 +258,9 @@
   line-height: 1.2;
 }
 @media (max-width: 900px) {
-  .main-ttl.md-ttl { font-size: 1.625rem; }
+  .main-ttl.md-ttl {
+    font-size: 1.625rem;
+  }
 }
 
 /* 중형 타이틀: 52px → 24px */
@@ -154,7 +270,9 @@
   line-height: 1.25;
 }
 @media (max-width: 900px) {
-  .main-ttl.ms-ttl { font-size: 1.5rem; }
+  .main-ttl.ms-ttl {
+    font-size: 1.5rem;
+  }
 }
 
 /* 소형 타이틀: 28px → 17px */
@@ -164,7 +282,9 @@
   line-height: 1.3;
 }
 @media (max-width: 900px) {
-  .main-ttl.sm-ttl { font-size: 1.0625rem; }
+  .main-ttl.sm-ttl {
+    font-size: 1.0625rem;
+  }
 }
 
 /* 아주 작은 타이틀: 24px → 15px */
@@ -174,7 +294,9 @@
   line-height: 1.35;
 }
 @media (max-width: 900px) {
-  .main-ttl.ss-ttl { font-size: 0.9375rem; }
+  .main-ttl.ss-ttl {
+    font-size: 0.9375rem;
+  }
 }
 
 /* 최소 타이틀: 20px → 15px */
@@ -184,7 +306,9 @@
   line-height: 1.4;
 }
 @media (max-width: 900px) {
-  .main-ttl.xs-ttl { font-size: 0.9375rem; }
+  .main-ttl.xs-ttl {
+    font-size: 0.9375rem;
+  }
 }
 
 /* ============================================= */
@@ -198,28 +322,29 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   --color-primary: #8b5cf6;
   --color-primary-foreground: #ffffff;
-  
+
   --color-secondary: #1e293b;
   --color-secondary-foreground: #f8fafc;
-  
+
   --color-accent: var(--accent);
   --color-accent-foreground: #ffffff;
-  
+
   --color-muted: #64748b;
   --color-muted-foreground: #94a3b8;
-  
+
   --color-border: var(--admin-border);
   --color-input: var(--admin-border);
-  
+
   --radius-xl: 1.5rem;
   --radius-2xl: 2rem;
   --radius-3xl: 2.5rem;
-  
+
   --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
-  --animate-scroll: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
+  --animate-scroll: scroll var(--animation-duration, 40s)
+    var(--animation-direction, forwards) linear infinite;
   --animate-scroll-up: scrollUp 20s linear infinite;
 }
 
@@ -371,6 +496,10 @@ body {
   animation: scrollLeft 60s linear infinite;
 }
 
+.animate-scroll-left-fast {
+  animation: scrollLeft 30s linear infinite;
+}
+
 .text-shadow-sm {
-  text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

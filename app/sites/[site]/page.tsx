@@ -100,13 +100,25 @@ export default async function SitePage({
   const siteSlug = site.toLowerCase().trim();
   
   // 1. Special Hardcoded Landing Pages (Check FIRST)
-  if (siteSlug === "bizon") {
+  // 1. Special Hardcoded Landing Pages (Check FIRST)
+  if (siteSlug === "bizon" || siteSlug === "bizon-before" || siteSlug === "before") {
     const BizonMarketing = (await import("./bizon-marketing")).default;
     return (
       <>
         <ThemeWrapper site={siteSlug} />
         <ViewTracker siteId={siteSlug} />
         <BizonMarketing site={siteSlug} />
+      </>
+    );
+  }
+
+  if (siteSlug === "bizon-after" || siteSlug === "after") {
+    const BizonMarketingAfter = (await import("./bizon-marketing-after")).default;
+    return (
+      <>
+        <ThemeWrapper site={siteSlug} />
+        <ViewTracker siteId={siteSlug} />
+        <BizonMarketingAfter site={siteSlug} />
       </>
     );
   }
