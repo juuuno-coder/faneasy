@@ -283,11 +283,11 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                 <div className="absolute top-2 left-4 z-20">
                   <span className="px-2.5 py-0.5 bg-gray-900 text-white rounded-full text-[10px] md:text-xs font-black opacity-90">비즈온 도입 전</span>
                 </div>
-                <div className="relative h-[140px] md:h-[180px]">
+                <div className="relative h-[160px] md:h-[220px]">
                    <Image src="/assets/bizon/b3.jpg" alt="Before Background" fill className="object-cover opacity-10" unoptimized />
                    <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover mix-blend-multiply opacity-80" unoptimized />
                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-gray-900/60 to-transparent z-10" />
-                   <div className="absolute inset-x-5 bottom-3 z-20 text-white">
+                   <div className="absolute right-5 bottom-3 z-20 text-white text-right">
                       <p className="text-xs md:text-sm font-bold opacity-90">관리가 절실했던 상태</p>
                    </div>
                 </div>
