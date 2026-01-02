@@ -278,15 +278,15 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
           </div>
 
           <div className="flex flex-col items-center gap-2 md:gap-4">
-             {/* Before Card - Much Smaller */}
-             <div className="relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-white w-full max-w-sm">
+             {/* Before Card - Wider, No Shadow */}
+             <div className="relative rounded-2xl overflow-hidden bg-white w-full max-w-[480px]">
                 <div className="absolute top-2 left-4 z-20">
-                  <span className="px-2.5 py-0.5 bg-gray-900 text-white rounded-full text-[10px] md:text-xs font-black">비즈온 도입 전</span>
+                  <span className="px-2.5 py-0.5 bg-gray-900 text-white rounded-full text-[10px] md:text-xs font-black opacity-90">비즈온 도입 전</span>
                 </div>
                 <div className="relative h-[140px] md:h-[180px]">
-                   <Image src="/assets/bizon/b3.jpg" alt="Before Background" fill className="object-cover opacity-20" unoptimized />
+                   <Image src="/assets/bizon/b3.jpg" alt="Before Background" fill className="object-cover opacity-10" unoptimized />
                    <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover mix-blend-multiply opacity-80" unoptimized />
-                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/80 to-transparent z-10" />
+                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-gray-900/60 to-transparent z-10" />
                    <div className="absolute inset-x-5 bottom-3 z-20 text-white">
                       <p className="text-xs md:text-sm font-bold opacity-90">관리가 절실했던 상태</p>
                    </div>
@@ -304,16 +304,17 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
              </div>
 
              {/* After Card - Compact & Wide */}
-             <div className="relative rounded-[32px] overflow-hidden shadow-[0_15px_60px_-15px_rgba(234,88,12,0.3)] bg-white w-full max-w-4xl border border-gray-100">
+             <div className="relative rounded-[32px] overflow-hidden shadow-[0_15px_60px_-15px_rgba(234,88,12,0.2)] bg-white w-full max-w-4xl border border-gray-100/50">
                 <div className="absolute top-4 left-6 z-20">
                   <span className="px-4 py-1.5 bg-orange-600 text-white rounded-full text-xs font-black shadow-lg">비즈온 도입 후</span>
                 </div>
                 <div className="relative h-[200px] md:h-[280px]">
-                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-contain p-2" unoptimized />
+                   {/* Increased padding to shrink image and avoid overlap */}
+                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-contain p-4 md:p-8" unoptimized />
                    
-                   <div className="absolute right-6 md:right-10 bottom-4 md:bottom-8 z-20 text-right bg-white/80 backdrop-blur-sm p-3 rounded-2xl md:bg-transparent md:p-0 md:backdrop-blur-none border border-orange-100/50 md:border-none shadow-sm md:shadow-none">
-                      <p className="text-lg md:text-xl font-bold text-orange-600 mb-0 md:mb-1 shadow-sm">핵심 지표 폭발적 성장</p>
-                      <h3 className="text-4xl md:text-7xl font-black tracking-tighter leading-none text-gray-900">842% <span className="text-2xl md:text-4xl text-orange-600">성장</span></h3>
+                   <div className="absolute right-6 md:right-10 bottom-3 md:bottom-6 z-20 text-right bg-white/90 backdrop-blur-sm p-3 rounded-2xl md:bg-transparent md:p-0 md:backdrop-blur-none border border-orange-100/50 md:border-none shadow-sm md:shadow-none">
+                      <p className="text-base md:text-lg font-bold text-orange-600 mb-0 md:mb-1 shadow-sm">핵심 지표 폭발적 성장</p>
+                      <h3 className="text-3xl md:text-6xl font-black tracking-tighter leading-none text-gray-900">842% <span className="text-xl md:text-3xl text-orange-600">성장</span></h3>
                    </div>
                 </div>
              </div>
