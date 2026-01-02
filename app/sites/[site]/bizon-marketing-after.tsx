@@ -376,8 +376,9 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       {/* 5. Certificates - Original Images Only */}
       <section className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden">
         <div className="text-center mb-10 px-6">
-          <h2 className="text-3xl md:text-6xl font-black text-gray-900 tracking-tighter">
-            실제 운영 경험과<br />성과로 증명합니다.
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
+            <span className="text-orange-600">실제 운영 경험</span>과<br />
+            <span className="underline decoration-4 underline-offset-8 decoration-orange-500/30">성과</span>로 증명합니다.
           </h2>
         </div>
         <div className="relative w-full overflow-hidden bg-gray-50 py-10 border-y border-gray-100">
