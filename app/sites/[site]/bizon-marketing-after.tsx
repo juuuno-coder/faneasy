@@ -227,74 +227,80 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </div>
 
       {/* 2. Reason - Adjusted Images */}
-      <section id="reason" className="min-h-screen snap-start flex flex-col justify-center bg-white px-6 pt-24 pb-20">
+      <section id="reason" className="min-h-screen snap-start flex flex-col justify-center bg-white px-6 pt-24 pb-16">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 tracking-tighter">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-5xl font-black leading-tight text-gray-900 tracking-tight">
               프랜차이즈라서<br />
               <span className="text-orange-600">마케팅이 의미 없다고 생각하시나요?</span>
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 md:gap-10 mb-10">
-            {[
-              { text: '검색시 누가봐도 가고 싶은곳', img: '/assets/bizon/a1.jpg' },
-              { text: '리뷰가 많고 후기가 좋은 곳', img: '/assets/bizon/a2.jpg' },
-            ].map((item, i) => (
-              <div key={i} className="text-center group">
-                <div className="relative aspect-video rounded-[32px] overflow-hidden shadow-xl border border-gray-100 mb-4 bg-gray-50 group-hover:scale-[1.01] transition-transform duration-500">
-                  <Image src={item.img} alt={item.text} fill className="object-cover" unoptimized />
-                </div>
-                <h3 className="text-xl md:text-2xl font-black text-gray-900">{item.text}</h3>
+          <div className="grid md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-center mb-8">
+            <div className="text-center group">
+              <div className="relative aspect-video rounded-3xl overflow-hidden shadow-xl border border-gray-100 mb-3 bg-gray-50 group-hover:scale-[1.01] transition-transform duration-500">
+                <Image src="/assets/bizon/a1.jpg" alt="검색시 누가봐도 가고 싶은곳" fill className="object-cover" unoptimized />
               </div>
-            ))}
+              <h3 className="text-lg md:text-2xl font-black text-gray-900">검색시 누가봐도 가고 싶은곳<span className="text-orange-600">?</span></h3>
+            </div>
+            
+            <div className="hidden md:flex items-center justify-center">
+              <ArrowRight className="w-12 h-12 text-orange-600" strokeWidth={3} />
+            </div>
+            
+            <div className="text-center group">
+              <div className="relative aspect-video rounded-3xl overflow-hidden shadow-xl border border-gray-100 mb-3 bg-gray-50 group-hover:scale-[1.01] transition-transform duration-500">
+                <Image src="/assets/bizon/a2.jpg" alt="리뷰가 많고 후기가 좋은 곳" fill className="object-cover" unoptimized />
+              </div>
+              <h3 className="text-lg md:text-2xl font-black text-gray-900">리뷰가 많고 후기가 좋은 곳<span className="text-orange-600">!</span></h3>
+            </div>
           </div>
 
-          <div className="text-center p-8 md:p-12 rounded-[40px] bg-linear-to-br from-gray-900 to-black text-white shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-orange-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <p className="text-lg md:text-2xl lg:text-3xl font-black leading-tight relative z-10">
-              지점 별로 <span className="text-orange-500 underline decoration-2 underline-offset-8">플레이스 마케팅</span> 관리를<br />
-              <span className="text-2xl md:text-4xl lg:text-5xl mt-6 block font-black">제대로 해주는 본사는 <span className="text-yellow-400">'없습니다'</span></span>
+          <div className="text-center p-6 md:p-10 rounded-[32px] bg-linear-to-br from-gray-900 to-black text-white shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-orange-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <p className="text-base md:text-xl lg:text-2xl font-black leading-tight relative z-10">
+              지점 별로 <span className="text-orange-500 underline decoration-2 underline-offset-4">플레이스 마케팅</span> 관리를<br />
+              <span className="text-xl md:text-3xl lg:text-4xl mt-4 block font-black">제대로 해주는 본사는 <span className="text-yellow-400">'없습니다'</span></span>
             </p>
           </div>
         </div>
       </section>
 
-      {/* 3. Stats - Before/After Data Comparison */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-24 pb-20">
-        <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 leading-tight tracking-tight">
+      {/* 3. Stats - Before/After Data Comparison - Redesigned */}
+      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-20 pb-16">
+        <div className="max-w-5xl mx-auto w-full">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight tracking-tight">
               마케팅의 부재로 인해 새고 있던 잠재 고객들,<br />
               <span className="text-orange-600">비즈온이 숫자로 증명합니다.</span>
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch max-w-5xl mx-auto">
-             {/* Before Image Card */}
-             <div className="relative rounded-[40px] overflow-hidden shadow-2xl border border-gray-100 bg-white group hover:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.2)] transition-all duration-500">
-                <div className="absolute top-6 left-8 z-20">
-                  <span className="px-5 py-2 bg-gray-900 text-white rounded-full text-sm font-black tracking-tight shadow-lg">비즈온 도입 전</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+             {/* Before Card - Compact */}
+             <div className="relative rounded-3xl overflow-hidden shadow-xl border border-gray-200 bg-white group">
+                <div className="absolute top-4 left-6 z-20">
+                  <span className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-xs font-black">비즈온 도입 전</span>
                 </div>
-                <div className="relative aspect-4/5 md:aspect-auto md:h-[480px]">
-                   <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover group-hover:scale-105 transition-transform duration-700" unoptimized />
-                   <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-black/60 to-transparent z-10" />
-                   <div className="absolute inset-x-8 bottom-10 z-20 text-white">
-                      <p className="text-lg font-bold opacity-90">관리가 절실했던 상태</p>
+                <div className="relative h-[360px] md:h-[400px]">
+                   <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover" unoptimized />
+                   <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-black/70 to-transparent z-10" />
+                   <div className="absolute inset-x-6 bottom-6 z-20 text-white">
+                      <p className="text-sm font-bold opacity-90">관리가 절실했던 상태</p>
                    </div>
                 </div>
              </div>
 
-             {/* After Orange Card */}
-             <div className="relative rounded-[50px] overflow-hidden shadow-[0_30px_100px_-20px_rgba(234,88,12,0.5)] bg-linear-to-br from-orange-500 to-red-600 group z-10 scale-105 hover:scale-110 transition-all duration-700">
-                <div className="absolute top-8 left-10 z-20">
-                  <span className="px-6 py-2.5 bg-white text-orange-600 rounded-full text-sm font-black tracking-tight shadow-xl">비즈온 도입 후</span>
+             {/* After Card - Compact Orange */}
+             <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-linear-to-br from-orange-500 to-red-600 group">
+                <div className="absolute top-4 left-6 z-20">
+                  <span className="px-4 py-1.5 bg-white text-orange-600 rounded-full text-xs font-black shadow-lg">비즈온 도입 후</span>
                 </div>
-                <div className="relative aspect-4/5 md:aspect-auto md:h-[520px]">
-                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-cover mix-blend-multiply opacity-60 group-hover:scale-110 transition-transform duration-1000" unoptimized />
-                   <div className="absolute inset-x-10 bottom-16 z-20 text-white">
-                      <p className="text-xl font-bold opacity-90 mb-4 whitespace-nowrap">핵심 지표 폭발적 성장</p>
-                      <h3 className="text-7xl md:text-8xl font-black tracking-tighter leading-none">842% <span className="text-3xl md:text-4xl">UP</span></h3>
+                <div className="relative h-[360px] md:h-[400px]">
+                   <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-cover mix-blend-multiply opacity-50" unoptimized />
+                   <div className="absolute inset-x-6 bottom-8 z-20 text-white">
+                      <p className="text-base font-bold opacity-90 mb-2">핵심 지표 폭발적 성장</p>
+                      <h3 className="text-6xl md:text-7xl font-black tracking-tighter leading-none">842% <span className="text-2xl">UP</span></h3>
                    </div>
                 </div>
              </div>
@@ -302,32 +308,32 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 4. Differentiation */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-black px-6 pt-24 pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(234,88,12,0.1),transparent_70%)]" />
+      {/* 4. Differentiation - Redesigned with Tighter Spacing */}
+      <section className="min-h-screen snap-start flex flex-col justify-center bg-black px-6 pt-20 pb-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(234,88,12,0.08),transparent_70%)]" />
         
-        <div className="max-w-6xl mx-auto w-full relative z-10">
-           <div className="text-center mb-12 md:mb-16">
-              <h2 className="text-blue-500 text-3xl md:text-5xl lg:text-6xl font-black mb-8 tracking-tighter">마케팅도 똑같습니다</h2>
+        <div className="max-w-5xl mx-auto w-full relative z-10">
+           <div className="text-center mb-10">
+              <h2 className="text-blue-500 text-2xl md:text-4xl lg:text-5xl font-black mb-6 tracking-tight">마케팅도 똑같습니다</h2>
               
-              <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[30px] p-8 md:p-10 max-w-3xl mx-auto shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)]">
-                <p className="text-xl md:text-3xl lg:text-4xl font-black text-white leading-tight tracking-tight">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 max-w-2xl mx-auto shadow-2xl">
+                <p className="text-lg md:text-2xl lg:text-3xl font-black text-white leading-tight tracking-tight">
                   가짜 마케팅 전문가가 판치는<br />
                   자영업 마케팅 시장,<br />
-                  <span className="text-orange-500 underline decoration-2 underline-offset-8">진짜 전문가인지 확인해 보세요.</span>
+                  <span className="text-orange-500 underline decoration-2 underline-offset-4">진짜 전문가인지 확인해 보세요.</span>
                 </p>
               </div>
            </div>
 
-           <div className="grid md:grid-cols-2 gap-6 md:gap-8 px-4">
+           <div className="grid md:grid-cols-2 gap-5 px-2 mb-12">
               {[
                 { txt: '우리의 목표는 단순히\n순위를 올리는 게 아닙니다.', bg: '/uploads/meeting-1.png' },
                 { txt: '고객이 올 수밖에 없는\n구조를 만들고\n\n그 경험을 매출로 전환하는 것.', bg: '/uploads/meeting-2.png' }
               ].map((b, i) => (
-                <div key={i} className={`relative h-[220px] md:h-[280px] rounded-[40px] overflow-hidden border border-white/10 group ${i === 1 ? 'md:translate-y-8' : ''}`}>
-                  <Image src={b.bg} alt="bg" fill className="object-cover opacity-20 group-hover:opacity-40 transition-all duration-700 group-hover:scale-105" unoptimized />
-                  <div className="absolute inset-0 flex items-center justify-center p-6 bg-black/40 backdrop-blur-[1px]">
-                    <h3 className="text-lg md:text-2xl font-black text-white text-center whitespace-pre-line leading-relaxed tracking-tight">
+                <div key={i} className={`relative h-[200px] md:h-[240px] rounded-3xl overflow-hidden border border-white/10 group ${i === 1 ? 'md:translate-y-6' : ''}`}>
+                  <Image src={b.bg} alt="bg" fill className="object-cover opacity-20 group-hover:opacity-35 transition-all duration-500" unoptimized />
+                  <div className="absolute inset-0 flex items-center justify-center p-5 bg-black/40">
+                    <h3 className="text-base md:text-xl font-black text-white text-center whitespace-pre-line leading-relaxed">
                       {b.txt.split('\n').map((l, j) => (
                         <span key={j} className={l.includes('순위') || l.includes('구조') || l.includes('매출') ? 'text-orange-500' : ''}>
                           {l}<br/>
@@ -339,10 +345,10 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
               ))}
            </div>
 
-           <div className="mt-16 md:mt-20 text-center">
+           <div className="text-center">
               <button 
                 onClick={() => scrollToSection('contact-form')} 
-                className="group relative px-10 py-5 bg-orange-600 text-white rounded-[24px] text-xl md:text-2xl font-black shadow-2xl hover:bg-orange-700 transition-all overflow-hidden"
+                className="group relative px-8 py-4 bg-orange-600 text-white rounded-3xl text-lg md:text-xl font-black shadow-2xl hover:bg-orange-700 transition-all overflow-hidden"
               >
                 <span className="relative z-10">진짜 전문가에게 문의하세요.</span>
                 <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
@@ -351,7 +357,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 5. Certificates - Filled Style with Variety */}
+      {/* 5. Certificates - Original Images Only */}
       <section className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden">
         <div className="text-center mb-10 px-6">
           <h2 className="text-3xl md:text-6xl font-black text-gray-900 tracking-tighter">
@@ -361,12 +367,17 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         <div className="relative w-full overflow-hidden bg-gray-50 py-10 border-y border-gray-100">
            <div className="flex animate-scroll-left-fast w-max">
              {[...Array(24)].map((_, i) => {
-                const images = [
-                  `/uploads/certificates/cert${(i % 8) + 1}.png`,
-                  `/assets/bizon/1.jpg`,
-                  `/assets/bizon/2.jpg`,
+                const certImages = [
+                  `/uploads/certificates/cert1.png`,
+                  `/uploads/certificates/cert2.png`,
+                  `/uploads/certificates/cert3.png`,
+                  `/uploads/certificates/cert4.png`,
+                  `/uploads/certificates/cert5.png`,
+                  `/uploads/certificates/cert6.png`,
+                  `/uploads/certificates/cert7.png`,
+                  `/uploads/certificates/cert8.png`,
                 ];
-                const img = images[i % images.length];
+                const img = certImages[i % certImages.length];
                 return (
                   <div key={i} className="relative w-[200px] md:w-[320px] aspect-3/4 mx-3 md:mx-6 bg-white shadow-xl rounded-[32px] overflow-hidden p-3 md:p-5 border border-gray-100/50">
                       <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center">
@@ -443,15 +454,21 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
           </div>
 
           <div className="relative flex items-center justify-center min-h-[500px] md:min-h-[600px]">
-            {/* Background Rotating Logo - HIGH VISIBILITY - Moved to Front */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30 transition-opacity duration-700">
-               <div className="relative w-[320px] h-[320px] md:w-[600px] md:h-[600px] opacity-100 drop-shadow-[0_0_50px_rgba(255,255,255,0.8)]">
+            {/* Rotating Outer Ring - BEHIND cards */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-5">
+               <div className="relative w-[320px] h-[320px] md:w-[600px] md:h-[600px] opacity-30">
                  <RotatingOuterRing />
+               </div>
+            </div>
+
+            {/* Center Logo - IN FRONT of everything */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+               <div className="relative w-[200px] h-[200px] md:w-[350px] md:h-[350px] opacity-100 drop-shadow-[0_0_40px_rgba(255,255,255,0.9)]">
                  <RotatingBizonO />
                </div>
             </div>
 
-            {/* Success Steps - Simplified Titles Only */}
+            {/* Success Steps - MIDDLE layer */}
             <div className="relative z-20 w-full grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-56 gap-y-12 md:gap-y-20">
                 {[
                   { id: '01', t: '매장 점검 및 진단', color: 'from-blue-500/20 to-blue-600/20' },
@@ -482,10 +499,10 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       <section id="review" className="h-screen snap-start flex flex-col justify-center bg-gray-900 px-6 text-white overflow-hidden relative">
         <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/40 pointer-events-none" />
         <div className="max-w-7xl mx-auto w-full relative z-10">
-          <div className="text-center mb-16 md:mb-20">
-            <span className="inline-block px-5 py-2 bg-orange-700/20 text-orange-600 rounded-full text-sm font-black mb-6 border border-orange-700/30 tracking-widest uppercase">
-              Real Review
-            </span>
+          <div className="text-center mb-12 md:mb-16">
+            <div className="inline-block px-5 py-2 bg-orange-600/10 text-orange-500 rounded-full text-sm font-black mb-6 tracking-wider">
+              REAL REVIEW
+            </div>
             <h2 className="text-4xl md:text-6xl font-black">
               사장님들의 <span className="text-orange-600">진짜 이야기</span>
             </h2>
@@ -542,14 +559,14 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* 9. Chat Gallery - Optimized for Screen Fit */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 overflow-hidden px-6 relative pt-24 pb-12">
+      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 overflow-hidden px-6 relative pt-20 pb-12">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-8 md:mb-12">
-             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight text-gray-900">
+          <div className="text-center mb-8">
+             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-3 tracking-tight text-gray-900">
                수많은 사장님들과의<br />
                진한 <span className="text-orange-600">소통 기록</span>
              </h2>
-             <p className="text-lg md:text-xl text-gray-600 font-bold">비즈온마케팅은 '결과'만큼 '과정'에서의 소통을 중요시합니다</p>
+             <p className="text-base md:text-lg text-gray-600 font-bold">비즈온마케팅은 '결과'만큼 '과정'에서의 소통을 중요시합니다</p>
           </div>
 
           <div className="relative h-[350px] md:h-[450px] overflow-hidden rounded-[40px] border border-gray-100 bg-white/50 backdrop-blur-sm p-4">
