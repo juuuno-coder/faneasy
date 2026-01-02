@@ -294,12 +294,12 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                 </div>
              </div>
 
-             {/* Decorative Arrow - Tiny */}
-             <div className="flex items-center justify-center -my-3 z-30">
+             {/* Decorative Arrow - Overlapping Style */}
+             <div className="flex items-center justify-center -my-3 md:-my-6 z-30">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-linear-to-b from-orange-500 to-red-600 rounded-full blur-lg opacity-40 animate-pulse" />
-                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-1 shadow-xl border-2 border-white">
-                    <ArrowDown className="w-5 h-5 md:w-6 md:h-6 text-white" strokeWidth={2} />
+                  <div className="absolute inset-0 bg-linear-to-b from-orange-500 to-red-600 rounded-full blur-xl opacity-50 animate-pulse" />
+                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-1.5 md:p-2 shadow-2xl border-2 border-white">
+                    <ArrowDown className="w-5 h-5 md:w-8 md:h-8 text-white" strokeWidth={3} />
                   </div>
                 </div>
              </div>
