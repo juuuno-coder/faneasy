@@ -158,7 +158,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
     <div 
       ref={mainContainerRef}
       onScroll={handleScroll}
-      className="h-screen bg-black overflow-x-hidden overflow-y-auto snap-y snap-mandatory scroll-smooth select-none">
+      className="h-screen bg-black overflow-x-hidden overflow-y-auto md:snap-y md:snap-mandatory scroll-smooth select-none">
       
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -206,7 +206,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </header>
 
       {/* 1. Hero */}
-      <section className="relative h-screen snap-start flex items-center justify-center bg-black">
+      <section className="relative h-screen md:snap-start flex items-center justify-center bg-black">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-black/60 z-10" />
           <video autoPlay muted loop playsInline className="w-full h-full object-cover">
@@ -230,7 +230,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </div>
 
       {/* 2. Reason - Adjusted Images */}
-      <section id="reason" className="min-h-screen snap-start flex flex-col justify-center bg-white px-5 md:px-6 pt-16 md:pt-24 pb-12 md:pb-16">
+      <section id="reason" className="min-h-0 md:min-h-screen md:snap-start flex flex-col justify-center bg-white px-5 md:px-6 pt-16 md:pt-24 pb-12 md:pb-16">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-6 md:mb-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight text-gray-900 tracking-tight break-keep">
@@ -270,7 +270,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* 3. Stats - Before/After Vertical Comparison - Strictly Compact */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-5 md:px-6 pt-12 md:pt-16 pb-8 md:pb-12">
+      <section className="min-h-0 md:min-h-screen md:snap-start flex flex-col justify-center bg-gray-50 px-5 md:px-6 pt-12 md:pt-16 pb-8 md:pb-12">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-4 md:mb-6">
             <h2 className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-black text-gray-900 leading-tight tracking-tight break-keep">
@@ -326,7 +326,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* 4. Differentiation - Redesigned with Tighter Spacing */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-black px-6 pt-20 pb-16 relative overflow-hidden">
+      <section id="differentiation" className="min-h-0 md:min-h-screen md:snap-start flex flex-col justify-center bg-black px-6 pt-20 pb-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(234,88,12,0.08),transparent_70%)]" />
         
         <div className="max-w-5xl mx-auto w-full relative z-10">
@@ -375,7 +375,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* 5. Certificates - Original Images Only */}
-      <section className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden">
+      <section className="h-auto md:h-screen md:snap-start flex flex-col justify-center bg-white overflow-hidden py-16 md:py-0">
         <div className="text-center mb-10 px-6">
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
             <span className="text-orange-600">실제 운영 경험</span>과<br />
@@ -424,7 +424,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-24 pb-20">
+      <section className="min-h-0 md:min-h-screen md:snap-start flex flex-col justify-center bg-gray-50 px-6 pt-24 pb-20">
         <div className="max-w-6xl mx-auto w-full">
             <div className="text-center mb-8 md:mb-12">
                <p className="text-lg md:text-2xl font-bold text-gray-500 mb-2">대표님! 아직도 플레이스 순위에만 집중하시나요?</p>
@@ -462,9 +462,8 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* 7. Process - Success Cycle Slimmed */}
-      <section id="process" className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden px-6 relative">
+      <section id="process" className="min-h-0 md:min-h-screen md:snap-start flex flex-col justify-center bg-white px-6 pt-20 pb-16 relative overflow-hidden">
         <div className="max-w-6xl mx-auto w-full relative">
-          
           <div className="text-center mb-4 md:mb-6 relative z-20">
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4 tracking-tight">
               마케팅 성공방식
@@ -473,24 +472,23 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
               멈추지 않는 성공의 <span className="text-orange-600">수레바퀴</span>
             </p>
           </div>
-
-          <div className="relative flex items-center justify-center min-h-[500px] md:min-h-[600px]">
-            {/* Rotating Outer Ring - BEHIND cards */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-5">
+          <div className="relative flex items-center justify-center min-h-0 md:min-h-[600px]">
+            {/* Rotating Outer Ring - BEHIND cards - Hidden on Mobile */}
+            <div className="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none z-5">
                <div className="relative w-[320px] h-[320px] md:w-[600px] md:h-[600px] opacity-30">
                  <RotatingOuterRing />
                </div>
             </div>
 
-            {/* Center Logo - IN FRONT of everything */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+            {/* Center Logo - IN FRONT of everything - Hidden on Mobile */}
+            <div className="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none z-50">
                <div className="relative w-[150px] h-[150px] md:w-[350px] md:h-[350px] opacity-100 drop-shadow-[0_0_30px_rgba(255,255,255,0.7)]">
                  <RotatingBizonO />
                </div>
             </div>
 
             {/* Success Steps - MIDDLE layer */}
-            <div className="relative z-20 w-full grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-56 gap-y-12 md:gap-y-20">
+            <div className="relative z-20 w-full grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-56 gap-y-4 md:gap-y-20">
                  {[
                   { id: '01', t: '매장 점검 및 진단', color: 'from-blue-500/20 to-blue-600/20' },
                   { id: '02', t: '맞춤형 마케팅 설계', color: 'from-amber-500/20 to-amber-600/20' },
@@ -499,7 +497,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                 ].map((item, i) => (
                   <div 
                     key={i} 
-                    className="group bg-white/95 backdrop-blur-xl p-6 md:p-16 rounded-[32px] md:rounded-[40px] shadow-[0_15px_45px_-10px_rgba(0,0,0,0.1)] border border-gray-100/50 flex flex-col justify-center hover:scale-105 hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] transition-all duration-500 min-h-[140px] md:min-h-[220px]"
+                    className="group bg-white/95 backdrop-blur-xl p-5 md:p-16 rounded-[24px] md:rounded-[40px] shadow-[0_15px_45px_-10px_rgba(0,0,0,0.1)] border border-gray-100/50 flex flex-col justify-center hover:scale-105 hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] transition-all duration-500 min-h-0 md:min-h-[220px]"
                   >
                     <div className="flex items-center gap-4 md:gap-6">
                       <div className={`text-3xl md:text-5xl font-black bg-linear-to-r ${item.color} bg-clip-text text-transparent opacity-40`}>
@@ -519,7 +517,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
 
       {/* 8. Review - Premium Design */}
-      <section id="review" className="h-screen snap-start flex flex-col justify-center bg-gray-900 px-6 text-white overflow-hidden relative">
+      <section id="review" className="h-auto md:h-screen md:snap-start flex flex-col justify-center bg-gray-900 px-6 text-white overflow-hidden relative py-16 md:py-0">
         <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/40 pointer-events-none" />
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="text-center mb-12 md:mb-16">
@@ -579,7 +577,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* 9. Chat Gallery - Optimized for Screen Fit */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 overflow-hidden px-6 relative pt-20 pb-12">
+      <section className="h-auto md:h-screen md:snap-start relative flex items-center justify-center bg-gray-50 overflow-hidden select-none py-12 md:py-0">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-8">
              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-3 tracking-tight text-gray-900">
@@ -629,7 +627,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* 10. Contact - Final Diagnosis Form */}
-      <section id="contact-form" className="min-h-screen snap-start flex flex-col md:flex-row bg-white overflow-hidden">
+      <section id="contact-form" className="min-h-0 md:min-h-screen md:snap-start flex flex-col md:flex-row bg-white overflow-hidden">
         <div className="w-full md:w-5/12 bg-black text-white p-10 md:p-16 flex flex-col justify-center relative">
           <Image src="/uploads/meeting-1.png" alt="bg" fill className="object-cover opacity-20 grayscale" unoptimized />
           <div className="relative z-10 space-y-8">
@@ -706,7 +704,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       </section>
 
       {/* Footer - Restored Original Content */}
-      <footer className="snap-start py-20 pb-40 px-6 bg-black text-gray-500 text-center text-base border-t border-white/5">
+      <footer className="md:snap-start py-20 pb-40 px-6 bg-black text-gray-500 text-center text-base border-t border-white/5">
         <Image 
           src="/bizon-logo.png" 
           alt="비즈온" 
