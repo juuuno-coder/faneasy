@@ -509,6 +509,68 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
+
+
+      {/* 8. Review - Premium Design */}
+      <section id="review" className="h-screen snap-start flex flex-col justify-center bg-gray-900 px-6 text-white overflow-hidden relative">
+        <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/40 pointer-events-none" />
+        <div className="max-w-7xl mx-auto w-full relative z-10">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-4xl md:text-6xl font-black">
+              사장님들의 <span className="text-orange-600">진짜 이야기</span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { 
+                name: '이OO 대표님', 
+                business: '프랜차이즈 가맹점주',
+                quote: '피드백과 자영업 맞춤 케어 해주셔서 비즈온과 함께할 생각입니다. 매출이 실제로 30% 이상 상승했습니다.',
+                rating: 5
+              },
+              { 
+                name: '김사장님', 
+                business: '음식점 운영 12년차',
+                quote: '대표님! 매달 신경쓸수록 방문 고객이 늘었어요. 플레이스 장악이 이렇게 중요한지 이제야 알았습니다.',
+                rating: 5
+              },
+              { 
+                name: '박대표님', 
+                business: '수도권 카페 브랜딩',
+                quote: '막연했던 어려움을 잘 이끌어주셔서 이제야 방향키를 제대로 잡아갑니다! 역시 전문가는 다릅니다.',
+                rating: 5
+              },
+            ].map((review, i) => (
+              <div key={i} className="group">
+                <div className="bg-white/5 backdrop-blur-md rounded-[40px] p-10 md:p-12 border border-white/10 hover:border-orange-600/50 transition-all h-full flex flex-col hover:translate-y-[-10px] duration-500">
+                  <span className="inline-block px-4 py-1 bg-orange-600 text-white text-[10px] font-black rounded mb-8 w-fit tracking-tighter">
+                    BIZON SUCCESS
+                  </span>
+                  <p className="text-gray-200 text-xl md:text-2xl font-bold leading-relaxed mb-10 flex-1 break-keep">
+                    "{review.quote}"
+                  </p>
+                  <div className="flex gap-1.5 mb-10">
+                    {[...Array(review.rating)].map((_, j) => (
+                      <Star key={j} className="h-6 w-6 text-yellow-500 fill-yellow-500" />
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-5">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-600/20 flex items-center justify-center border border-orange-600/30">
+                      <Users className="h-7 w-7 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="font-black text-white text-xl">{review.name}</p>
+                      <p className="text-gray-500 font-bold">{review.business}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 9. Chat Gallery - Optimized for Screen Fit */}
       <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 overflow-hidden px-6 relative pt-20 pb-12">
         <div className="max-w-6xl mx-auto w-full">
