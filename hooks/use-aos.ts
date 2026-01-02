@@ -11,19 +11,8 @@ import 'aos/dist/aos.css';
 export function useAOS() {
   useEffect(() => {
     AOS.init({
-      duration: 1000,             // ↑ 애니메이션 지속 시간 증가 (ms)
-      easing: 'ease-out-cubic',   // 이징 함수
-      once: true,                 // 한 번만 애니메이션 실행
-      offset: 100,                // ↑ 뷰포트 오프셋 증가 (px)
-      delay: 0,                   // 기본 딜레이
-      anchorPlacement: 'top-bottom',
-      disable: false,             // 모바일에서도 활성화
+      disable: true, // 애니메이션이 스냅 스크롤과 충돌하여 임시 비활성화 (모든 콘텐츠 즉시 노출)
     });
-
-    // 컴포넌트 언마운트 시 정리
-    return () => {
-      AOS.refresh();
-    };
   }, []);
 }
 

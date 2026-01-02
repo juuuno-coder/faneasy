@@ -93,23 +93,23 @@ export default function BizonMarketing({ site }: { site: string }) {
       };
 
       // Save to Firestore
-      await addDoc(collection(db, "inquiries"), {
+      const docRef = await addDoc(collection(db, "inquiries"), {
         ...newInquiry,
         serverCreatedAt: serverTimestamp(),
       });
 
-      // Log Activity
-      await logActivity({
+      // Log Activity (Non-blocking)
+      logActivity({
         type: 'inquiry',
         userName: formData.brandName,
         userEmail: formData.contact,
         action: '비즈온 마케팅 진단 요청',
         target: '진단 요청',
         subdomain: site || 'bizon'
-      });
+      }).catch(err => console.error("Activity logging failed:", err));
 
-      // Send Email Notification
-      await fetch('/api/send-email', {
+      // Send Email Notification (Non-blocking)
+      fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -118,14 +118,15 @@ export default function BizonMarketing({ site }: { site: string }) {
           brandName: formData.brandName,
           address: formData.address,
           concern: formData.concern,
-          // userEmail is not collected, so we omit it or pass empty
+          site: site || 'bizon',
+          id: docRef.id
         }),
-      });
+      }).catch(err => console.error("Email notification failed:", err));
 
       // Local store update for UI
       addInquiry({
         ...newInquiry,
-        id: `inq-${Date.now()}`,
+        id: docRef.id,
         status: 'pending' as any,
         workflowStatus: 'received',
         notes: [],
@@ -137,9 +138,9 @@ export default function BizonMarketing({ site }: { site: string }) {
       });
 
       setSubmitted(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Submission failed:", error);
-      alert("접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      alert(`접수 중 오류가 발생했습니다: ${error.message || '잠시 후 다시 시도해주세요.'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -164,7 +165,7 @@ export default function BizonMarketing({ site }: { site: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden select-none">
+    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
       {/* Fixed Header - Scroll-based styling */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 

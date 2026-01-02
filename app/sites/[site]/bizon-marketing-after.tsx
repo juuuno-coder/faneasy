@@ -226,7 +226,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </button>
       </div>
 
-      {/* 2. Reason */}
+      {/* 2. Reason - Adjusted Images */}
       <section id="reason" className="h-screen snap-start flex flex-col justify-center bg-white px-6">
         <div className="max-w-5xl mx-auto w-full">
           <div className="text-center mb-8 md:mb-12">
@@ -238,14 +238,12 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 mb-10">
             {[
-              { text: '검색시 누가봐도 가고 싶은곳', img: '/uploads/place-example-1.png' },
-              { text: '리뷰가 많고 후기가 좋은 곳', img: '/uploads/place-example-2.png' },
+              { text: '검색시 누가봐도 가고 싶은곳', img: '/assets/bizon/1.jpg' },
+              { text: '리뷰가 많고 후기가 좋은 곳', img: '/assets/bizon/2.jpg' },
             ].map((item, i) => (
               <div key={i} className="text-center">
                 <div className="relative aspect-video rounded-3xl overflow-hidden shadow-lg border border-gray-100 mb-4 bg-gray-50">
-                  <Image src={item.img} alt={item.text} fill className="object-cover" unoptimized 
-                  onError={(e) => (e.currentTarget.style.opacity = '0')} />
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 font-bold">플레이스 예시</div>
+                  <Image src={item.img} alt={item.text} fill className="object-cover" unoptimized />
                 </div>
                 <h3 className="text-xl md:text-3xl font-black text-gray-900">{item.text}</h3>
               </div>
@@ -261,29 +259,50 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 3. Stats */}
-      <section className="h-screen snap-start flex flex-col justify-center bg-slate-950 px-6 text-white">
-        <div className="max-w-5xl mx-auto w-full">
-          <div className="text-center mb-12 md:mb-20">
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black leading-tight break-keep">
-              지역 장악 마케팅으로<br />
-              대표님의 프랜차이즈 매장을<br />
-              <span className="text-orange-600 underline">지역 1등 업체</span>로 만들겠습니다.
+      {/* 3. Stats - Before/After Data Comparison */}
+      <section className="h-screen snap-start flex flex-col justify-center bg-gray-50 px-6">
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
+              마케팅의 부재로 인해 새고 있던 잠재 고객들,<br />
+              <span className="text-orange-600">비즈온이 숫자로 증명합니다.</span>
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             {[
-               { val: '300+', label: '프랜차이즈 지점', sub: '현재 진행 중' },
-               { val: '4.8/5.0', label: '고객 만족도', sub: '평균 평점' },
-               { val: '평균 2배', label: '매출 증가율', sub: '6개월 기준' },
-             ].map((s, i) => (
-               <div key={i} className="bg-white/5 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-white/10 text-center">
-                 <div className="text-3xl md:text-5xl font-black text-orange-600 mb-2">{s.val}</div>
-                 <div className="text-white font-bold text-lg">{s.label}</div>
-                 <div className="text-gray-500 text-xs md:text-sm">{s.sub}</div>
-               </div>
-             ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+             {/* Before Image Card */}
+             <div className="relative rounded-[40px] overflow-hidden shadow-xl border border-gray-100 bg-white group">
+                <div className="absolute top-6 left-8 z-20">
+                  <span className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-xs font-black">비즈온 도입 전</span>
+                </div>
+                <div className="relative aspect-4/5 md:aspect-auto md:h-full min-h-[400px]">
+                   <Image src="/assets/bizon/b1.jpg" alt="Before" fill className="object-cover group-hover:scale-105 transition-transform duration-700" unoptimized />
+                </div>
+             </div>
+
+             {/* After Orange Card */}
+             <div className="relative rounded-[40px] overflow-hidden shadow-2xl bg-orange-600 group scale-105 z-10">
+                <div className="absolute top-6 left-8 z-20">
+                  <span className="px-4 py-1.5 bg-white text-orange-600 rounded-full text-xs font-black">비즈온 도입 후</span>
+                </div>
+                <div className="relative aspect-4/5 md:aspect-auto md:h-full min-h-[400px]">
+                   <Image src="/assets/bizon/b2.jpg" alt="After" fill className="object-cover mix-blend-multiply opacity-80 group-hover:scale-110 transition-transform duration-700" unoptimized />
+                   <div className="absolute inset-x-8 bottom-12 z-20 text-white">
+                      <p className="text-sm font-bold opacity-80 mb-2">핵심 지표 성장</p>
+                      <h3 className="text-5xl font-black">842% <span className="text-2xl">UP</span></h3>
+                   </div>
+                </div>
+             </div>
+
+             {/* Analytics Graph Card */}
+             <div className="relative rounded-[40px] overflow-hidden shadow-xl border border-gray-100 bg-white group">
+                <div className="absolute top-6 left-8 z-20">
+                  <span className="px-4 py-1.5 bg-gray-100 text-gray-500 rounded-full text-xs font-black">성과 데이터</span>
+                </div>
+                <div className="relative aspect-4/5 md:aspect-auto md:h-full min-h-[400px]">
+                   <Image src="/assets/bizon/b3.jpg" alt="Analytics" fill className="object-cover group-hover:scale-105 transition-transform duration-700" unoptimized />
+                </div>
+             </div>
           </div>
         </div>
       </section>
@@ -292,12 +311,15 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       <section className="h-screen snap-start flex flex-col justify-center bg-black px-6 relative">
         <div className="max-w-5xl mx-auto w-full relative z-10">
            <div className="text-center mb-12">
-              <p className="text-blue-500 font-bold mb-2">마케팅도 똑같습니다</p>
-              <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-white leading-tight">
-                가짜 마케팅 전문가가 판치는<br />
-                자영업 마케팅 시장,<br />
-                진짜 전문가인지 확인해 보세요.
-              </h2>
+              <h2 className="text-blue-500 text-3xl md:text-5xl font-black mb-10">마케팅도 똑같습니다</h2>
+              
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 mb-12 max-w-3xl mx-auto">
+                <p className="text-xl md:text-2xl lg:text-3xl font-black text-white leading-tight">
+                  가짜 마케팅 전문가가 판치는<br />
+                  자영업 마케팅 시장,<br />
+                  <span className="text-orange-500">진짜 전문가인지 확인해 보세요.</span>
+                </p>
+              </div>
            </div>
 
            <div className="grid md:grid-cols-2 gap-6">
@@ -328,7 +350,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 5. Certificates */}
+      {/* 5. Certificates - Filled Style with Variety */}
       <section className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden">
         <div className="text-center mb-10 px-6">
           <h2 className="text-3xl md:text-6xl font-black text-gray-900 tracking-tighter">
@@ -337,61 +359,68 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
         <div className="relative w-full overflow-hidden bg-gray-50 py-10 border-y border-gray-100">
            <div className="flex animate-scroll-left-fast w-max">
-             {[...Array(24)].map((_, i) => (
-               <div key={i} className="relative w-[180px] md:w-[280px] aspect-[3/4] mx-2 md:mx-4 bg-white shadow-md rounded-2xl overflow-hidden">
-                  <Image src={`/uploads/certificates/cert${(i % 8) + 1}.png`} alt="cert" fill className="object-cover p-2" unoptimized 
-                  onError={(e) => (e.currentTarget.style.opacity='0.2')}/>
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="relative w-2/3 h-1/3 opacity-[0.08] grayscale">
-                      <Image 
-                        src="/bizon-logo.png" 
-                        alt="watermark" 
-                        fill 
-                        className="object-contain" 
-                        unoptimized 
-                      />
-                    </div>
+             {[...Array(24)].map((_, i) => {
+                const images = [
+                  `/uploads/certificates/cert${(i % 8) + 1}.png`,
+                  `/assets/bizon/1.jpg`,
+                  `/assets/bizon/2.jpg`,
+                ];
+                const img = images[i % images.length];
+                return (
+                  <div key={i} className="relative w-[180px] md:w-[280px] aspect-3/4 mx-2 md:mx-4 bg-white shadow-md rounded-2xl overflow-hidden">
+                      <Image src={img} alt="cert" fill className="object-cover" unoptimized 
+                      onError={(e) => (e.currentTarget.style.opacity='0.2')}/>
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="relative w-2/3 h-1/3 opacity-[0.08] grayscale">
+                          <Image 
+                            src="/bizon-logo.png" 
+                            alt="watermark" 
+                            fill 
+                            className="object-contain" 
+                            unoptimized 
+                          />
+                        </div>
+                      </div>
                   </div>
-               </div>
-             ))}
+                );
+             })}
            </div>
         </div>
       </section>
 
-      {/* 6. Promises */}
       <section className="h-screen snap-start flex flex-col justify-center bg-gray-50 px-6">
-        <div className="max-w-5xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
             <div className="text-center mb-10 md:mb-16">
-               <h3 className="text-2xl md:text-4xl lg:text-5xl font-black text-gray-900 mb-4">
+               <p className="text-xl md:text-3xl font-bold text-gray-500 mb-4">대표님! 아직도 플레이스 순위에만 집중하시나요?</p>
+               <h3 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 mb-4 tracking-tighter">
                 '플레이스 노출 순위' 물론 중요합니다.<br />
                 다만! <span className="text-orange-600 underline">효율적인 마케팅</span>을 해야합니다.
                </h3>
             </div>
-            <div className="grid md:grid-cols-5 gap-4">
+            <div className="grid md:grid-cols-5 gap-8">
                <div className="md:col-span-2 flex flex-col justify-center">
                   <h2 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tighter leading-tight">
-                    그래서<br />비즈온은<br /><span className="text-orange-600">5가지 약속</span>을<br />만들었습니다.
+                    그래서<br />비즈온은<br /><span className="text-orange-600">4가지 약속</span>을<br />만들었습니다.
                   </h2>
                </div>
-               <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+               <div className="md:col-span-3 grid grid-cols-1 gap-4">
                   {[
-                    { t: '과장·허위 광고 NO', d: '무작정 영업 대신, 기존 광고주 관리에 집중합니다.' },
-                    { t: '상권 맞춘 견적', d: '상권과 업종에 딱 맞는 합리적 비용만 제안합니다.' },
-                    { t: '불법 트래픽 NO', d: '지속 가능한 성과를 위해 편법을 절대 쓰지 않습니다.' },
-                    { t: '오프라인 케어', d: '매장 컨디션까지 현장 전문가가 함께 고민합니다.' },
-                    { t: '24/7 전담 소통', d: '필요할 때 언제든 1:1 전담 소통이 가능합니다.' },
+                    { t: '영업광고 전화는 일절 안 합니다.', d: '저희와 함께 해주는 광고주님 관리에 더 집중합니다.' },
+                    { t: '불법/트래픽은 절대 사용하지 않습니다.', d: '잠깐의 노출보다 더 값진 건강한 플레이스를 만들어 지속되는 성과를 만듭니다.' },
+                    { t: '가게에 꼭 필요한 마케팅만 집중적으로 진행합니다.', d: '지역상권과 업종에 맞춘 고효율의 마케팅만 진행합니다.' },
+                    { t: '온라인 마케팅이 다가 아닙니다.', d: '오프라인 매장에 도움이 되는 마케팅까지 함께 제안하고 도와드립니다. (리뷰이벤트, 운영관련팁, 매장의 포스터 디자인까지 현장 전문가가 함께 매장의 컨디션관리를 함께 합니다)' },
                   ].map((p, i) => (
-                    <div key={i} className={`p-6 rounded-2xl bg-white border border-gray-200 shadow-sm ${i === 4 ? 'sm:col-span-2' : ''}`}>
-                       <h4 className="font-black text-gray-900 mb-1">{p.t}</h4>
-                       <p className="text-gray-500 text-sm leading-snug">{p.d}</p>
+                    <div key={i} className="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                       <h4 className="font-black text-lg text-gray-900 mb-2">{p.t}</h4>
+                       <p className="text-gray-500 font-medium leading-relaxed">{p.d}</p>
                     </div>
                   ))}
                </div>
             </div>
         </div>
-      </section>
+      </section>,
 
-      {/* 7. Process - Success Cycle Redesign */}
+      {/* 7. Process - Success Cycle Slimmed */}
       <section id="process" className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden px-6 relative">
         <div className="max-w-6xl mx-auto w-full relative">
           
@@ -405,37 +434,34 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
           </div>
 
           <div className="relative flex items-center justify-center min-h-[500px] md:min-h-[600px]">
-            {/* Background Rotating Logo */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-               <div className="relative w-[320px] h-[320px] md:w-[580px] md:h-[580px] opacity-[0.35]">
+            {/* Background Rotating Logo - HIGH VISIBILITY */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-opacity duration-700">
+               <div className="relative w-[320px] h-[320px] md:w-[580px] md:h-[580px] opacity-[0.8] drop-shadow-[0_0_30px_rgba(255,255,255,0.5)]">
                  <RotatingOuterRing />
                  <RotatingBizonO />
                </div>
             </div>
 
-            {/* Staggered Grid of Success Steps */}
-            <div className="relative z-10 w-full grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-56 gap-y-12 md:gap-y-20">
+            {/* Success Steps - Simplified Titles Only */}
+            <div className="relative z-20 w-full grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-56 gap-y-12 md:gap-y-20">
                 {[
-                  { id: '01', t: '매장 점검 및 진단', desc: '현재 상태를 철저히 분석하여\n근본적인 문제점을 파악합니다.', color: 'from-blue-500/20 to-blue-600/20' },
-                  { id: '02', t: '맞춤형 마케팅 설계', desc: '전담 기획팀이 상권과 업종에\n최적화된 전략을 수립합니다.', color: 'from-amber-500/20 to-amber-600/20' },
-                  { id: '03', t: '마케팅 상품 실행', desc: '검색 노출부터 브랜딩까지\n즉각적인 실행에 착수합니다.', color: 'from-purple-500/20 to-purple-600/20' },
-                  { id: '04', t: '성과 분석 및 조정', desc: '실데이터 기반 분석을 통해\n성과를 끊임없이 최적화합니다.', color: 'from-orange-500/20 to-orange-600/20' },
+                  { id: '01', t: '매장 점검 및 진단', color: 'from-blue-500/20 to-blue-600/20' },
+                  { id: '02', t: '맞춤형 마케팅 설계', color: 'from-amber-500/20 to-amber-600/20' },
+                  { id: '03', t: '마케팅 상품 실행', color: 'from-purple-500/20 to-purple-600/20' },
+                  { id: '04', t: '성과 분석 및 전략 조정', color: 'from-orange-500/20 to-orange-600/20' },
                 ].map((item, i) => (
                   <div 
                     key={i} 
-                    className="group bg-white/95 backdrop-blur-xl p-8 md:p-12 rounded-[40px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.12)] border border-gray-100 flex flex-col justify-center hover:scale-105 transition-all duration-500"
+                    className="group bg-white/90 backdrop-blur-xl p-8 md:p-14 rounded-[40px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.12)] border border-gray-100/50 flex flex-col justify-center hover:scale-105 transition-all duration-500"
                   >
-                    <div className="flex items-center gap-6 mb-4">
+                    <div className="flex items-center gap-6">
                       <div className={`text-4xl md:text-5xl font-black bg-linear-to-r ${item.color} bg-clip-text text-transparent opacity-40`}>
                         {item.id}
                       </div>
-                      <h3 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight">
+                      <h3 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">
                         {item.t}
                       </h3>
                     </div>
-                    <p className="text-gray-500 text-lg md:text-xl font-medium whitespace-pre-line leading-relaxed">
-                      {item.desc}
-                    </p>
                   </div>
                 ))}
             </div>
@@ -506,30 +532,30 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 9. Chat Gallery - Scrolling Owner Messages */}
+      {/* 9. Chat Gallery - Optimized for Screen Fit */}
       <section className="h-screen snap-start flex flex-col justify-center bg-gray-50 overflow-hidden px-6 relative">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-16 md:mb-20">
-             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
+          <div className="text-center mb-6 md:mb-10 pt-4 md:pt-0">
+             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight">
                수많은 사장님들과의<br />
                진한 <span className="text-orange-600">소통 기록</span>
              </h2>
-             <p className="text-xl md:text-2xl text-gray-500 font-bold">비즈온마케팅은 '결과'만큼 '과정'에서의 소통을 중요시합니다</p>
+             <p className="text-lg md:text-xl text-gray-500 font-bold">비즈온마케팅은 '결과'만큼 '과정'에서의 소통을 중요시합니다</p>
           </div>
 
-          <div className="relative h-[450px] md:h-[550px] overflow-hidden rounded-[50px] border border-gray-100 bg-white/50 backdrop-blur-sm p-4">
-             <div className="absolute top-0 left-0 right-0 h-24 bg-linear-to-b from-gray-50 to-transparent z-10 pointer-events-none" />
-             <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-gray-50 to-transparent z-10 pointer-events-none" />
+          <div className="relative h-[350px] md:h-[450px] overflow-hidden rounded-[40px] border border-gray-100 bg-white/50 backdrop-blur-sm p-4">
+             <div className="absolute top-0 left-0 right-0 h-16 bg-linear-to-b from-gray-50 to-transparent z-10 pointer-events-none" />
+             <div className="absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-gray-50 to-transparent z-10 pointer-events-none" />
 
-             <div className="flex gap-4 md:gap-8 h-full px-4 overflow-hidden">
+             <div className="flex gap-3 md:gap-6 h-full px-2 overflow-hidden">
                 {[...Array(4)].map((_, colIdx) => (
                   <div 
                     key={colIdx} 
-                    className={`flex-1 flex flex-col gap-4 md:gap-6 animate-scroll-up ${colIdx % 2 === 0 ? '' : 'mt-20'}`}
-                    style={{ animationDuration: `${20 + colIdx * 2}s` }}
+                    className={`flex-1 flex flex-col gap-3 md:gap-4 animate-scroll-up ${colIdx % 2 === 0 ? '' : 'mt-16'}`}
+                    style={{ animationDuration: `${22 + colIdx * 2}s` }}
                   >
                     {[...Array(2)].map((_, setIdx) => (
-                      <div key={setIdx} className="flex flex-col gap-4 md:gap-6">
+                      <div key={setIdx} className="flex flex-col gap-3 md:gap-4">
                         {[
                           { msg: '대표님! 네이버 순위가 눈에 띄게 올랐어요 대박!!', initial: '박', color: 'bg-orange-100 text-orange-600' },
                           { msg: '이번 주 매출 최고 찍었습니다 고생하셨어요', initial: '김', color: 'bg-blue-100 text-blue-600' },
@@ -538,11 +564,11 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                           { msg: '전화 문의가 지난주보다 2배는 많아진거 같아요', initial: '정', color: 'bg-indigo-100 text-indigo-600' },
                           { msg: '상권분석 해주신게 진짜 신의 한수였네요', initial: '강', color: 'bg-rose-100 text-rose-600' },
                         ].map((item, i) => (
-                          <div key={`${setIdx}-${i}-${colIdx}`} className="bg-white rounded-3xl p-5 shadow-xl border border-gray-50/50 hover:scale-105 transition-transform">
-                            <div className="flex items-start gap-4">
-                              <div className={`h-10 w-10 rounded-full ${item.color} flex items-center justify-center text-sm font-black shrink-0 shadow-inner`}>{item.initial}</div>
+                          <div key={`${setIdx}-${i}-${colIdx}`} className="bg-white rounded-2xl p-4 shadow-lg border border-gray-50/50 hover:scale-105 transition-transform">
+                            <div className="flex items-start gap-3">
+                              <div className={`h-8 w-8 rounded-full ${item.color} flex items-center justify-center text-[10px] md:text-sm font-black shrink-0 shadow-inner`}>{item.initial}</div>
                               <div className="flex-1">
-                                <p className="text-sm md:text-base text-gray-800 font-medium leading-relaxed break-keep">{item.msg}</p>
+                                <p className="text-xs md:text-sm text-gray-800 font-medium leading-relaxed break-keep">{item.msg}</p>
                               </div>
                             </div>
                           </div>
@@ -556,18 +582,21 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 9. Contact - High Visibility Form */}
+      {/* 10. Contact - Final Diagnosis Form */}
       <section id="contact-form" className="h-screen snap-start flex flex-col md:flex-row bg-white overflow-hidden">
         <div className="w-full md:w-5/12 bg-black text-white p-12 md:p-20 flex flex-col justify-center relative">
           <Image src="/uploads/meeting-1.png" alt="bg" fill className="object-cover opacity-20 grayscale" unoptimized />
-          <div className="relative z-10 space-y-6">
+          <div className="relative z-10 space-y-8">
             <h3 className="text-orange-600 font-bold tracking-widest text-lg">CONTACT US</h3>
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight text-white mb-8">
-              진짜 전문가에게<br />
-              <span className="text-orange-600">맡기세요.</span>
-            </h2>
+            <div className="space-y-4">
+               <h2 className="text-2xl font-black text-gray-400">비즈온마케팅 주식회사</h2>
+               <p className="text-lg md:text-xl font-bold leading-relaxed text-gray-100 break-keep">
+                 실전 운영경험과 전문성으로<br />
+                 진짜 매출상승을 도와드리겠습니다.
+               </p>
+            </div>
             <div className="pt-10 border-t border-white/10">
-               <p className="text-gray-400 font-bold mb-2">문의 전화</p>
+               <p className="text-gray-400 font-bold mb-2">대표번호</p>
                <p className="text-4xl md:text-6xl font-black text-white">1666-0865</p>
             </div>
           </div>
@@ -577,40 +606,43 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
             {!submitted ? (
               <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 max-w-xl mx-auto w-full">
                 <div className="mb-8">
-                  <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">무료 진단 신청</h3>
-                  <p className="text-gray-600 font-medium">상담을 통해 가능/불가능을 정직하게 말씀드립니다.</p>
+                  <h3 className="text-3xl md:text-5xl font-black text-gray-900 mb-2 leading-tight">
+                    상담이 아니라<br />
+                    <span className="text-orange-600">진단부터 받으세요.</span>
+                  </h3>
+                  <p className="text-gray-600 font-medium text-lg">대표님 매장에 맞는 실행 우선순위 1장으로 답합니다.</p>
                 </div>
                 
                 <div className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-sm font-bold text-gray-900 ml-1">상호명</label>
-                      <input type="text" required placeholder="매장명을 입력해주세요" value={formData.brandName} onChange={(e) => setFormData({...formData, brandName: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-900 ml-1">상호명 *</label>
+                      <input type="text" required placeholder="예: 비즈온 마케팅" value={formData.brandName} onChange={(e) => setFormData({...formData, brandName: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-sm font-bold text-gray-900 ml-1">지역</label>
-                      <input type="text" required placeholder="예) 서울 강북구" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-900 ml-1">지역 *</label>
+                      <input type="text" required placeholder="예: 서울시 강남구" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-sm font-bold text-gray-900 ml-1">신청자 성함</label>
-                      <input type="text" required placeholder="이름을 입력해주세요" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-900 ml-1">성함 *</label>
+                      <input type="text" required placeholder="성함을 입력해주세요" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-sm font-bold text-gray-900 ml-1">연락처</label>
-                      <input type="tel" required placeholder="휴대폰 번호 입력" value={formData.contact} onChange={(e) => setFormData({...formData, contact: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-900 ml-1">연락처 *</label>
+                      <input type="tel" required placeholder="010-0000-0000" value={formData.contact} onChange={(e) => setFormData({...formData, contact: e.target.value})} className="w-full p-4 bg-white border border-gray-100 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 shadow-sm" />
                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-bold text-gray-900 ml-1">상세 문의내용</label>
-                    <textarea required placeholder="현재 고민이신 부분을 자유롭게 적어주세요." value={formData.concern} onChange={(e) => setFormData({...formData, concern: e.target.value})} className="w-full p-4 bg-white border border-gray-200 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 h-32 md:h-40 resize-none shadow-sm" />
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-900 ml-1">상세 문의내용 *</label>
+                    <textarea required placeholder="구체적인 고민이나 궁금하신 점을 남겨주세요." value={formData.concern} onChange={(e) => setFormData({...formData, concern: e.target.value})} className="w-full p-4 bg-white border border-gray-100 rounded-2xl outline-none focus:border-orange-600 text-gray-900 font-medium placeholder:text-gray-400 h-32 md:h-40 resize-none shadow-sm" />
                   </div>
                 </div>
 
                 <div className="pt-4">
                   <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-xl hover:bg-orange-700 transition-all shadow-xl hover:shadow-orange-600/40 flex items-center justify-center gap-2">
-                    {isSubmitting ? '접수 중...' : '우리 매장 지역장악 플랜 받기'}
+                    {isSubmitting ? '진단 요청 중...' : '우리 매장 지역장악 플랜 받기'}
                     {!isSubmitting && <ArrowRight className="h-6 w-6" />}
                   </button>
                 </div>
@@ -621,7 +653,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                     <CheckCircle className="w-10 h-10 text-green-600" />
                   </div>
                   <h3 className="text-3xl font-black mb-4 text-gray-900">신청이 완료되었습니다!</h3>
-                  <p className="text-gray-500 text-xl">담당자가 확인 후 순차적으로 연락드리겠습니다.</p>
+                  <p className="text-gray-500 text-xl font-medium leading-relaxed">진단 리포트 작성을 위해<br />담당자가 곧 연락드리겠습니다.</p>
                 </div>
             )}
         </div>
