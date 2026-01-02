@@ -740,7 +740,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
 
       {/* Kakao Consultation Sticky Button */}
       <a
-        href="http://pf.kakao.com/_xgMxjUG/chat"
+        href="https://pf.kakao.com/_cNxatn"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-24 right-6 z-50 w-16 h-16 bg-[#FEE500] rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-300 md:bottom-12 md:right-12 cursor-pointer"

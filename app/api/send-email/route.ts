@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     // Target Email (Site Owner)
     // TODO: Dynamically fetch owner email based on siteDomain if needed.
     // For now, hardcode to the main admin.
-    const targetEmails = ['kgw2642@gmail.com', 'designd@designd.co.kr', 'juuuno@naver.com']; 
+    const targetEmails = ['didtmdguq632@naver.com', 'juuuno@naver.com', 'juuuno1116@gmail.com']; 
 
     // SMTP Configuration
     const transporter = nodemailer.createTransport({
