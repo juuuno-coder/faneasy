@@ -21,7 +21,14 @@ export function middleware(req: NextRequest) {
     // A. Custom Domain Mapping
     if (hostname.includes('bizonmarketing.co.kr')) {
        console.log(`Custom Domain Rewrite: ${hostname} -> /sites/bizon`);
-       url.pathname = `/sites/bizon${url.pathname}`;
+       
+       if (url.pathname === '/before') {
+          url.pathname = '/sites/bizon-before';
+       } else if (url.pathname === '/after') {
+          url.pathname = '/sites/bizon';
+       } else {
+          url.pathname = `/sites/bizon${url.pathname}`;
+       }
        return NextResponse.rewrite(url);
     }
 
