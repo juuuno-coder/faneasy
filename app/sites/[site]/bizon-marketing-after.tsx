@@ -442,11 +442,11 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                     { t: '영업광고 전화는 일절 안 합니다.', d: '저희와 함께 해주는 광고주님 관리에 더 집중합니다.' },
                     { t: '불법/트래픽은 절대 사용하지 않습니다.', d: '잠깐의 노출보다 더 값진 건강한 플레이스를 만들어 지속되는 성과를 만듭니다.' },
                     { t: '가게에 꼭 필요한 마케팅만 집중적으로 진행합니다.', d: '지역상권과 업종에 맞춘 고효율의 마케팅만 진행합니다.' },
-                    { t: '온라인 마케팅이 다가 아닙니다.', d: '오프라인 매장에 도움이 되는 마케팅까지 함께 도와드립니다. (단골 관리 팁, 포스터 디자인 등 매장 컨디션 관리를 함께 합니다)' },
+                    { t: '온라인 마케팅이 다가 아닙니다.', d: '오프라인 매장에 도움이 되는 마케팅까지 함께 도와드립니다.\n(단골 관리 팁, 포스터 디자인 등 매장 컨디션 관리를 함께 합니다)' },
                   ].map((p, i) => (
                     <div key={i} className="p-4 md:p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                        <h4 className="font-black text-base md:text-xl text-gray-900 mb-1">{p.t}</h4>
-                       <p className="text-gray-500 text-sm md:text-base font-medium leading-relaxed break-keep">{p.d}</p>
+                       <p className="text-gray-500 text-sm md:text-base font-medium leading-relaxed break-keep whitespace-pre-line">{p.d}</p>
                     </div>
                   ))}
                </div>
@@ -458,7 +458,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
       <section id="process" className="h-screen snap-start flex flex-col justify-center bg-white overflow-hidden px-6 relative">
         <div className="max-w-6xl mx-auto w-full relative">
           
-          <div className="text-center mb-12 relative z-20">
+          <div className="text-center mb-4 md:mb-6 relative z-20">
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4 tracking-tight">
               마케팅 성공방식
             </h2>

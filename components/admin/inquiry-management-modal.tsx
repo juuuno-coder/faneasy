@@ -575,7 +575,7 @@ export default function InquiryManagementModal({ inquiry, onClose, onUpdate, isD
           <button 
             onClick={handleSaveNotes}
             disabled={isSaving}
-            className="flex-[2] py-4 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-lg shadow-xl shadow-purple-200"
+            className="flex-2 py-4 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-lg shadow-xl shadow-purple-200"
           >
             <Save className="h-6 w-6" />
             {isSaving ? '저장 중...' : '메모 및 변경사항 저장'}
