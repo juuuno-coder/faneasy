@@ -8,6 +8,7 @@ import {
   Star, 
   CheckCircle, 
   ArrowRight,
+  ArrowDown,
   Building2,
   Target,
   Zap,
@@ -266,9 +267,9 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
         </div>
       </section>
 
-      {/* 3. Stats - Before/After Data Comparison - Redesigned */}
+      {/* 3. Stats - Before/After Vertical Comparison */}
       <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 px-6 pt-20 pb-16">
-        <div className="max-w-5xl mx-auto w-full">
+        <div className="max-w-4xl mx-auto w-full">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight tracking-tight">
               마케팅의 부재로 인해 새고 있던 잠재 고객들,<br />
@@ -276,31 +277,43 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-             {/* Before Card - Compact */}
-             <div className="relative rounded-3xl overflow-hidden shadow-xl border border-gray-200 bg-white group">
-                <div className="absolute top-4 left-6 z-20">
-                  <span className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-xs font-black">비즈온 도입 전</span>
+          <div className="flex flex-col items-center gap-6">
+             {/* Before Card - Smaller, Tilted Left */}
+             <div className="relative rounded-3xl overflow-hidden shadow-lg border border-gray-200 bg-white w-full max-w-md transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+                <div className="absolute top-3 left-5 z-20">
+                  <span className="px-3 py-1 bg-gray-900 text-white rounded-full text-xs font-black">비즈온 도입 전</span>
                 </div>
-                <div className="relative h-[360px] md:h-[400px]">
-                   <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover" unoptimized />
-                   <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-black/70 to-transparent z-10" />
-                   <div className="absolute inset-x-6 bottom-6 z-20 text-white">
+                <div className="relative h-[280px]">
+                   <Image src="/assets/bizon/b3.jpg" alt="Before Background" fill className="object-cover opacity-20" unoptimized />
+                   <Image src="/assets/bizon/1.jpg" alt="Before" fill className="object-cover mix-blend-multiply opacity-80" unoptimized />
+                   <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-black/70 to-transparent z-10" />
+                   <div className="absolute inset-x-5 bottom-5 z-20 text-white">
                       <p className="text-sm font-bold opacity-90">관리가 절실했던 상태</p>
                    </div>
                 </div>
              </div>
 
-             {/* After Card - Compact Orange */}
-             <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-linear-to-br from-orange-500 to-red-600 group">
-                <div className="absolute top-4 left-6 z-20">
-                  <span className="px-4 py-1.5 bg-white text-orange-600 rounded-full text-xs font-black shadow-lg">비즈온 도입 후</span>
+             {/* Decorative Arrow */}
+             <div className="flex items-center justify-center my-2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-linear-to-b from-orange-500 to-red-600 rounded-full blur-xl opacity-40 animate-pulse" />
+                  <div className="relative bg-linear-to-b from-orange-500 to-red-600 rounded-full p-4 shadow-2xl">
+                    <ArrowDown className="w-8 h-8 text-white" strokeWidth={3} />
+                  </div>
                 </div>
-                <div className="relative h-[360px] md:h-[400px]">
+             </div>
+
+             {/* After Card - Larger, Tilted Right */}
+             <div className="relative rounded-[40px] overflow-hidden shadow-[0_40px_120px_-30px_rgba(234,88,12,0.6)] bg-linear-to-br from-orange-500 to-red-600 w-full scale-105 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                <div className="absolute top-5 left-7 z-20">
+                  <span className="px-5 py-2 bg-white text-orange-600 rounded-full text-sm font-black shadow-xl">비즈온 도입 후</span>
+                </div>
+                <div className="relative h-[420px]">
+                   <Image src="/assets/bizon/b2.jpg" alt="After Background" fill className="object-cover opacity-10" unoptimized />
                    <Image src="/assets/bizon/2.jpg" alt="After" fill className="object-cover mix-blend-multiply opacity-50" unoptimized />
-                   <div className="absolute inset-x-6 bottom-8 z-20 text-white">
-                      <p className="text-base font-bold opacity-90 mb-2">핵심 지표 폭발적 성장</p>
-                      <h3 className="text-6xl md:text-7xl font-black tracking-tighter leading-none">842% <span className="text-2xl">UP</span></h3>
+                   <div className="absolute inset-x-8 bottom-10 z-20 text-white">
+                      <p className="text-lg font-bold opacity-90 mb-3">핵심 지표 폭발적 성장</p>
+                      <h3 className="text-7xl md:text-8xl font-black tracking-tighter leading-none">842% <span className="text-3xl">UP</span></h3>
                    </div>
                 </div>
              </div>
@@ -379,17 +392,15 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                 ];
                 const img = certImages[i % certImages.length];
                 return (
-                  <div key={i} className="relative w-[200px] md:w-[320px] aspect-3/4 mx-3 md:mx-6 bg-white shadow-xl rounded-[32px] overflow-hidden p-3 md:p-5 border border-gray-100/50">
-                      <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center">
-                        <Image 
-                          src={img} 
-                          alt="cert" 
-                          fill 
-                          className="object-contain p-2" 
-                          unoptimized 
-                          onError={(e) => (e.currentTarget.style.opacity='0.2')}
-                        />
-                      </div>
+                  <div key={i} className="relative w-[200px] md:w-[320px] aspect-3/4 mx-3 md:mx-6 bg-white shadow-xl rounded-[32px] overflow-hidden border border-gray-100/50">
+                      <Image 
+                        src={img} 
+                        alt="cert" 
+                        fill 
+                        className="object-cover" 
+                        unoptimized 
+                        onError={(e) => (e.currentTarget.style.opacity='0.2')}
+                      />
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="relative w-1/2 h-1/4 opacity-[0.05] grayscale">
                           <Image 
@@ -478,7 +489,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                 ].map((item, i) => (
                   <div 
                     key={i} 
-                    className="group bg-white/95 backdrop-blur-xl p-8 md:p-12 rounded-[40px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-gray-100/50 flex flex-col justify-center hover:scale-105 hover:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.25)] transition-all duration-500"
+                    className="group bg-white/95 backdrop-blur-xl p-10 md:p-16 rounded-[40px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-gray-100/50 flex flex-col justify-center hover:scale-105 hover:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.25)] transition-all duration-500 min-h-[180px] md:min-h-[220px]"
                   >
                     <div className="flex items-center gap-6">
                       <div className={`text-4xl md:text-5xl font-black bg-linear-to-r ${item.color} bg-clip-text text-transparent opacity-40`}>
@@ -491,69 +502,6 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
                   </div>
                 ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 8. Review - Premium Design */}
-      <section id="review" className="h-screen snap-start flex flex-col justify-center bg-gray-900 px-6 text-white overflow-hidden relative">
-        <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/40 pointer-events-none" />
-        <div className="max-w-7xl mx-auto w-full relative z-10">
-          <div className="text-center mb-12 md:mb-16">
-            <div className="inline-block px-5 py-2 bg-orange-600/10 text-orange-500 rounded-full text-sm font-black mb-6 tracking-wider">
-              REAL REVIEW
-            </div>
-            <h2 className="text-4xl md:text-6xl font-black">
-              사장님들의 <span className="text-orange-600">진짜 이야기</span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { 
-                name: '이OO 대표님', 
-                business: '프랜차이즈 가맹점주',
-                quote: '피드백과 자영업 맞춤 케어 해주셔서 비즈온과 함께할 생각입니다. 매출이 실제로 30% 이상 상승했습니다.',
-                rating: 5
-              },
-              { 
-                name: '김사장님', 
-                business: '음식점 운영 12년차',
-                quote: '대표님! 매달 신경쓸수록 방문 고객이 늘었어요. 플레이스 장악이 이렇게 중요한지 이제야 알았습니다.',
-                rating: 5
-              },
-              { 
-                name: '박대표님', 
-                business: '수도권 카페 브랜딩',
-                quote: '막연했던 어려움을 잘 이끌어주셔서 이제야 방향키를 제대로 잡아갑니다! 역시 전문가는 다릅니다.',
-                rating: 5
-              },
-            ].map((review, i) => (
-              <div key={i} className="group">
-                <div className="bg-white/5 backdrop-blur-md rounded-[40px] p-10 md:p-12 border border-white/10 hover:border-orange-600/50 transition-all h-full flex flex-col hover:translate-y-[-10px] duration-500">
-                  <span className="inline-block px-4 py-1 bg-orange-600 text-white text-[10px] font-black rounded mb-8 w-fit tracking-tighter">
-                    BIZON SUCCESS
-                  </span>
-                  <p className="text-gray-200 text-xl md:text-2xl font-bold leading-relaxed mb-10 flex-1 break-keep">
-                    "{review.quote}"
-                  </p>
-                  <div className="flex gap-1.5 mb-10">
-                    {[...Array(review.rating)].map((_, j) => (
-                      <Star key={j} className="h-6 w-6 text-yellow-500 fill-yellow-500" />
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-5">
-                    <div className="h-14 w-14 rounded-2xl bg-orange-600/20 flex items-center justify-center border border-orange-600/30">
-                      <Users className="h-7 w-7 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="font-black text-white text-xl">{review.name}</p>
-                      <p className="text-gray-500 font-bold">{review.business}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
