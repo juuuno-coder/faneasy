@@ -344,7 +344,7 @@ export default function BizonMarketingAfter({ site }: { site: string }) {
            <div className="grid md:grid-cols-2 gap-5 px-2 mb-12">
               {[
                 { txt: '우리의 목표는 단순히\n순위를 올리는 게 아닙니다.', bg: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2670&auto=format&fit=crop' },
-                { txt: '고객이 올 수밖에 없는\n구조를 만들고\n\n그 경험을 매출로 전환하는 것.', bg: 'https://images.unsplash.com/photo-1550966841-3ee3ad3e1b12?q=80&w=2670&auto=format&fit=crop' }
+                { txt: '고객이 올 수밖에 없는\n구조를 만들고\n\n그 경험을 매출로 전환하는 것.', bg: 'https://images.unsplash.com/photo-1517248135467-4c7ed9d421bb?q=80&w=2670&auto=format&fit=crop' }
               ].map((b, i) => (
                 <div key={i} className={`relative h-[200px] md:h-[240px] rounded-3xl overflow-hidden border border-white/10 group ${i === 1 ? 'md:translate-y-6' : ''}`}>
                   <Image src={b.bg} alt="bg" fill className="object-cover opacity-20 group-hover:opacity-35 transition-all duration-500" unoptimized />
